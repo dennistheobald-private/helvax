@@ -8,6 +8,7 @@ from fontTools.pens.boundsPen import BoundsPen
 
 FONT = "/usr/share/fonts/opentype/inter/InterDisplay-SemiBold.otf"
 OUT = sys.argv[1] if len(sys.argv) > 1 else "assets/brand"
+TRACK = float(sys.argv[2]) if len(sys.argv) > 2 else -0.07  # letter spacing, in em
 
 RED = "#D03B2B"
 INK = "#16130F"
