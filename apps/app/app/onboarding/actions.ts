@@ -17,7 +17,10 @@ export async function createCompany(_prev: { error?: string }, form: FormData): 
   if (!auth.user) redirect("/login");
   if (!(await allow("create-tenant", auth.user.id, 5, 86400))) return { error: "Too many companies created today. Try again tomorrow." };
   const { data, error } = await supabase.rpc("create_tenant", { tenant_name: name, tenant_timezone: timezone });
-  if (error || !data) return { error: "We couldn't create the company. Try again." };
+  if (error || !data) {
+    console.error("create_tenant failed", error?.code, error?.message);
+    return { error: "We couldn't create the company. Try again." };
+  }
 
   (await cookies()).set(TENANT_COOKIE, data, { httpOnly: true, sameSite: "lax", secure: true, path: "/" });
   redirect("/overview");
