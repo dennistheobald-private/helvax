@@ -65,6 +65,7 @@ export async function inviteMember(_prev: FormState, form: FormData): Promise<Fo
     subject: `${inviter} invited you to ${company} on Helvax`,
     text: `${inviter} invited you to join ${company} on Helvax as ${role}.\n\nAccept the invitation: ${link}\n\nThe link works for 7 days.`,
     html: `<p>${escapeHtml(inviter)} invited you to join <strong>${escapeHtml(company)}</strong> on Helvax as ${role}.</p><p><a href="${link}">Accept the invitation</a></p><p>The link works for 7 days.</p>`,
+    idempotencyKey: `invite/${tokenHash}`,
   });
   revalidatePath("/settings");
   return sent ? { ok: `Invitation sent to ${email}.` } : { error: `Invitation created, but the email couldn't be sent. Check the Resend setup.` };
