@@ -8,8 +8,9 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Helvax · Realistic attacks. Verified results.", template: "%s · Helvax" },
+  title: { default: "Helvax · Trust. Trained. Tested.", template: "%s · Helvax" },
   description: "Security-awareness simulations that only count a failure when the evidence shows a real person took a risky action. No mailbox connection needed.",
+  openGraph: { title: "Helvax · Trust. Trained. Tested.", siteName: "Helvax", type: "website" },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

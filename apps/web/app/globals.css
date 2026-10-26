@@ -7,18 +7,19 @@
   --font-mono: var(--hx-font-mono), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
-html, body { margin: 0; background: var(--warm); }
+html { background: var(--warm); }
+body, body.hx-root { margin: 0; background: transparent; } /* lets the fixed .page-gap backdrop show */
 
 .skip-link { position: absolute; left: 16px; top: -48px; z-index: 100; padding: 8px 14px; border-radius: var(--radius-btn); background: var(--ink); color: var(--canvas); }
 .skip-link:focus { top: 16px; }
 
 .site-header { position: sticky; top: 12px; z-index: var(--z-sticky); max-width: 1240px; margin: 12px auto 0; padding: 0 16px; }
 
-.hero { position: relative; isolation: isolate; overflow: hidden; display: grid; justify-items: center; gap: 24px; text-align: center; padding: 96px 16px 128px; }
-.hero__gap { --gap: 0.6; position: absolute; z-index: -1; left: 50%; top: 50%; width: min(1100px, 150vw); translate: -50% -50%; overflow: visible; pointer-events: none; }
-.hero__gap path { fill: var(--brand-500); opacity: 0.07; will-change: transform; }
-.hero__gap path:first-of-type { transform: translate(calc(var(--gap) * -22px), calc(var(--gap) * 6px)); }
-.hero__gap path:last-of-type { transform: translate(calc(var(--gap) * 22px), calc(var(--gap) * -6px)); }
+.hero { position: relative; display: grid; justify-items: center; gap: 24px; text-align: center; padding: 96px 16px 128px; }
+.page-gap { --gap: 1; position: fixed; z-index: -1; left: 50%; top: 50%; width: min(1100px, 150vw); translate: -50% -50%; overflow: visible; pointer-events: none; }
+.page-gap path { fill: var(--brand-500); opacity: 0.06; will-change: transform; }
+.page-gap path:first-of-type { transform: translate(calc(var(--gap) * -22px), calc(var(--gap) * 6px)); }
+.page-gap path:last-of-type { transform: translate(calc(var(--gap) * 22px), calc(var(--gap) * -6px)); }
 .hero__gap-note { margin: 8px 0 0; font-size: var(--text-sm); color: var(--muted); }
 .hero__gap-note strong { color: var(--brand-700); font-weight: var(--weight-semibold); }
 .hero .hx-headline { max-width: 18ch; }
@@ -322,7 +323,7 @@ html, body { margin: 0; background: var(--warm); }
 .newsletter { display: grid; justify-items: center; gap: 16px; text-align: center; padding: clamp(64px, 9vw, 112px) 16px; border-top: 1px solid var(--border); background: var(--canvas); }
 .newsletter .hx-lead { margin: 0 auto; }
 .newsletter__form { display: grid; gap: 10px; width: min(100%, 480px); margin-top: 8px; }
-.newsletter__field { display: flex; gap: 6px; padding: 6px; border-radius: 999px; background: var(--canvas); border: 1px solid var(--border-strong); box-shadow: var(--shadow-sm, 0 8px 24px -16px rgb(23 25 29 / 0.25)); }
+.newsletter__field { display: flex; gap: 8px; padding: 7px; border-radius: 14px; background: var(--canvas); border: 1px solid var(--border-strong); box-shadow: var(--shadow-sm, 0 8px 24px -16px rgb(23 25 29 / 0.25)); }
 .newsletter__field:focus-within { box-shadow: var(--focus-ring); }
 .newsletter__field .hx-input { flex: 1; min-width: 0; border: 0; background: transparent; box-shadow: none; padding-left: 14px; }
 .newsletter__field .hx-input:focus { box-shadow: none; outline: 0; }

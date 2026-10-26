@@ -3,8 +3,8 @@
 import { useEffect, useRef } from "react";
 import { prefersReducedMotion } from "@helvax/ui/react";
 
-// The Split mark behind the hero. Its halves drift apart, the gap between what tests
-// measure and what really happens, and close as you scroll. Transform only.
+// The Split mark as a fixed backdrop. Its halves start apart, the gap between what tests
+// measure and what really happens, and close as you scroll down. It moves only on scroll.
 export function HeroGap() {
   const ref = useRef<SVGSVGElement>(null);
 
@@ -12,29 +12,25 @@ export function HeroGap() {
     const svg = ref.current;
     if (!svg || prefersReducedMotion()) return;
     let frame = 0;
-    let visible = true;
-    const start = performance.now();
-    const io = new IntersectionObserver(([e]) => {
-      visible = !!e?.isIntersecting;
-      if (visible && !frame) frame = requestAnimationFrame(tick);
-    });
-    io.observe(svg);
-
-    function tick(now: number) {
+    const update = () => {
       frame = 0;
-      if (!visible) return;
-      const hero = svg!.parentElement!;
-      const closed = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.7)));
-      const drift = 0.55 + 0.45 * Math.sin((now - start) / 1600 - Math.PI / 2) * -1;
-      svg!.style.setProperty("--gap", ((1 - closed) * drift).toFixed(3));
-      frame = requestAnimationFrame(tick);
-    }
-    frame = requestAnimationFrame(tick);
-    return () => { io.disconnect(); cancelAnimationFrame(frame); };
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? Math.min(1, window.scrollY / (max * 0.6)) : 0;
+      svg.style.setProperty("--gap", (1 - progress).toFixed(3));
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
+    };
   }, []);
 
   return (
-    <svg ref={ref} className="hero__gap" viewBox="-40 -20 180 140" aria-hidden="true" focusable="false">
+    <svg ref={ref} className="page-gap" viewBox="-40 -20 180 140" aria-hidden="true" focusable="false">
       <path d="M44 12A44 44 0 0 0 44 100Z" />
       <path d="M56 0A44 44 0 0 1 56 88Z" />
     </svg>

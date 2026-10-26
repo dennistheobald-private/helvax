@@ -33,14 +33,14 @@ export default async function HomePage() {
 
   return (
     <>
+      <HeroGap />
       <section className="hero hx-clouds" aria-labelledby="hero-title">
-        <HeroGap />
         <Link className="hx-badge hx-badge--link" href="/pricing">
           Start free · then from {from} per employee <Icon name="arrow" size="sm" />
         </Link>
         <h1 id="hero-title" className="hx-headline">
-          Realistic attacks.
-          <span className="hx-headline__sub">Verified results.</span>
+          Trust. Trained.
+          <span className="hx-headline__sub">Tested.</span>
         </h1>
         <p className="hx-lead">See how your people really respond to fraud and phishing, and prove they get better every month.</p>
         <div className="hx-btn-group">
