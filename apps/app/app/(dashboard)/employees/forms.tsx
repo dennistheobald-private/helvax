@@ -6,6 +6,7 @@ import {
   addDomain, addEmployee, addGroup, previewImport, verifyDomain,
   type FormState, type ImportPreview, type ImportRow, type RowVerdict,
 } from "./actions";
+import { LANGUAGE_OPTIONS } from "@/lib/engine/practice-copy";
 
 function Status({ state }: { state: FormState }) {
   if (state.error) return <p className="form-status form-status--error" role="alert">{state.error}</p>;
@@ -15,7 +16,7 @@ function Status({ state }: { state: FormState }) {
 
 type Group = { id: string; name: string };
 
-export function AddEmployeeForm({ groups, domains }: { groups: Group[]; domains: string[] }) {
+export function AddEmployeeForm({ groups, domains, defaultLocale }: { groups: Group[]; domains: string[]; defaultLocale: string }) {
   const [state, action, pending] = useActionState(addEmployee, {});
   return (
     <form action={action} className="employee-form" key={state.ok}>
@@ -27,6 +28,12 @@ export function AddEmployeeForm({ groups, domains }: { groups: Group[]; domains:
         <select id="new-group" name="group_id" className="hx-select" defaultValue="">
           <option value="">No group</option>
           {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
+        </select>
+      </div>
+      <div className="hx-field">
+        <label className="hx-label" htmlFor="new-locale">Language of simulations</label>
+        <select id="new-locale" name="locale" className="hx-select" defaultValue={defaultLocale}>
+          {LANGUAGE_OPTIONS.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
         </select>
       </div>
       <div className="settings-form__actions"><Button type="submit" loading={pending}><Icon name="plus" size="sm" />Add employee</Button><Status state={state} /></div>
@@ -41,6 +48,7 @@ const HEADERS: Record<string, keyof ImportRow> = {
   lastname: "last_name", last: "last_name", surname: "last_name", familyname: "last_name", nachname: "last_name", achternaam: "last_name",
   email: "email", emailaddress: "email", mail: "email", workemail: "email",
   group: "group", department: "group", team: "group", abteilung: "group", gruppe: "group", afdeling: "group",
+  language: "language", locale: "language", lang: "language", sprache: "language", taal: "language",
 };
 
 /** Minimal CSV reader: quoted fields, "," or ";" separators (Excel in Switzerland uses ";"). */
@@ -77,12 +85,13 @@ function toRows(text: string): { rows?: ImportRow[]; error?: string } {
   if (!header) return { error: "The file is empty." };
   const cols = header.map((h) => HEADERS[h.toLowerCase().replace(/[^a-z]/g, "")]);
   for (const need of ["first_name", "last_name", "email"] as const) {
-    if (!cols.includes(need)) return { error: "The first row needs the columns first_name, last_name and email (group is optional)." };
+    if (!cols.includes(need)) return { error: "The first row needs the columns first_name, last_name and email (group and language are optional)." };
   }
   return {
     rows: body.map((cells) => {
-      const r: ImportRow = { first_name: "", last_name: "", email: "", group: "" };
-      cols.forEach((k, i) => { if (k) r[k] = (cells[i] ?? "").trim(); });
+      const r: ImportRow = { first_name: "", last_name: "", email: "", group: "", language: "" };
+      // The server normalises the language ("Deutsch" → "de").
+      cols.forEach((k, i) => { if (k) (r as unknown as Record<string, string>)[k] = (cells[i] ?? "").trim(); });
       return r;
     }),
   };
@@ -132,7 +141,7 @@ export function CsvImport() {
       <label className="hx-dropzone">
         <span className="hx-dropzone__icon"><Icon name="upload" /></span>
         <span className="hx-dropzone__title">{fileName && rows ? fileName : "Choose a CSV file"}</span>
-        <span className="hx-dropzone__hint">Columns: first_name, last_name, email, group (optional) · up to 5,000 people</span>
+        <span className="hx-dropzone__hint">Columns: first_name, last_name, email, plus optional group and language (en, de, nl) · up to 5,000 people</span>
         <input type="file" accept=".csv,text/csv" onChange={(e) => onFile(e.currentTarget.files?.[0])} />
       </label>
       {readError && <p className="form-status form-status--error" role="alert">{readError}</p>}

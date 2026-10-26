@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { detectRequest } from "@/lib/engine/detect";
 import { loadLanding } from "@/lib/engine/landing";
+import { UI, toLocale, type Locale } from "@/lib/engine/practice-copy";
 import { hashAddress, signToken, verifyToken } from "@/lib/engine/token";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Practice } from "./Practice";
@@ -9,12 +10,13 @@ import { Practice } from "./Practice";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: { absolute: "Secure access" }, robots: { index: false, follow: false } };
 
-function Unavailable() {
+function Unavailable({ locale }: { locale: Locale }) {
+  const ui = UI[locale];
   return (
-    <main className="practice practice--center">
+    <main className="practice practice--center" lang={locale}>
       <div className="practice__card">
-        <h1>This link is no longer available</h1>
-        <p>It may have expired. You can close this page.</p>
+        <h1>{ui.unavailableTitle}</h1>
+        <p>{ui.unavailableLead}</p>
       </div>
     </main>
   );
@@ -27,9 +29,9 @@ export default async function LandingPage({ params, searchParams }: { params: Pr
   const simulationId = verifyToken("link", token);
   const landing = simulationId ? await loadLanding(simulationId) : null;
   const admin = createAdminClient();
-  if (!landing || !admin) return <Unavailable />;
-
   const h = await headers();
+  if (!landing || !admin) return <Unavailable locale={toLocale(h.get("accept-language")?.slice(0, 2))} />;
+
   const detection = detectRequest({
     userAgent: h.get("user-agent"),
     method: "GET",
@@ -39,7 +41,7 @@ export default async function LandingPage({ params, searchParams }: { params: Pr
   const { data: sessionId } = await admin.rpc("engine_start_session", {
     sim: landing.simulationId, ip_hash: hashAddress(ip), user_agent_family: detection.browser, network_class: detection.network,
   });
-  if (!sessionId) return <Unavailable />;
+  if (!sessionId) return <Unavailable locale={landing.locale} />;
   await admin.rpc("engine_record", {
     sim: landing.simulationId, session: sessionId, kind: sp.q === "1" ? "qr_request" : "link_request", who: detection.actor, detection: detection.signals,
   });
@@ -52,6 +54,7 @@ export default async function LandingPage({ params, searchParams }: { params: Pr
       senderName={landing.senderName}
       company={landing.company}
       training={landing.training}
+      locale={landing.locale}
     />
   );
 }

@@ -9,6 +9,7 @@ import { requireSession } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { removeDomain, removeEmployee, removeGroup, updateEmployee } from "./actions";
 import { AddDomainForm, AddEmployeeForm, AddGroupForm, CsvImport, VerifyDomainButton } from "./forms";
+import { LANGUAGE_OPTIONS } from "@/lib/engine/practice-copy";
 
 export const metadata: Metadata = { title: "Employees" };
 
@@ -30,7 +31,7 @@ export default async function EmployeesPage({ searchParams }: { searchParams: Pr
 
   let query = supabase
     .from("employees")
-    .select("id, first_name, last_name, email, status, group_id, is_demo", { count: "exact" })
+    .select("id, first_name, last_name, email, status, group_id, locale, is_demo", { count: "exact" })
     .eq("tenant_id", s.tenant.id)
     .order("last_name")
     .order("first_name")
@@ -129,6 +130,10 @@ export default async function EmployeesPage({ searchParams }: { searchParams: Pr
                                   <option value="">No group</option>
                                   {(groups ?? []).map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
                                 </select>
+                                <label className="hx-label" htmlFor={`l-${e.id}`}>Language</label>
+                                <select id={`l-${e.id}`} name="locale" className="hx-select" defaultValue={e.locale}>
+                                  {LANGUAGE_OPTIONS.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
+                                </select>
                                 <label className="hx-label" htmlFor={`s-${e.id}`}>Status</label>
                                 <select id={`s-${e.id}`} name="status" className="hx-select" defaultValue={e.status}>
                                   <option value="active">Active: receives simulations</option>
@@ -165,7 +170,7 @@ export default async function EmployeesPage({ searchParams }: { searchParams: Pr
         <div className="split">
           <Card className="section">
             <header><h2>Add one person</h2><p className="muted">First name, last name and work email. Only addresses on your company domains.</p></header>
-            <AddEmployeeForm groups={groups ?? []} domains={realDomains.map((d) => d.domain)} />
+            <AddEmployeeForm groups={groups ?? []} domains={realDomains.map((d) => d.domain)} defaultLocale={s.tenant.locale} />
           </Card>
           <Card className="section">
             <header><h2>Import a CSV file</h2><p className="muted">We check every row first and show you what will change. Existing people are matched by email.</p></header>

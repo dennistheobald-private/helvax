@@ -5,7 +5,6 @@ import { Button } from "@helvax/ui/react";
 import type { SimulationSettings } from "@/lib/database.types";
 import { setSending, updateSettings } from "./actions";
 
-const DAYS = [[1, "Mon"], [2, "Tue"], [3, "Wed"], [4, "Thu"], [5, "Fri"], [6, "Sat"], [7, "Sun"]] as const;
 const FREQUENCY = [
   { value: 1, label: "Monthly", help: "One simulation per person each month" },
   { value: 2, label: "Twice a month", help: "Two per person, at least the cooldown apart" },
@@ -29,27 +28,7 @@ export function SettingsForm({ settings, disabled }: { settings: SimulationSetti
         </div>
       </fieldset>
 
-      <fieldset className="hx-fieldset" disabled={disabled}>
-        <legend className="hx-label">Days</legend>
-        <div className="day-picker">
-          {DAYS.map(([d, label]) => (
-            <label key={d} className="day-picker__day">
-              <input type="checkbox" name="business_days" value={d} defaultChecked={settings.business_days.includes(d)} />
-              <span>{label}</span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
-
       <div className="schedule-form__row">
-        <div className="hx-field">
-          <label className="hx-label" htmlFor="window_start">From</label>
-          <input id="window_start" name="window_start" type="time" className="hx-input" defaultValue={settings.window_start.slice(0, 5)} disabled={disabled} />
-        </div>
-        <div className="hx-field">
-          <label className="hx-label" htmlFor="window_end">Until</label>
-          <input id="window_end" name="window_end" type="time" className="hx-input" defaultValue={settings.window_end.slice(0, 5)} disabled={disabled} />
-        </div>
         <div className="hx-field">
           <label className="hx-label" htmlFor="cooldown_days">Days between two simulations</label>
           <input id="cooldown_days" name="cooldown_days" type="number" min={2} max={60} className="hx-input" defaultValue={settings.cooldown_days} disabled={disabled} />
@@ -61,7 +40,7 @@ export function SettingsForm({ settings, disabled }: { settings: SimulationSetti
           </select>
         </div>
       </div>
-      <p className="muted">Times are in {"your company's"} time zone. Each person gets a different, random time inside this window, so nobody can predict the next one.</p>
+      <p className="muted">Each person gets a different, random day and time, so nobody can predict the next one.</p>
 
       <input type="hidden" name="training_moments" value={training ? "on" : "off"} />
       <button className="hx-switch" type="button" role="switch" aria-checked={training} disabled={disabled} onClick={() => setTraining((t) => !t)}>
