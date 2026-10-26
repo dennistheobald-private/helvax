@@ -33,8 +33,8 @@ export default async function HomePage() {
 
   return (
     <>
+      <HeroGap />
       <section className="hero hx-clouds" aria-labelledby="hero-title">
-        <HeroGap />
         <Link className="hx-badge hx-badge--link" href="/pricing">
           Start free · then from {from} per employee <Icon name="arrow" size="sm" />
         </Link>
