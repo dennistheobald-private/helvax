@@ -23,7 +23,6 @@ const GROUPS: { title: string; rows: [string, Cell[]][] }[] = [
   ] },
   { title: "Rhythm and training", rows: [
     ["You set how often, Helvax picks the moment", ALL],
-    ["Business hours and holidays respected", ALL],
     ["Two-minute training moment", ALL],
   ] },
   { title: "Reporting", rows: [

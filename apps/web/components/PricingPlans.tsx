@@ -21,7 +21,7 @@ interface Plan {
 const perMonth = (p: Price, c: Cycle) => (c === "annual" ? p.annual / 12 : p.monthly);
 
 export function PricingPlans({ prices }: { prices: PriceList }) {
-  const [cycle, setCycle] = useState<Cycle>("annual");
+  const [cycle, setCycle] = useState<Cycle>("monthly");
   const { currency } = prices;
   const saving = Math.round((1 - prices.helvax.annual / (prices.helvax.monthly * 12)) * 100);
   const paid = (p: Price) => (c: Cycle) => ({
@@ -45,7 +45,7 @@ export function PricingPlans({ prices }: { prices: PriceList }) {
       key: "helvax", name: "Helvax", price: paid(prices.helvax),
       features: [
         { text: "Everything in Free, for your whole team" },
-        { text: "Unpredictable testing schedule", tip: "You set how often. Helvax picks the day, time and scenario inside your business hours." },
+        { text: "Unpredictable testing schedule", tip: "You set how often. Helvax picks the day, time and scenario at random." },
         { text: "Team trends and PDF export" },
         { text: "Two-minute training moments", tip: "Shown right after a risky action, in private. Nobody is named or shamed." },
       ],
@@ -79,7 +79,7 @@ export function PricingPlans({ prices }: { prices: PriceList }) {
     <div className="plans">
       <div className="plans__cycle hx-tabs hx-tabs--track">
         <div className="hx-tabs__list" role="radiogroup" aria-label="Billing">
-          {(["annual", "monthly"] as const).map((c) => (
+          {(["monthly", "annual"] as const).map((c) => (
             <button key={c} type="button" role="radio" className="hx-tabs__tab" aria-checked={cycle === c} aria-selected={cycle === c} onClick={() => setCycle(c)}>
               {c === "annual" ? <>Yearly <span className="hx-badge hx-badge--brand">−{saving}%</span></> : "Monthly"}
             </button>

@@ -3,16 +3,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { LogoMark, prefersReducedMotion, useInView } from "@helvax/ui/react";
 
-// The testing rhythm: the chosen frequency puts that many tests on random working days
-// of a month, and each one lands at a random time inside business hours on the 24-hour
-// dial. More tests per month means more markers and a quicker beat. Example data only.
+// The testing rhythm: the chosen frequency puts that many tests on random days of a
+// month, and each one lands at a random time on the 24-hour dial. More tests per month
+// means more markers and a quicker beat. Example data only.
 
 const SIZE = 360;
 const C = SIZE / 2;
 const R = 132;
-const WINDOW = { start: 8, end: 17 };
-const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-const DAYS = 20; // four working weeks
+const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAYS = 28; // four weeks
 const FREQUENCIES = [1, 2, 4] as const;
 type Freq = (typeof FREQUENCIES)[number];
 const BEAT: Record<Freq, number> = { 1: 2600, 2: 1900, 4: 1300 };
@@ -28,19 +27,12 @@ const toXY = (hour: number, r = R) => {
   return [C + r * Math.cos(a), C + r * Math.sin(a)] as const;
 };
 
-function arc(from: number, to: number, r = R) {
-  const [x1, y1] = toXY(from, r);
-  const [x2, y2] = toXY(to, r);
-  const large = (to - from) / 24 > 0.5 ? 1 : 0;
-  return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
-}
-
-const WINDOW_LENGTH = ((WINDOW.end - WINDOW.start) / 24) * 2 * Math.PI * R;
+const RING = 2 * Math.PI * R;
 const fmt = (h: number) => `${String(Math.floor(h)).padStart(2, "0")}:${String(Math.floor((h % 1) * 60)).padStart(2, "0")}`;
 
 interface Test { day: number; hour: number; scenario: string }
 
-/** One month of tests: one random working day in each equal slice, so tests never bunch up. */
+/** One month of tests: one random day in each equal slice, so tests never bunch up. */
 function plan(freq: Freq, rand: () => number): Test[] {
   const slice = DAYS / freq;
   const used = new Set<string>();
@@ -50,7 +42,7 @@ function plan(freq: Freq, rand: () => number): Test[] {
     used.add(scenario);
     return {
       day: Math.floor(i * slice + rand() * slice),
-      hour: WINDOW.start + 0.25 + rand() * (WINDOW.end - WINDOW.start - 0.5),
+      hour: rand() * 24,
       scenario,
     };
   });
@@ -98,7 +90,7 @@ export function FrequencyDial() {
   return (
     <div ref={ref} className="dial-card" data-in={inView || undefined} style={{ ["--beat" as string]: `${BEAT[freq]}ms` }}>
       <div className="dial">
-        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label={`Example: ${freq} test${freq > 1 ? "s" : ""} per person per month, on random working days, at random times between ${WINDOW.start}:00 and ${WINDOW.end}:00.`}>
+        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label={`Example: ${freq} test${freq > 1 ? "s" : ""} per person per month, on random days at random times.`}>
           {Array.from({ length: 24 }, (_, h) => {
             const major = h % 6 === 0;
             const [x1, y1] = toXY(h, R + 22);
@@ -110,7 +102,7 @@ export function FrequencyDial() {
             return <text key={h} x={x} y={y} className="dial__label" textAnchor="middle" dominantBaseline="middle">{h}</text>;
           })}
           <circle cx={C} cy={C} r={R} className="dial__track" />
-          <path d={arc(WINDOW.start, WINDOW.end)} className="dial__window" style={{ strokeDasharray: WINDOW_LENGTH, strokeDashoffset: inView ? 0 : WINDOW_LENGTH }} />
+          <circle cx={C} cy={C} r={R} className="dial__window" transform={`rotate(-90 ${C} ${C})`} style={{ strokeDasharray: RING, strokeDashoffset: inView ? 0 : RING }} />
           {tests.slice(0, step).map((t) => {
             const [x, y] = toXY(t.hour, R - 26);
             return <circle key={`${month}-${t.day}`} cx={x} cy={y} r={5} className="dial__past" />;
@@ -123,7 +115,7 @@ export function FrequencyDial() {
           <LogoMark width={22} height={22} className="dial__mark" />
           <span className="dial__eyebrow">Test {step + 1} of {freq}</span>
           <span key={`s${key}`} className="dial__scenario">{current.scenario}</span>
-          <span className="dial__time">{WEEKDAYS[current.day % 5]} · {fmt(current.hour)}</span>
+          <span className="dial__time">{WEEKDAYS[current.day % 7]} · {fmt(current.hour)}</span>
         </div>
       </div>
 
@@ -139,7 +131,6 @@ export function FrequencyDial() {
       </div>
 
       <div className="dial__legend">
-        <span className="dial__pill"><i className="dial__swatch" />Business hours · 08–17</span>
         <div className="dial__freq" role="radiogroup" aria-label="Tests per person per month">
           {FREQUENCIES.map((f) => (
             <button key={f} type="button" role="radio" aria-checked={freq === f} onClick={() => choose(f)}>

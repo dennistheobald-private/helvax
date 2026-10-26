@@ -1,10 +1,10 @@
 // Prices are set in CHF. Visitors in the EU see EUR, converted at the daily ECB rate.
 
 export const PRICE_CHF = {
-  helvax: { monthly: 2, annual: 12 },
+  helvax: { monthly: 3, annual: 24 },
 } as const;
 
-/** Helvax Pro has no list price yet; set one here (e.g. { monthly: 4, annual: 24 }) to show it. */
+/** Helvax Pro has no list price yet; set one here (e.g. { monthly: 5, annual: 36 }) to show it. */
 export const PRO_PRICE_CHF: Price | null = null;
 
 /** Employees included in the Free plan. */

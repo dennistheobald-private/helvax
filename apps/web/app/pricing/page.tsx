@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 const faqs = [
   { q: "Who counts as an employee?", a: "Every active person you test. Employees you deactivate stop counting from the next billing period." },
   { q: "Can I switch plans later?", a: "Yes, up or down at any time. Upgrades apply straight away; downgrades from the next billing period." },
-  { q: "Is there a minimum contract?", a: "Monthly plans can be cancelled any time. Yearly plans are paid up front for half the price." },
+  { q: "Is there a minimum contract?", a: "Monthly plans can be cancelled any time. Yearly plans are paid up front and cost a third less." },
   { q: "Which currencies do you bill in?", a: "Swiss francs, or euros for customers in the EU, converted at the daily exchange rate." },
 ];
 

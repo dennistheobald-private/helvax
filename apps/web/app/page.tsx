@@ -20,7 +20,7 @@ const trust = [
 const faqs: { q: string; a: string }[] = [
   { q: "Do you need access to our email system?", a: "No. Helvax sends from its own domains like any outside sender, so there's no IT project. Only addresses on your verified company domain can be tested." },
   { q: "What counts as a failure?", a: "Only a verified risky action, such as confirming a fake bank change or approving a fake payment. Opening a link is never a failure on its own." },
-  { q: "How often are people tested?", a: "You choose, usually once or twice a month per person. Helvax picks random times inside your business hours, never flooding anyone." },
+  { q: "How often are people tested?", a: "You choose, usually once or twice a month per person. Helvax picks random days and times, never flooding anyone." },
   { q: "What about GDPR and the Swiss FADP?", a: "Helvax is built for data minimization: we store only work email, name and team, host data in the EU and sign a data processing agreement. You can delete anyone at any time." },
   { q: "Which languages are supported?", a: "English and German, with Dutch to follow." },
 ];
