@@ -13,6 +13,7 @@ const main: { href: string; label: string; icon: IconName }[] = [
 ];
 
 const account: typeof main = [{ href: "/settings", label: "Settings", icon: "gear" }];
+const billing: (typeof main)[number] = { href: "/billing", label: "Billing", icon: "invoice" };
 const audit: (typeof main)[number] = { href: "/audit", label: "Audit log", icon: "doc" };
 const admin: (typeof main)[number] = { href: "/admin", label: "Helvax admin", icon: "block" };
 
@@ -31,6 +32,7 @@ export function SidebarNav({ isAdmin, isSuperadmin }: { isAdmin: boolean; isSupe
       <div className="hx-sidebar__section">
         <span className="hx-eyebrow hx-sidebar__heading">Account</span>
         {account.map(link)}
+        {isAdmin && link(billing)}
         {isAdmin && link(audit)}
       </div>
       {isSuperadmin && (

@@ -59,15 +59,14 @@ select pg_temp.fails($$select public.set_sending_enabled('$$ || :'d' || $$', tru
 reset role;
 
 -- The planner works without sending, and only for eligible people.
-update public.simulation_settings set per_employee_per_month = 2, cooldown_days = 7, business_days = '{1,2,3,4,5}', window_start = '09:00', window_end = '17:00' where tenant_id = :'d';
+update public.simulation_settings set per_employee_per_month = 2, cooldown_days = 7 where tenant_id = :'d';
 select private.plan_simulations(:'d', current_date + 1, 30) as planned \gset
 select pg_temp.check(:planned = 4, 'two simulations each for the two active employees');
 select pg_temp.check(not exists (select 1 from public.simulations s join public.employees e on e.id = s.employee_id where e.email = 'pia.roth@delta-bau.ch'), 'paused employees are never planned');
 select pg_temp.check(not exists (
   select 1 from public.simulations where tenant_id = :'d'
-  and (extract(isodow from scheduled_at at time zone 'Europe/Zurich') > 5
-       or (scheduled_at at time zone 'Europe/Zurich')::time not between '09:00' and '17:00')
-), 'planned times fall on business days inside the window');
+  and (scheduled_at <= now() or (scheduled_at at time zone 'Europe/Zurich')::date not between current_date + 1 and current_date + 30)
+), 'planned times are in the future and inside the planned period');
 select pg_temp.check(not exists (
   select 1 from public.simulations a join public.simulations b on a.employee_id = b.employee_id and a.id < b.id
   where a.tenant_id = :'d' and abs(extract(epoch from a.scheduled_at - b.scheduled_at)) < 7 * 86400

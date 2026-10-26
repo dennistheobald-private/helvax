@@ -3,9 +3,9 @@ import { updateSession } from "./lib/supabase/proxy";
 
 // Pages anyone can open without being signed in.
 const PUBLIC = ["/login", "/auth/"];
-// Practice pages and engine endpoints: no sign-in, and Helvax session cookies are never
-// read or set there.
-const ENGINE = ["/p/", "/api/engine/"];
+// Practice pages, engine endpoints and the Stripe webhook: no sign-in, and Helvax session
+// cookies are never read or set there. Each checks its own token or signature.
+const ENGINE = ["/p/", "/api/engine/", "/api/billing/webhook"];
 
 function contentSecurityPolicy(nonce: string): string {
   const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
