@@ -19,6 +19,7 @@ Measurement is honest: automated mail scanners are labelled separately from real
 | `apps/app` | The app: login, teams, employees, simulations, activity, reports, settings | app.helvax.ch |
 | `packages/ui` | Helvax UI: design tokens, CSS components, showcase (`index.html`) and React wrappers (`react/`) | |
 | `packages/config` | Shared TypeScript config and Next.js settings (security headers) | |
+| `supabase` | Database migrations with row-level security, tests, auth email template | Supabase |
 
 Both apps are Next.js (App Router) with React and TypeScript, managed with pnpm workspaces and Turborepo. Auth and data will run on Supabase, and email on Resend.
 
@@ -34,6 +35,8 @@ pnpm dev:app      # only the app
 pnpm build        # production build of everything
 pnpm typecheck
 ```
+
+Database tests run on plain Postgres: `DATABASE_URL=postgres://… supabase/tests/run.sh` (CI does this on every PR). Dashboard settings for auth, email and MFA are in [docs/supabase-setup.md](docs/supabase-setup.md).
 
 Copy `.env.example` to `apps/app/.env.local` (and `apps/web/.env.local` if needed) for local settings. Never commit real keys.
 
