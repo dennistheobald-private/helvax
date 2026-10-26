@@ -26,6 +26,10 @@ Then, for every single message, `engine_claim_due` checks again: the employee is
 
 No schedule is configured yet. When sending is released, add a Vercel cron for this route (every 15 minutes needs a Pro plan) or call it from Supabase `pg_cron`.
 
+## Languages
+
+Each employee has a language (English, German or Dutch), set when adding them, in the CSV (`language` column: `en`, `de`, `nl`, or the language's name) or later on the Employees page. New people get the company's language. Simulation emails, practice pages and the reveal afterwards use that language; scenario text lives in `scenario_translations` and falls back to English. German uses Swiss spelling.
+
 ## Practice pages
 
 Links go to `https://$SIMULATION_HOST/p/<token>`. Once `SIMULATION_HOST` is set, that domain serves only practice pages, and practice pages are served nowhere else. They never read or set Helvax sign-in cookies.

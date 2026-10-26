@@ -34,6 +34,7 @@ export type Employee = {
   locale: "en" | "de" | "nl"; status: EmployeeStatus; consent_scope: "standard" | "excluded"; is_demo: boolean; created_at: string; updated_at: string;
 };
 export type CompanyDomain = { id: string; tenant_id: string; domain: string; verification_token: string; verified_at: string | null; is_demo: boolean; created_at: string };
+export type ScenarioTranslation = { scenario_id: string; locale: string; subject: string; sender_name: string; preview: string };
 export type Scenario = {
   id: string; slug: string; category: ScenarioCategory; difficulty: 1 | 2 | 3; title: string; description: string; subject: string;
   sender_name: string; preview: string; locales: string[]; approval_state: "draft" | "in_review" | "approved" | "retired"; version: number; created_at: string;
@@ -107,6 +108,7 @@ export type Database = {
       employees: Table<Employee, EmployeeWrite & { tenant_id: string }, Partial<EmployeeWrite>, [FK<"employees_group_id_fkey", "group_id", "employee_groups">]>;
       company_domains: Table<CompanyDomain, Pick<CompanyDomain, "tenant_id" | "domain">, Pick<CompanyDomain, "verified_at">>; // verified_at: service role only
       scenarios: Table<Scenario, never, never>;
+      scenario_translations: Table<ScenarioTranslation, never, never>;
       tenant_scenarios: Table<TenantScenario, TenantScenario, Pick<TenantScenario, "enabled">, [FK<"tenant_scenarios_scenario_id_fkey", "scenario_id", "scenarios">]>;
       simulation_settings: Table<SimulationSettings, never, Partial<Omit<SimulationSettings, "tenant_id" | "sending_enabled" | "updated_at">>>;
       simulations: Table<Simulation, never, never, [
