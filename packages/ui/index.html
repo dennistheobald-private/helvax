@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Helvax UI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Helvax UI: tokens, foundations and 36 accessible HTML components for the security simulation platform.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<style>
+  /* Showcase layout: sticky section index on the left, long reading column of
+     component "specimens" on the right; every demo sits on a dotted canvas. */
+  :root {
+    --code-bg: #17191D; --code-fg: #E4E2DD; --code-dim: #8E9199; --code-tag: #FF9A6B; --code-attr: #E9C46A;
+    --dot: #E1DFDA;
+  }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; background: var(--warm); color: var(--ink); }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--canvas); }
+  .ds-pad { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .ds-wrap { max-width: 1320px; margin: 0 auto; }
+
+  .ds-top { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); z-index: 25; padding-top: 12px; }
+  .ds-top .hx-navbar { max-width: 1240px; margin: 0 auto; }
+  .ds-ver { font: 500 11px/1 var(--font-mono); color: #A9A8AE; padding: 5px 8px; border-radius: 999px; background: rgb(255 255 255 / 0.07); }
+
+  /* Hero: centered, light, peach cloud haze */
+  .ds-hero { margin-top: -80px; padding-top: 80px; background: var(--canvas); }
+  .ds-hero .ds-wrap { display: grid; justify-items: center; text-align: center; gap: var(--space-6); padding-block: clamp(56px, 8vw, 104px) clamp(96px, 12vw, 168px); }
+  .ds-hero .hx-headline { max-width: 15ch; }
+  .ds-hero .hx-lead { margin: 0 auto; font-size: clamp(1.0625rem, 1rem + .4vw, 1.3125rem); }
+  .ds-hero .hx-btn-group { justify-content: center; margin-top: var(--space-2); }
+  .ds-hero__note { font-size: var(--text-sm); color: var(--subtle); }
+  .ds-hero__facts { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2); margin-top: var(--space-4); }
+  .ds-hero__facts span { display: inline-flex; gap: 8px; align-items: center; padding: 8px 14px; border-radius: 999px; background: color-mix(in srgb, var(--canvas) 70%, transparent); backdrop-filter: blur(6px); border: 1px solid color-mix(in srgb, var(--border) 70%, transparent); font-size: var(--text-sm); color: var(--muted); }
+  .ds-hero__facts b { font: 600 var(--text-sm)/1 var(--font-mono); color: var(--ink); }
+
+  /* Docs layout */
+  .ds-layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: var(--space-10); padding-block: var(--space-10) var(--space-24); }
+  .ds-index { position: sticky; top: 88px; align-self: start; max-height: calc(100dvh - 104px); overflow-y: auto; display: grid; gap: var(--space-5); font-size: var(--text-sm); padding-right: 4px; }
+  .ds-index ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; }
+  .ds-index a { display: block; padding: 5px 10px; border-radius: 6px; color: var(--muted); text-decoration: none; border-left: 2px solid transparent; }
+  .ds-index a:hover { color: var(--ink); background: var(--sunken); }
+  .ds-index a[aria-current="true"] { color: var(--ink); font-weight: 600; border-left-color: var(--brand-500); border-radius: 0 6px 6px 0; }
+  @media (max-width: 960px) {
+    .ds-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+    .ds-index { position: static; max-height: none; display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
+    .ds-index > div { display: contents; }
+    .ds-index .hx-eyebrow { display: none; }
+    .ds-index ul { display: flex; gap: 6px; margin: 0; }
+    .ds-index a { white-space: nowrap; border: 1px solid var(--border); border-radius: 999px; background: var(--canvas); }
+  }
+
+  .ds-main { display: grid; gap: var(--space-16); min-width: 0; }
+  .ds-group-title { display: grid; gap: var(--space-3); padding-top: var(--space-6); }
+  .ds-group-title p { color: var(--muted); max-width: 62ch; }
+  .ds-sec { display: grid; gap: var(--space-4); min-width: 0; }
+  .ds-sec > header { display: grid; gap: 6px; }
+  .ds-sec > header h3 { font: 700 var(--text-2xl)/1.15 var(--font-display); letter-spacing: -0.025em; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .ds-sec > header h3 code { font: 500 12px/1 var(--font-mono); color: var(--subtle); letter-spacing: 0; }
+  .ds-sec > header p { color: var(--muted); max-width: 68ch; }
+
+  .ds-demo { position: relative; padding: clamp(20px, 3vw, 32px); border: 1px solid var(--border); border-radius: var(--radius-card) var(--radius-card) 0 0; background-color: var(--warm); background-image: radial-gradient(var(--dot) 1px, transparent 1.2px); background-size: 16px 16px; display: grid; gap: var(--space-5); min-width: 0; }
+  .ds-demo--plain { background-image: none; background: var(--canvas); }
+  .ds-row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+  .ds-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: var(--space-5); }
+  .ds-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: var(--space-4); }
+  .ds-caption { font: 500 11px/1 var(--font-mono); color: var(--subtle); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .ds-code { border: 1px solid var(--border); border-top: 0; border-radius: 0 0 var(--radius-card) var(--radius-card); background: var(--canvas); overflow: hidden; }
+  .ds-code__bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: 6px 8px 6px 16px; }
+  .ds-code__toggle { cursor: pointer; border: 0; background: none; font: 600 var(--text-sm)/1 var(--font-body); color: var(--muted); display: inline-flex; gap: 8px; align-items: center; padding: 10px 4px; border-radius: 6px; }
+  .ds-code__toggle:hover { color: var(--ink); }
+  .ds-code__toggle::before { content: "›"; display: inline-block; transition: transform var(--dur) var(--ease); font-size: 16px; }
+  .ds-code__toggle[aria-expanded="true"]::before { transform: rotate(90deg); }
+  .ds-code pre { margin: 0; max-height: 420px; overflow: auto; padding: var(--space-4) var(--space-5); background: var(--code-bg); color: var(--code-fg); font: 12.5px/1.65 var(--font-mono); tab-size: 2; }
+  .ds-code pre .t { color: var(--code-tag); } .ds-code pre .a { color: var(--code-attr); } .ds-code pre .c { color: var(--code-dim); }
+
+  .ds-spec { display: grid; grid-template-columns: minmax(110px, 160px) minmax(0, 1fr); margin: 0; font-size: var(--text-sm); border-top: 1px solid var(--border); }
+  .ds-spec dt, .ds-spec dd { padding: 10px 0; border-bottom: 1px solid var(--border); margin: 0; }
+  .ds-spec dt { font-weight: 600; color: var(--ink); padding-right: var(--space-4); }
+  .ds-spec dd { color: var(--muted); min-width: 0; }
+  .ds-spec code, .ds-sec p code, .ds-note code { font: 500 0.86em var(--font-mono); background: var(--sunken); color: var(--ink); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+  @media (max-width: 560px) { .ds-spec { grid-template-columns: minmax(0, 1fr); } .ds-spec dt { border-bottom: 0; padding-bottom: 0; } }
+
+  /* Foundations */
+  .ds-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr)); gap: var(--space-3); }
+  .ds-swatch { display: grid; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--canvas); text-align: left; padding: 0; cursor: pointer; font: inherit; color: inherit; }
+  .ds-swatch__chip { height: 72px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-end; padding: 8px; font: 600 11px/1 var(--font-mono); }
+  .ds-swatch__info { padding: 10px 12px; display: grid; gap: 2px; }
+  .ds-swatch__info b { font-size: 13px; }
+  .ds-swatch__info span { font: 12px/1.3 var(--font-mono); color: var(--subtle); }
+  .ds-swatch__info i { font-style: normal; font-size: 12px; color: var(--muted); }
+  .ds-type-row { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: var(--space-4); align-items: baseline; padding-block: var(--space-4); border-bottom: 1px solid var(--border); }
+  .ds-type-row:last-child { border-bottom: 0; }
+  .ds-type-row .ds-caption { line-height: 1.5; }
+  @media (max-width: 560px) { .ds-type-row { grid-template-columns: minmax(0, 1fr); gap: 6px; } }
+  .ds-scale { display: grid; gap: 8px; }
+  .ds-scale__row { display: grid; grid-template-columns: 72px 56px minmax(0, 1fr); gap: 12px; align-items: center; font: 12px var(--font-mono); color: var(--muted); }
+  .ds-scale__bar { height: 12px; background: var(--brand-500); border-radius: 2px; }
+  .ds-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: var(--space-4); }
+  .ds-tile { height: 96px; background: var(--canvas); border: 1px solid var(--border); display: grid; place-items: center; font: 12px var(--font-mono); color: var(--muted); text-align: center; }
+  .ds-motion { display: flex; gap: var(--space-4); flex-wrap: wrap; }
+  .ds-motion button { flex: 1 1 160px; }
+  .ds-motion__track { height: 8px; border-radius: 8px; background: var(--sunken); position: relative; margin-top: 8px; }
+  .ds-motion__dot { position: absolute; left: 0; top: -4px; width: 16px; height: 16px; border-radius: 50%; background: var(--brand-500); transition: left var(--d) var(--ease); }
+  .ds-motion__track[data-on] .ds-motion__dot { left: calc(100% - 16px); }
+  .ds-cols { display: grid; gap: 6px; }
+  .ds-cols__row { display: grid; gap: 4px; }
+  .ds-cols__row i { height: 28px; background: color-mix(in srgb, var(--brand-500) 18%, transparent); border: 1px solid color-mix(in srgb, var(--brand-500) 40%, transparent); border-radius: 4px; }
+  .ds-icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: var(--space-2); }
+  .ds-icons div { display: grid; justify-items: center; gap: 8px; padding: 14px 6px; border-radius: 10px; background: var(--canvas); border: 1px solid var(--border); font: 11px var(--font-mono); color: var(--subtle); }
+  .ds-icons .hx-icon { width: 24px; height: 24px; color: var(--ink); }
+  .ds-note { font-size: var(--text-sm); color: var(--muted); max-width: 72ch; }
+
+  .ds-vp { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .ds-frame { margin: 0 auto; width: 100%; border: 1px solid var(--border-strong); border-radius: var(--radius-card); overflow: hidden; background: var(--warm); transition: max-width var(--dur-slow) var(--ease); box-shadow: var(--shadow-md); }
+  .ds-footer { border-top: 1px solid var(--border); padding-block: var(--space-8); color: var(--subtle); font-size: var(--text-sm); }
+  .ds-footer .ds-wrap { display: flex; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<!-- Icon sprite: 20px grid, 1.75 stroke, round caps. Original drawings. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-signal" viewBox="0 0 20 20"><circle cx="10" cy="10" r="1.6"/><path d="M6.6 6.6a4.8 4.8 0 000 6.8M13.4 6.6a4.8 4.8 0 010 6.8M4.2 4.2a8.2 8.2 0 000 11.6M15.8 4.2a8.2 8.2 0 010 11.6"/></symbol>
+    <symbol id="i-overview" viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="7" rx="1.5"/><rect x="11" y="3" width="6" height="4" rx="1.5"/><rect x="11" y="9" width="6" height="8" rx="1.5"/><rect x="3" y="12" width="6" height="5" rx="1.5"/></symbol>
+    <symbol id="i-users" viewBox="0 0 20 20"><circle cx="7.5" cy="7" r="3"/><path d="M2.5 16.5c.6-2.8 2.6-4.3 5-4.3s4.4 1.5 5 4.3"/><path d="M13 4.3a3 3 0 010 5.4M14.5 12.4c1.6.5 2.7 1.9 3 4.1"/></symbol>
+    <symbol id="i-target" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="3.5"/><circle cx="10" cy="10" r=".6"/></symbol>
+    <symbol id="i-activity" viewBox="0 0 20 20"><path d="M2.5 10h3l2-5 3.5 10 2-5h4.5"/></symbol>
+    <symbol id="i-report" viewBox="0 0 20 20"><path d="M5 2.5h6.5L15 6v11.5H5z"/><path d="M11 2.5V6.5h4M8 10.5v3.5M10.5 9v5M13 12v2"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 20 20"><circle cx="10" cy="10" r="2.5"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M4.7 15.3l1.4-1.4M13.9 6.1l1.4-1.4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 20 20"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l4 4"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 20 20"><path d="M5 13.5V9a5 5 0 0110 0v4.5l1.5 1.5h-13z"/><path d="M8.3 17a1.8 1.8 0 003.4 0"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 20 20"><path d="M10 13V3.5M6.5 7L10 3.5 13.5 7"/><path d="M3.5 12.5v3a1.5 1.5 0 001.5 1.5h10a1.5 1.5 0 001.5-1.5v-3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 20 20"><path d="M10 3.5V13M6.5 9.5L10 13l3.5-3.5"/><path d="M3.5 12.5v3a1.5 1.5 0 001.5 1.5h10a1.5 1.5 0 001.5-1.5v-3"/></symbol>
+    <symbol id="i-check" viewBox="0 0 20 20"><path d="M4 10.5l4 4 8-9"/></symbol>
+    <symbol id="i-x" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 20 20"><path d="M10 4v12M4 10h12"/></symbol>
+    <symbol id="i-info" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v4.5M10 6.5v.01"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 20 20"><path d="M10 3l7.5 13.5h-15z"/><path d="M10 8.5v3.5M10 14.3v.01"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 20 20"><rect x="3" y="4.5" width="14" height="12.5" rx="2"/><path d="M3 8.5h14M7 2.5v3.5M13 2.5v3.5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 20 20"><path d="M4 10h12M11.5 5.5L16 10l-4.5 4.5"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 20 20"><path d="M3 6h14M3 10h14M3 14h14"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 20 20"><rect x="2.5" y="4.5" width="15" height="11" rx="2"/><path d="M3 5.5l7 5.5 7-5.5"/></symbol>
+    <symbol id="i-qr" viewBox="0 0 20 20"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="12" y="3" width="5" height="5" rx="1"/><rect x="3" y="12" width="5" height="5" rx="1"/><path d="M12 12h2v2h-2zM15 15h2v2h-2zM15 12h2M12 16v1"/></symbol>
+    <symbol id="i-invoice" viewBox="0 0 20 20"><path d="M5 2.5h10v15l-2.5-1.5L10 17.5 7.5 16 5 17.5z"/><path d="M8 7h4M8 10h4M8 13h2"/></symbol>
+    <symbol id="i-person" viewBox="0 0 20 20"><circle cx="10" cy="6.5" r="3.5"/><path d="M3.5 17.5c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 20 20"><path d="M5 2.5h6.5L15 6v11.5H5z"/><path d="M11 2.5V6.5h4M7.5 10h5M7.5 13h5"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 20 20"><rect x="5" y="4" width="3" height="12" rx="1"/><rect x="12" y="4" width="3" height="12" rx="1"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 20 20"><path d="M2 10s3-5.5 8-5.5S18 10 18 10s-3 5.5-8 5.5S2 10 2 10z"/><circle cx="10" cy="10" r="2.5"/></symbol>
+    <symbol id="i-more" viewBox="0 0 20 20"><path d="M5 10v.01M10 10v.01M15 10v.01" stroke-width="2.5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3.5"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.3 4.3l1.4 1.4M14.3 14.3l1.4 1.4M4.3 15.7l1.4-1.4M14.3 5.7l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 20 20"><path d="M16 12.5A6.5 6.5 0 017.5 4a6.5 6.5 0 108.5 8.5z"/></symbol>
+    <symbol id="i-block" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M5 5l10 10"/></symbol>
+    <symbol id="i-checkc" viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"/><path d="M7 10.2l2 2 4-4.4"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 20 20"><path d="M3 7V5a2 2 0 012-2h2M13 3h2a2 2 0 012 2v2M17 13v2a2 2 0 01-2 2h-2M7 17H5a2 2 0 01-2-2v-2"/><path d="M7 10.5l2 2 4-4.5"/></symbol>
+    <symbol id="i-reply" viewBox="0 0 20 20"><path d="M8 5L3 10l5 5"/><path d="M3.5 10H12a5 5 0 015 5v1"/></symbol>
+    <symbol id="i-helvax" viewBox="0 0 20 20"><path d="M5.5 3.5v13M14.5 3.5v13"/><path d="M5.5 11c1.6-2 3-2.8 4.5-2.8s2.9.8 4.5 2.8"/></symbol>
+    <symbol id="mark" viewBox="0 0 28 28"><rect width="28" height="28" rx="8" fill="var(--brand-500)" stroke="none"/><path d="M9 7.5v13M19 7.5v13M9 15.5c1.8-2.3 3.4-3.2 5-3.2s3.2.9 5 3.2" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="hx-root">
+
+<div class="ds-top ds-pad">
+  <nav class="hx-navbar" aria-label="Showcase" id="ds-nav">
+    <a class="hx-navbar__brand" href="#top"><span class="hx-appicon hx-appicon--sm"><svg class="hx-icon" aria-hidden="true"><use href="#i-helvax"/></svg></span>Helvax UI</a>
+    <ul class="hx-navbar__links">
+      <li><a href="#colors">Foundations</a></li>
+      <li><a href="#button">Components</a></li>
+      <li><a href="#navbar">Navigation</a></li>
+      <li><a href="#reportpreview">Product</a></li>
+    </ul>
+    <div class="hx-navbar__end">
+      <button class="hx-btn hx-btn--ghost hx-btn--icon hx-navbar__menu" type="button" aria-expanded="false" aria-label="Open menu" data-ds-navtoggle><svg class="hx-icon" aria-hidden="true"><use href="#i-menu"/></svg></button>
+      <a class="hx-btn" href="#button">Get the kit</a>
+    </div>
+  </nav>
+</div>
+
+<section class="ds-hero hx-clouds ds-pad" id="top">
+  <div class="ds-wrap">
+    <span class="hx-appicon hx-appicon--lg"><svg class="hx-icon" aria-hidden="true"><use href="#i-helvax"/></svg></span>
+    <a class="hx-badge hx-badge--link" href="#button">Version 0.3, 26 October <svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    <h1 class="hx-headline">Test people, not inboxes.<span class="hx-headline__sub">Every part, ready to reuse.</span></h1>
+    <p class="hx-lead">Helvax UI is the component kit for Helvax, the security simulation platform. Tokens, type and 36 accessible HTML components, from a pill button to the monthly report.</p>
+    <div class="hx-btn-group">
+      <a class="hx-btn hx-btn--lg" href="#button">Browse components <svg class="hx-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a class="hx-btn hx-btn--lg hx-btn--soft" href="#colors">See foundations</a>
+    </div>
+    <p class="ds-hero__note">Three files. No dependencies. Copy any snippet below.</p>
+    <div class="ds-hero__facts"><span><b>36</b> components</span><span><b>AA</b> WCAG 2.2 contrast</span><span><b>DE · EN · NL</b> ready</span><span><b>0</b> dependencies</span></div>
+  </div>
+</section>
+
+<div class="ds-pad" style="padding-block:clamp(24px,4vw,48px) 0">
+<div class="ds-wrap">
+<section class="ds-sec" id="feature-panel">
+  <header><span class="hx-eyebrow">Marketing &amp; product</span><h3>Feature panel <code>.hx-panel · .hx-grain · .hx-incident · .hx-status · .hx-tag</code></h3><p>A warm stone panel pairs a grainy media half (orange or sage) with a product card and a copy half. Use it on the marketing site and the scenario showcase.</p></header>
+  <div class="ds-demo ds-demo--plain" data-demo style="padding:clamp(8px,1.5vw,16px)">
+    <div class="hx-panel" style="margin-bottom:16px">
+      <div class="hx-panel__copy" style="padding-left:clamp(16px,3vw,40px)">
+        <span class="hx-kicker"><svg class="hx-icon" aria-hidden="true"><use href="#i-mail"/></svg>Email simulations</span>
+        <h2 class="hx-title">Test your team against payment fraud &amp; AI phishing</h2>
+        <p>Realistic, randomized simulations land in real inboxes inside business hours. No mailbox connection, no integration project.</p>
+        <a class="hx-link hx-link--arrow" href="#scenariocard" style="font-size:var(--text-lg)">Learn more <svg class="hx-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <ul class="hx-tags" aria-label="Simulation types"><li class="hx-tag">Payment fraud</li><li class="hx-tag">CEO fraud</li><li class="hx-tag">Executive impersonation</li><li class="hx-tag">AI phishing</li><li class="hx-tag">Safe credential form</li><li class="hx-tag">QR attacks</li></ul>
+      </div>
+      <div class="hx-grain hx-grain--sage hx-grain--bleed">
+        <div class="hx-window" role="img" aria-label="Inbox preview with one executive impersonation simulation highlighted">
+          <div class="hx-window__bar"><span class="hx-window__dots"><i></i><i></i><i></i></span><span class="hx-window__tab"><svg class="hx-icon" aria-hidden="true"><use href="#i-mail"/></svg>Dringende Zahlung heute</span></div>
+          <div class="hx-window__url"><b>webmail.kessler-wohnbau.example</b>/inbox</div>
+          <ul class="hx-window__list">
+            <li class="hx-mailrow" aria-hidden="true"><span class="hx-mailrow__check"></span><span class="hx-mailrow__avatar"></span><span class="hx-mailrow__who">Jonas Albers<small>to me</small></span><span class="hx-mailrow__line"></span></li>
+            <li class="hx-mailrow" aria-hidden="true"><span class="hx-mailrow__check"></span><span class="hx-mailrow__avatar"></span><span class="hx-mailrow__who">Selin Yıldız<small>me, Pieter</small></span><span class="hx-mailrow__line"></span></li>
+            <li><article class="hx-incident"><div class="hx-incident__strip"><span class="hx-incident__tab"><svg class="hx-icon" aria-hidden="true"><use href="#i-person"/></svg></span>Executive impersonation</div><div class="hx-incident__person"><span class="hx-avatar">LS</span><div style="min-width:0"><b>Lena Seidel, CEO</b><span>Bist du am Platz? Ich brauche heute noch eine Zahlung über €48.750…</span></div></div></article></li>
+            <li class="hx-mailrow" aria-hidden="true"><span class="hx-mailrow__check"></span><span class="hx-mailrow__avatar"></span><span class="hx-mailrow__who">Ana Brandt<small>me, Tobias</small></span><span class="hx-mailrow__line"></span></li>
+            <li class="hx-mailrow" aria-hidden="true"><span class="hx-mailrow__check"></span><span class="hx-mailrow__avatar"></span><span class="hx-mailrow__who">Facility team<small>to me</small></span><span class="hx-mailrow__line"></span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="hx-panel">
+      <div class="hx-grain">
+        <div class="hx-card" style="display:grid;gap:18px;padding:clamp(16px,2.4vw,28px)">
+          <div class="hx-profile"><span class="hx-avatar">TK</span><div><div class="hx-profile__name">Tobias Kranz</div><div class="hx-profile__meta">Finance · 7 simulations <span class="hx-profile__new">1 new</span></div></div></div>
+          <div class="hx-tabs hx-tabs--track" data-hx-tabs>
+            <div class="hx-tabs__list" role="tablist" aria-label="Employee detail">
+              <button class="hx-tabs__tab" role="tab" aria-selected="false" aria-controls="fp-1">Simulations</button>
+              <button class="hx-tabs__tab" role="tab" aria-selected="false" aria-controls="fp-2">Replies</button>
+              <button class="hx-tabs__tab" role="tab" aria-selected="true" aria-controls="fp-3">Activity</button>
+            </div>
+            <div role="tabpanel" id="fp-1" hidden></div><div role="tabpanel" id="fp-2" hidden></div>
+            <div role="tabpanel" id="fp-3" style="display:grid;gap:12px;padding-top:14px">
+              <article class="hx-incident">
+                <div class="hx-incident__strip"><span class="hx-incident__tab"><svg class="hx-icon" aria-hidden="true"><use href="#i-reply"/></svg></span>Risky reply</div>
+                <div class="hx-incident__body"><div class="hx-item__lead"><span class="hx-incident__title">Offered to update supplier bank details</span><span class="hx-incident__meta">Supplier fraud · conf 0.88</span></div><span class="hx-status hx-status--danger"><svg class="hx-icon" aria-hidden="true"><use href="#i-block"/></svg>High risk</span></div>
+              </article>
+              <article class="hx-item"><svg class="hx-icon" aria-hidden="true" style="color:var(--subtle)"><use href="#i-qr"/></svg><span class="hx-status"><svg class="hx-icon" aria-hidden="true"><use href="#i-checkc"/></svg>Reported</span><div class="hx-item__lead"><span class="hx-item__meta">QR parking permit · ignored the code</span></div></article>
+              <article class="hx-item"><svg class="hx-icon" aria-hidden="true" style="color:var(--subtle)"><use href="#i-doc"/></svg><span class="hx-status"><svg class="hx-icon" aria-hidden="true"><use href="#i-checkc"/></svg>Completed</span><div class="hx-item__lead"><span class="hx-item__meta">Training moment · 2 min</span></div></article>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hx-panel__copy">
+        <span class="hx-kicker"><svg class="hx-icon" aria-hidden="true"><use href="#i-scan"/></svg>Supplier fraud</span>
+        <h2 class="hx-title">See who checks before they pay</h2>
+        <p>Realistic invoice and bank-change simulations, sent at random inside business hours. Replies are classified and flagged for review, never used to shame anyone.</p>
+        <a class="hx-link hx-link--arrow" href="#scenariocard" style="font-size:var(--text-lg)">Learn more <svg class="hx-icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <ul class="hx-tags" aria-label="Scenarios in this category"><li class="hx-tag">Invoice correction</li><li class="hx-tag">Bank detail change</li><li class="hx-tag">Overdue reminder</li><li class="hx-tag">Executive request</li><li class="hx-tag">New vendor onboarding</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>Panel</dt><dd><code>.hx-panel</code> on a stone gradient, 28px radius. Media first by default, <code>--reverse</code> flips it. Stacks below 860px.</dd>
+    <dt>Grain</dt><dd><code>.hx-grain</code> (orange) or <code>--sage</code> is a radial gradient with inline SVG film grain; no image files. A <code>.hx-card</code> inside gets a translucent white halo.</dd>
+    <dt>Window</dt><dd><code>.hx-window</code> frames an inbox preview: faded <code>.hx-mailrow</code> placeholders and one <code>.hx-incident</code> that bleeds off the edge. Use <code>.hx-grain--bleed</code> so the window runs into the panel corner. Fictional names and domains only.</dd>
+    <dt>Status pill</dt><dd><code>.hx-status</code> is outlined with an icon and a word; <code>--danger</code> only for real high risk, plain grey for neutral outcomes, plus <code>--success</code> <code>--warning</code> <code>--brand</code>.</dd>
+    <dt>Incident</dt><dd><code>.hx-incident</code> with an orange mono uppercase strip. Use it for the one event that needs attention; everything else is a plain <code>.hx-item</code>.</dd>
+    <dt>Tags</dt><dd><code>.hx-tag</code> are static labels in a list, not buttons. Use <code>.hx-chip</code> when they filter.</dd>
+    <dt>Tabs</dt><dd><code>.hx-tabs--track</code>: grey track, white active tab. Add <code>--caps</code> for the uppercase product switcher.</dd>
+  </dl>
+</section>
+</div>
+</div>
+
+<div class="ds-pad">
+<div class="ds-wrap ds-layout">
+
+<aside class="ds-index" aria-label="Contents">
+  <div><span class="hx-eyebrow">Foundations</span><ul>
+    <li><a href="#colors">Color</a></li><li><a href="#typography">Typography</a></li><li><a href="#spacing">Spacing &amp; radii</a></li><li><a href="#elevation">Borders &amp; shadow</a></li><li><a href="#motion">Motion</a></li><li><a href="#grid">Breakpoints &amp; grid</a></li><li><a href="#icons">Icons</a></li>
+  </ul></div>
+  <div><span class="hx-eyebrow">Actions &amp; inputs</span><ul>
+    <li><a href="#button">Button</a></li><li><a href="#link">Link</a></li><li><a href="#input">Input</a></li><li><a href="#select">Select</a></li><li><a href="#checkbox">Checkbox &amp; Radio</a></li><li><a href="#switch">Switch</a></li><li><a href="#daterange">DateRangePicker</a></li><li><a href="#dropzone">UploadDropzone</a></li>
+  </ul></div>
+  <div><span class="hx-eyebrow">Feedback</span><ul>
+    <li><a href="#badge">Badge</a></li><li><a href="#riskpill">RiskPill</a></li><li><a href="#alert">Alert</a></li><li><a href="#toast">Toast</a></li><li><a href="#progress">Progress</a></li><li><a href="#skeleton">Skeleton</a></li><li><a href="#empty">EmptyState</a></li>
+  </ul></div>
+  <div><span class="hx-eyebrow">Overlays &amp; nav</span><ul>
+    <li><a href="#navbar">Navbar &amp; AppIcon</a></li><li><a href="#tooltip">Tooltip &amp; Popover</a></li><li><a href="#dialog">Dialog</a></li><li><a href="#drawer">Drawer</a></li><li><a href="#tabs">Tabs</a></li><li><a href="#stepper">Stepper</a></li><li><a href="#pagination">Pagination</a></li><li><a href="#app-shell">Sidebar &amp; Topbar</a></li>
+  </ul></div>
+  <div><span class="hx-eyebrow">Data &amp; product</span><ul>
+    <li><a href="#card">Card</a></li><li><a href="#statcard">StatCard</a></li><li><a href="#datatable">DataTable</a></li><li><a href="#chartframe">ChartFrame</a></li><li><a href="#timeline">Activity timeline</a></li><li><a href="#scenariocard">ScenarioCard</a></li><li><a href="#reportpreview">ReportPreview</a></li>
+  </ul></div>
+</aside>
+
+<main class="ds-main">
+
+<!-- ============================ FOUNDATIONS ============================ -->
+<div class="ds-group-title"><span class="hx-eyebrow">01 · Foundations</span><h2 class="hx-headline hx-headline--md">Tokens.<span class="hx-headline__sub">One source for every value.</span></h2><p>Every component reads from <code>tokens.css</code>. Change a token and the whole library follows; dark values are redefined on the same names, so no component carries its own theme logic.</p></div>
+
+<section class="ds-sec" id="colors">
+  <header><h3>Color</h3><p>Orange is the signature, used for primary actions, focus and the one highlighted series in a chart. It is never used to mean danger. Click a swatch to copy its token.</p></header>
+  <div class="ds-demo ds-demo--plain">
+    <span class="ds-caption">Brand</span>
+    <div class="ds-swatches" data-swatches="brand-500:Primary fill, focus ring|brand-600:Hover fill; large text only|brand-700:Orange text on white · 5.7:1|brand-100:Subtle orange surface|on-brand:Text on brand-500 · 5.8:1"></div>
+    <span class="ds-caption">Neutrals</span>
+    <div class="ds-swatches" data-swatches="ink:Headings, dark sections|muted:Secondary text · 8.7:1|subtle:Captions · 5.0:1|canvas:Main UI surface|warm:Page background|sunken:Wells, table heads|border:Dividers"></div>
+    <span class="ds-caption">Semantic (always paired with icon + label)</span>
+    <div class="ds-swatches" data-swatches="success:Healthy, verified|warning:Needs attention|danger:Actual high risk only|info:Neutral information"></div>
+  </div>
+  <dl class="ds-spec">
+    <dt>Contrast</dt><dd><code>brand-500</code> on white is 3.0:1, so it never carries small text. Use <code>on-brand</code> ink text on orange fills, and <code>brand-700</code> for orange text on light surfaces.</dd>
+    <dt>Theme</dt><dd>Helvax is light only. Depth comes from warm stone panels and the grain gradients, not from a dark mode.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="typography">
+  <header><h3>Typography</h3><p>Plus Jakarta Sans for display, Inter for interface, IBM Plex Mono for every number a person compares. All three are SIL Open Font License; self-host the WOFF2 files in production with <code>font-display: swap</code>.</p></header>
+  <div class="ds-demo ds-demo--plain" style="gap:0">
+    <div class="ds-type-row"><span class="ds-caption">Display<br>Jakarta 800 · 36–72</span><span class="hx-headline" style="font-size:clamp(2.25rem,1.4rem + 3vw,4rem)">Every inbox is a door.</span></div>
+    <div class="ds-type-row"><span class="ds-caption">Headline<br>two-tone · grey 2nd line</span><span class="hx-headline hx-headline--md">Security overview.<span class="hx-headline__sub">Last 30 days.</span></span></div>
+    <div class="ds-type-row"><span class="ds-caption">H1 section<br>Jakarta 700 · 28–40</span><span class="hx-h1">Security overview</span></div>
+    <div class="ds-type-row"><span class="ds-caption">H2<br>Jakarta 700 · 28</span><span class="hx-h2">Scenario performance</span></div>
+    <div class="ds-type-row"><span class="ds-caption">H3<br>Jakarta 700 · 22</span><span class="hx-h3">October report is ready</span></div>
+    <div class="ds-type-row"><span class="ds-caption">Lead<br>Inter 400 · 18</span><span class="hx-lead">No mailbox connection. Upload a roster and simulations start inside your approved business hours.</span></div>
+    <div class="ds-type-row"><span class="ds-caption">Body / UI<br>Inter 400–600 · 14–16</span><span>Replies are classified as verification, refusal, neutral, risky intent or ambiguous, each with a confidence score a reviewer can confirm.</span></div>
+    <div class="ds-type-row"><span class="ds-caption">Metric<br>Plex Mono 600</span><span class="hx-mono" style="font-size:2rem;font-weight:600;letter-spacing:-.02em">1,284 · 4.8% · €2.00</span></div>
+    <div class="ds-type-row"><span class="ds-caption">Eyebrow<br>Inter 600 · 12 · +8%</span><span class="hx-eyebrow">Last 30 days</span></div>
+  </div>
+</section>
+
+<section class="ds-sec" id="spacing">
+  <header><h3>Spacing &amp; radii</h3><p>An 8px grid with 4px micro steps. Controls use a 10px radius, cards 12 or 16px, pills are fully round.</p></header>
+  <div class="ds-demo ds-demo--plain">
+    <div class="ds-scale" id="space-scale"></div>
+    <div class="ds-tiles">
+      <div class="ds-tile" style="border-radius:var(--radius-xs)">--radius-xs<br>4px</div>
+      <div class="ds-tile" style="border-radius:var(--radius-control)">--radius-control<br>10px</div>
+      <div class="ds-tile" style="border-radius:var(--radius-card-sm)">--radius-card-sm<br>12px</div>
+      <div class="ds-tile" style="border-radius:var(--radius-card)">--radius-card<br>16px</div>
+      <div class="ds-tile" style="border-radius:var(--radius-pill);height:56px;align-self:center">--radius-pill</div>
+    </div>
+  </div>
+</section>
+
+<section class="ds-sec" id="elevation">
+  <header><h3>Borders &amp; shadow</h3><p>Surfaces separate with a 1px line first. Shadows are reserved for things that float: menus, toasts, dialogs.</p></header>
+  <div class="ds-demo">
+    <div class="ds-tiles">
+      <div class="ds-tile" style="border-radius:16px">border only<br>cards, tables</div>
+      <div class="ds-tile" style="border-radius:16px;box-shadow:var(--shadow-sm)">--shadow-sm<br>hover lift</div>
+      <div class="ds-tile" style="border-radius:16px;box-shadow:var(--shadow-md)">--shadow-md<br>popover, toast</div>
+      <div class="ds-tile" style="border-radius:16px;box-shadow:var(--shadow-lg)">--shadow-lg<br>dialog, drawer</div>
+      <div class="ds-tile" style="border-radius:16px;box-shadow:var(--focus-ring)">--focus-ring<br>2px gap + 2px orange</div>
+    </div>
+  </div>
+</section>
+
+<section class="ds-sec" id="motion">
+  <header><h3>Motion</h3><p>150–250ms with one ease curve. Motion confirms an action; it never decorates. With reduced motion requested, every duration drops to zero and the hero pulse stops.</p></header>
+  <div class="ds-demo ds-demo--plain">
+    <div class="ds-motion">
+      <button class="hx-btn hx-btn--outline" type="button" data-motion="var(--dur-fast)">--dur-fast · 150ms<span class="hx-visually-hidden"> play</span></button>
+      <button class="hx-btn hx-btn--outline" type="button" data-motion="var(--dur)">--dur · 200ms</button>
+      <button class="hx-btn hx-btn--outline" type="button" data-motion="var(--dur-slow)">--dur-slow · 250ms</button>
+    </div>
+    <div class="ds-motion__track" id="motion-track"><span class="ds-motion__dot"></span></div>
+    <p class="ds-note"><code>--ease: cubic-bezier(0.2, 0.7, 0.2, 1)</code> for everything. Press a duration to compare.</p>
+  </div>
+</section>
+
+<section class="ds-sec" id="grid">
+  <header><h3>Breakpoints &amp; grid</h3><p>12 columns on desktop, 8 on tablet, 4 on mobile. App shell components respond to their container, so the same sidebar works in a full page or a narrow preview.</p></header>
+  <div class="ds-demo ds-demo--plain">
+    <div class="ds-cols">
+      <span class="ds-caption">Desktop · ≥ 1280px · 12 col · 24px gutter</span><div class="ds-cols__row" style="grid-template-columns:repeat(12,1fr)"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <span class="ds-caption" style="margin-top:8px">Tablet · 640–1279px · 8 col · 20px gutter</span><div class="ds-cols__row" style="grid-template-columns:repeat(8,1fr);max-width:66%"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <span class="ds-caption" style="margin-top:8px">Mobile · &lt; 640px · 4 col · 16px gutter</span><div class="ds-cols__row" style="grid-template-columns:repeat(4,1fr);max-width:33%"><i></i><i></i><i></i><i></i></div>
+    </div>
+  </div>
+</section>
+
+<section class="ds-sec" id="icons">
+  <header><h3>Icons</h3><p>Drawn on a 20px grid with a 1.75 stroke and round joins, inheriting <code>currentColor</code>. Abstract signals over padlocks and hooded figures. Decorative icons get <code>aria-hidden</code>; icon-only buttons get an <code>aria-label</code>.</p></header>
+  <div class="ds-demo ds-demo--plain"><div class="ds-icons" id="icon-grid"></div></div>
+</section>
+
+<!-- ============================ ACTIONS & INPUTS ============================ -->
+<div class="ds-group-title"><span class="hx-eyebrow">02 · Actions &amp; inputs</span><h2 class="hx-headline hx-headline--md">Controls.<span class="hx-headline__sub">Soft to touch, clear to use.</span></h2><p>Every control has a 44px hit area, a visible focus ring and a disabled state that still explains itself.</p></div>
+
+<section class="ds-sec" id="button">
+  <header><h3>Button <code>.hx-btn</code></h3><p>Orange primary for the one main action on a screen, dark secondary for confident alternatives, outline and ghost for the rest.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="hx-btn-group">
+      <button class="hx-btn" type="button">Approve scenario</button>
+      <button class="hx-btn hx-btn--soft" type="button">Request demo</button>
+      <button class="hx-btn hx-btn--secondary" type="button">Upload roster</button>
+      <button class="hx-btn hx-btn--outline" type="button">Preview</button>
+      <button class="hx-btn hx-btn--ghost" type="button">Cancel</button>
+      <button class="hx-btn hx-btn--destructive" type="button">Pause all simulations</button>
+    </div>
+    <div class="hx-btn-group">
+      <button class="hx-btn hx-btn--sm" type="button"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-plus"/></svg>Add group</button>
+      <button class="hx-btn hx-btn--outline" type="button"><svg class="hx-icon" aria-hidden="true"><use href="#i-download"/></svg>Export CSV</button>
+      <button class="hx-btn hx-btn--lg" type="button">Start free pilot <svg class="hx-icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <button class="hx-btn hx-btn--outline hx-btn--icon" type="button" aria-label="More actions"><svg class="hx-icon" aria-hidden="true"><use href="#i-more"/></svg></button>
+      <button class="hx-btn" type="button" data-hx-loading-demo data-done="Report sent to 3 admins">Send report</button>
+      <button class="hx-btn" type="button" disabled>Disabled</button>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>Variants</dt><dd><code>--soft</code> (light grey pill) <code>--secondary</code> (ink) <code>--outline</code> <code>--ghost</code> <code>--destructive</code> · sizes <code>--sm</code> <code>--lg</code> · <code>--icon</code> <code>--block</code></dd>
+    <dt>HTML</dt><dd><code>&lt;button type="button"&gt;</code> for actions, <code>&lt;a class="hx-btn"&gt;</code> for navigation. Never a <code>div</code>.</dd>
+    <dt>Keyboard</dt><dd><span class="hx-kbd">Tab</span> to focus, <span class="hx-kbd">Enter</span> or <span class="hx-kbd">Space</span> to activate (native).</dd>
+    <dt>States</dt><dd>Primary carries a soft orange glow that lifts on hover; active nudges 1px. Loading sets <code>aria-busy="true"</code> and <code>disabled</code> via <code>HelvaxUI.setLoading(btn, true)</code>; the label is kept for screen readers. Disabled at 45% opacity.</dd>
+    <dt>A11y</dt><dd>Primary uses ink text on orange (5.8:1). Icon-only buttons need <code>aria-label</code>. Destructive actions confirm in a Dialog.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="link">
+  <header><h3>Link <code>.hx-link</code></h3><p>Inline links are always underlined so they never rely on color alone.</p></header>
+  <div class="ds-demo" data-demo>
+    <p>Read how we <a class="hx-link" href="#timeline">separate scanner visits from human clicks</a>, or open the <a class="hx-link hx-link--quiet" href="#reportpreview">October report</a>.</p>
+    <a class="hx-link hx-link--arrow" href="#scenariocard">Browse the scenario library <svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>Variants</dt><dd>default (brand-700), <code>--quiet</code> (ink), <code>--arrow</code> (standalone call to action)</dd>
+    <dt>A11y</dt><dd>Link text names the destination. External links add <code>rel="noopener"</code> and a visually hidden "(opens in new tab)".</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="input">
+  <header><h3>Input <code>.hx-field · .hx-input</code></h3><p>Label above, help below, error replaces help and says how to fix it.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-grid-2">
+      <div class="hx-field">
+        <label class="hx-label" for="in-company">Company name</label>
+        <input class="hx-input" id="in-company" value="Kessler Wohnbau GmbH" autocomplete="organization">
+        <span class="hx-help">Shown to admins in reports. Employees never see it.</span>
+      </div>
+      <div class="hx-field">
+        <label class="hx-label" for="in-domain">Recipient domain</label>
+        <input class="hx-input" id="in-domain" value="kessler-wohnbau" aria-invalid="true" aria-describedby="in-domain-err">
+        <span class="hx-error" id="in-domain-err"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-warn"/></svg>Add the top-level domain, for example kessler-wohnbau.de.</span>
+      </div>
+      <div class="hx-field">
+        <label class="hx-label" for="in-search">Search employees</label>
+        <div class="hx-input-wrap"><svg class="hx-icon" aria-hidden="true"><use href="#i-search"/></svg><input class="hx-input" id="in-search" type="search" placeholder="Name, email or group"></div>
+      </div>
+      <div class="hx-field">
+        <label class="hx-label" for="in-tenant">Tenant ID</label>
+        <input class="hx-input hx-mono" id="in-tenant" value="tnt_8f2a41" disabled>
+        <span class="hx-help">Set at provisioning and cannot be changed.</span>
+      </div>
+      <div class="hx-field" style="grid-column:1/-1">
+        <label class="hx-label" for="in-note">Reviewer note <span class="hx-optional">(optional)</span></label>
+        <textarea class="hx-input" id="in-note" placeholder="Why did you reclassify this reply?"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>HTML</dt><dd><code>&lt;label for&gt;</code> + <code>&lt;input&gt;</code>; help and error linked with <code>aria-describedby</code>.</dd>
+    <dt>States</dt><dd>hover, focus (orange halo), <code>aria-invalid="true"</code> (red border + message), <code>disabled</code> (sunken).</dd>
+    <dt>A11y</dt><dd>Never use the placeholder as the label. Error text starts with what to do. Mark optional fields, not required ones.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="select">
+  <header><h3>Select <code>.hx-select</code></h3><p>A native select, restyled. It keeps the platform picker on mobile and full keyboard support for free.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-grid-2">
+      <div class="hx-field">
+        <label class="hx-label" for="sel-intensity">Simulation intensity</label>
+        <select class="hx-select" id="sel-intensity"><option>Light · about 1 per month</option><option selected>Standard · about 2 per month</option><option>Focused · about 4 per month</option></select>
+        <span class="hx-help">Send times stay random inside business hours.</span>
+      </div>
+      <div class="hx-field">
+        <label class="hx-label" for="sel-tz">Timezone</label>
+        <select class="hx-select" id="sel-tz" disabled><option>Europe/Berlin (CET)</option></select>
+      </div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>Keyboard</dt><dd>Native: <span class="hx-kbd">↑</span> <span class="hx-kbd">↓</span> to change, <span class="hx-kbd">Space</span> to open, type to jump.</dd>
+    <dt>When not to use</dt><dd>More than about 15 options needs a searchable combobox; fewer than 4 reads better as Radio.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="checkbox">
+  <header><h3>Checkbox &amp; Radio <code>.hx-check</code></h3><p>Native inputs with a custom face, so forms submit and validate as usual.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-grid-2">
+      <fieldset class="hx-fieldset">
+        <legend class="hx-label">Scenario categories</legend>
+        <label class="hx-check"><input type="checkbox" checked> Phishing</label>
+        <label class="hx-check"><input type="checkbox" checked> Supplier fraud</label>
+        <label class="hx-check"><input type="checkbox"> <span>QR phishing<span class="hx-check__hint">Uses printed codes on your owned landing domain.</span></span></label>
+        <label class="hx-check"><input type="checkbox" disabled> Voice calls (not available)</label>
+      </fieldset>
+      <fieldset class="hx-fieldset">
+        <legend class="hx-label">Report language</legend>
+        <label class="hx-check"><input type="radio" name="lang" checked> Deutsch</label>
+        <label class="hx-check"><input type="radio" name="lang"> English</label>
+        <label class="hx-check"><input type="radio" name="lang"> Nederlands</label>
+      </fieldset>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>HTML</dt><dd>Wrap the input in its <code>&lt;label&gt;</code>; group with <code>&lt;fieldset&gt;</code> and <code>&lt;legend&gt;</code>. Indeterminate is set from script (<code>input.indeterminate = true</code>).</dd>
+    <dt>Keyboard</dt><dd><span class="hx-kbd">Space</span> toggles a checkbox; arrows move within a radio group.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="switch">
+  <header><h3>Switch <code>button[role=switch]</code></h3><p>For settings that take effect immediately. If it needs a Save button, use a Checkbox.</p></header>
+  <div class="ds-demo" data-demo>
+    <div style="display:grid;gap:4px">
+      <button class="hx-switch" type="button" role="switch" aria-checked="true"><span class="hx-switch__track" aria-hidden="true"></span>Email monthly report to admins</button>
+      <button class="hx-switch" type="button" role="switch" aria-checked="false"><span class="hx-switch__track" aria-hidden="true"></span>Show training moment after a click</button>
+      <button class="hx-switch" type="button" role="switch" aria-checked="false" disabled><span class="hx-switch__track" aria-hidden="true"></span>Inbound reply analysis (needs domain verification)</button>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>Events</dt><dd>Fires <code>hx:change</code> with <code>detail: true|false</code>.</dd>
+    <dt>Keyboard</dt><dd><span class="hx-kbd">Space</span> or <span class="hx-kbd">Enter</span> toggles. The visible text is the accessible name.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="daterange">
+  <header><h3>DateRangePicker <code>[data-hx-daterange]</code></h3><p>Presets for the common periods, two native date fields for anything else. Validates that the end follows the start.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="hx-daterange" data-hx-daterange data-today="2026-10-26" role="group" aria-labelledby="dr-label" style="max-width:520px">
+      <span class="hx-label" id="dr-label">Reporting period</span>
+      <div class="hx-daterange__presets">
+        <button class="hx-chip" type="button" data-hx-preset="7" aria-pressed="false">Last 7 days</button>
+        <button class="hx-chip" type="button" data-hx-preset="30" aria-pressed="true">Last 30 days</button>
+        <button class="hx-chip" type="button" data-hx-preset="90" aria-pressed="false">Last 90 days</button>
+        <button class="hx-chip" type="button" data-hx-preset="month" aria-pressed="false">This month</button>
+        <button class="hx-chip" type="button" data-hx-preset="lastmonth" aria-pressed="false">Last month</button>
+      </div>
+      <div class="hx-daterange__fields">
+        <div class="hx-field"><label class="hx-label" for="dr-from">From</label><input class="hx-input" type="date" id="dr-from" data-hx-from></div>
+        <div class="hx-field"><label class="hx-label" for="dr-to">To</label><input class="hx-input" type="date" id="dr-to" data-hx-to aria-describedby="dr-sum"></div>
+      </div>
+      <p class="hx-daterange__summary" id="dr-sum" aria-live="polite"></p>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>Attributes</dt><dd><code>data-today</code> pins "today" (for tenant timezone or tests). Presets: <code>7</code> <code>30</code> <code>90</code> <code>month</code> <code>lastmonth</code>.</dd>
+    <dt>Events</dt><dd><code>hx:range</code> with <code>{ from, to, valid }</code> as ISO dates.</dd>
+    <dt>A11y</dt><dd>Presets are toggle buttons (<code>aria-pressed</code>). The summary is a polite live region and also carries the error.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="dropzone">
+  <header><h3>UploadDropzone <code>[data-hx-dropzone]</code></h3><p>For the employee roster import. Drop or browse; the file is checked for type, size and an email column before the dry run.</p></header>
+  <div class="ds-demo" data-demo>
+    <div style="max-width:560px;width:100%">
+      <label class="hx-dropzone" data-hx-dropzone data-hx-filelist="dz-files" data-max-bytes="5242880">
+        <span class="hx-dropzone__icon"><svg class="hx-icon" aria-hidden="true"><use href="#i-upload"/></svg></span>
+        <span class="hx-dropzone__title">Drop your employee CSV here, or browse</span>
+        <span class="hx-dropzone__hint">Columns: email, first_name, last_name, group · up to 5 MB</span>
+        <input type="file" accept=".csv" aria-describedby="dz-hint">
+      </label>
+      <p class="hx-help" id="dz-hint" style="margin-top:8px">Nothing is sent until you confirm the dry-run results.</p>
+      <ul class="hx-filelist" id="dz-files" aria-live="polite"></ul>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>HTML</dt><dd>A <code>&lt;label&gt;</code> wrapping a real file input, so click, keyboard and screen readers work without script.</dd>
+    <dt>States</dt><dd>idle, <code>data-dragging</code>, <code>data-state="error"</code> (wrong type or too large), file list with row count or warning.</dd>
+    <dt>Events</dt><dd><code>hx:file</code> with <code>{ file, error }</code> per file.</dd>
+  </dl>
+</section>
+
+<!-- ============================ FEEDBACK ============================ -->
+<div class="ds-group-title"><span class="hx-eyebrow">03 · Feedback</span><h2 class="hx-headline hx-headline--md">Feedback.<span class="hx-headline__sub">Calm, until it matters.</span></h2><p>State is shown in shape and words as well as color. Red appears only when risk is actually high.</p></div>
+
+<section class="ds-sec" id="badge">
+  <header><h3>Badge <code>.hx-badge</code></h3><p>Short status or category labels.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-row">
+      <span class="hx-badge">Draft</span>
+      <span class="hx-badge hx-badge--brand">New scenario</span>
+      <span class="hx-badge hx-badge--success"><span class="hx-badge__dot"></span>Approved</span>
+      <span class="hx-badge hx-badge--warning"><span class="hx-badge__dot"></span>Awaiting review</span>
+      <span class="hx-badge hx-badge--danger"><span class="hx-badge__dot"></span>Bounced</span>
+      <span class="hx-badge hx-badge--info"><span class="hx-badge__dot"></span>Scanner</span>
+      <span class="hx-badge hx-badge--outline hx-mono">DE</span>
+    </div>
+    <div class="ds-row">
+      <span class="hx-status hx-status--danger"><svg class="hx-icon" aria-hidden="true"><use href="#i-block"/></svg>Blocked</span>
+      <span class="hx-status"><svg class="hx-icon" aria-hidden="true"><use href="#i-checkc"/></svg>Completed</span>
+      <span class="hx-status hx-status--success"><svg class="hx-icon" aria-hidden="true"><use href="#i-checkc"/></svg>Verified sender</span>
+      <span class="hx-status hx-status--brand"><svg class="hx-icon" aria-hidden="true"><use href="#i-eye"/></svg>In review</span>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>Variants</dt><dd>Soft pill <code>.hx-badge</code> for categories; outlined <code>.hx-status</code> with an icon for outcomes.</dd><dt>A11y</dt><dd>The text carries the meaning; the dot is decoration. Keep labels to one or two words.</dd></dl>
+</section>
+
+<section class="ds-sec" id="riskpill">
+  <header><h3>RiskPill <code>.hx-risk[data-level]</code></h3><p>An ordinal four-step scale. The bar count encodes the level, so it reads without color. Only <code>high</code> turns red; <code>unknown</code> is dashed because nonresponse is never treated as safe.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-row">
+      <span class="hx-risk" data-level="low"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Low</span>
+      <span class="hx-risk" data-level="guarded"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Guarded</span>
+      <span class="hx-risk" data-level="elevated"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Elevated</span>
+      <span class="hx-risk" data-level="high"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>High risk</span>
+      <span class="hx-risk" data-level="unknown"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Not enough data</span>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>Props</dt><dd><code>data-level</code>: <code>low</code> · <code>guarded</code> · <code>elevated</code> · <code>high</code> · <code>unknown</code></dd>
+    <dt>Copy</dt><dd>Describe groups and behaviour, never shame individuals. Pair with the measured basis, e.g. "Elevated · 3 risky replies of 41 sends".</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="alert">
+  <header><h3>Alert <code>.hx-alert</code></h3><p>Inline, persistent messages tied to a page or section.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="hx-alert" role="status"><svg class="hx-icon" aria-hidden="true"><use href="#i-info"/></svg><div><div class="hx-alert__title">Delivery is not the same as inbox placement</div><div class="hx-alert__body">"Accepted" means the receiving server took the message. It may still be filtered before anyone sees it.</div></div></div>
+    <div class="hx-alert hx-alert--warning" role="status"><svg class="hx-icon" aria-hidden="true"><use href="#i-warn"/></svg><div><div class="hx-alert__title">SPF record missing for sim.kessler-wohnbau.de</div><div class="hx-alert__body">Simulations stay paused until the sender domain authenticates.</div><div class="hx-alert__actions"><a class="hx-link" href="#dialog">View DNS records</a><a class="hx-link hx-link--quiet" href="#alert">Check again</a></div></div></div>
+    <div class="hx-alert hx-alert--success" role="status"><svg class="hx-icon" aria-hidden="true"><use href="#i-check"/></svg><div><div class="hx-alert__title">412 employees imported</div><div class="hx-alert__body">3 rows were skipped because the domain is outside your verified scope.</div></div><button class="hx-btn hx-btn--ghost hx-btn--icon hx-btn--sm" type="button" aria-label="Dismiss" onclick="this.closest('.hx-alert').remove()"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+    <div class="hx-alert hx-alert--danger" role="alert"><svg class="hx-icon" aria-hidden="true"><use href="#i-warn"/></svg><div><div class="hx-alert__title">Global safety pause is on</div><div class="hx-alert__body">No simulations will send for any tenant until a platform admin resumes them.</div></div></div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>Variants</dt><dd>info (default), <code>--success</code>, <code>--warning</code>, <code>--danger</code>, <code>--brand</code></dd>
+    <dt>A11y</dt><dd><code>role="status"</code> for most; <code>role="alert"</code> only when the user must act now.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="toast">
+  <header><h3>Toast <code>HelvaxUI.toast()</code></h3><p>Brief confirmation after an action. Toasts never carry the only copy of important information.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="hx-btn-group">
+      <button class="hx-btn hx-btn--outline" type="button" data-hx-toast="success" data-title="Scenario approved" data-body="It joins the rotation from tomorrow, 08:00 CET.">Success toast</button>
+      <button class="hx-btn hx-btn--outline" type="button" data-hx-toast="info" data-title="Export started" data-body="We'll email you when the PDF is ready.">Info toast</button>
+      <button class="hx-btn hx-btn--outline" type="button" data-hx-toast="danger" data-title="Could not save settings" data-body="The session expired. Sign in again to keep your changes.">Error toast</button>
+      <button class="hx-btn hx-btn--outline" type="button" data-hx-toast="brand" data-title="October report is ready">Brand toast</button>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>API</dt><dd><code>HelvaxUI.toast({ title, body, tone: "success"|"info"|"danger"|"brand", timeout: 6000 })</code>. <code>timeout: 0</code> keeps it until dismissed.</dd>
+    <dt>A11y</dt><dd>Region is <code>aria-live="polite"</code>; errors use <code>role="alert"</code>. Auto-dismiss pauses on hover and focus.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="progress">
+  <header><h3>Progress <code>.hx-progress · .hx-ring</code></h3><p>Native <code>&lt;progress&gt;</code> for tasks and coverage; a ring for a single headline proportion.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-grid-2" style="align-items:center">
+      <div style="display:grid;gap:20px">
+        <div class="hx-progress"><div class="hx-progress__head"><label for="pg-1">Importing roster</label><span class="hx-progress__value">286 / 412</span></div><progress id="pg-1" max="412" value="286"></progress></div>
+        <div class="hx-progress hx-progress--ink"><div class="hx-progress__head"><label for="pg-2">Employees reached this quarter</label><span class="hx-progress__value">91%</span></div><progress id="pg-2" max="100" value="91"></progress></div>
+        <div class="hx-progress"><div class="hx-progress__head"><label for="pg-3">Generating PDF</label><span class="hx-progress__value">working…</span></div><progress id="pg-3"></progress></div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:center"><div class="hx-ring" style="--value:72" role="img" aria-label="72% of approved scenarios used this month"><span>72%</span></div><p class="hx-small" style="max-width:24ch">of approved scenarios used this month</p></div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>A11y</dt><dd>Label each <code>&lt;progress&gt;</code>; omit <code>value</code> for indeterminate. The ring is an image with a full-sentence <code>aria-label</code>.</dd></dl>
+</section>
+
+<section class="ds-sec" id="skeleton">
+  <header><h3>Skeleton <code>.hx-skeleton</code></h3><p>Placeholder shapes that match the layout being loaded. The shimmer stops with reduced motion.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="hx-card" aria-busy="true" aria-label="Loading overview" style="max-width:420px;display:grid;gap:14px">
+      <div style="display:flex;gap:12px;align-items:center"><span class="hx-skeleton hx-skeleton--circle" style="width:40px;height:40px"></span><div style="flex:1;display:grid;gap:8px"><span class="hx-skeleton hx-skeleton--title"></span><span class="hx-skeleton hx-skeleton--text" style="width:35%"></span></div></div>
+      <span class="hx-skeleton" style="height:120px;border-radius:12px"></span>
+      <span class="hx-skeleton hx-skeleton--text"></span><span class="hx-skeleton hx-skeleton--text" style="width:80%"></span>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>A11y</dt><dd>Put <code>aria-busy="true"</code> and a label on the container, not on each shape. Swap content in once, without layout shift.</dd></dl>
+</section>
+
+<section class="ds-sec" id="empty">
+  <header><h3>EmptyState <code>.hx-empty</code></h3><p>Says what will appear here and the one step that makes it appear.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="hx-empty">
+      <svg class="hx-empty__art" viewBox="0 0 88 88" aria-hidden="true"><circle cx="44" cy="44" r="8" fill="currentColor"/><circle cx="44" cy="44" r="20" fill="none" stroke="currentColor" stroke-width="2" opacity=".6"/><circle cx="44" cy="44" r="32" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".35"/><circle cx="44" cy="44" r="43" fill="none" stroke="currentColor" stroke-width="1" opacity=".18"/></svg>
+      <h4 class="hx-empty__title">No activity yet</h4>
+      <p class="hx-empty__body">Interactions appear here within minutes of the first simulation. Import your roster to schedule it.</p>
+      <div class="hx-btn-group"><button class="hx-btn" type="button"><svg class="hx-icon" aria-hidden="true"><use href="#i-upload"/></svg>Import employees</button><a class="hx-btn hx-btn--ghost" href="#timeline">How tracking works</a></div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+</section>
+
+<!-- ============================ OVERLAYS & NAV ============================ -->
+<div class="ds-group-title"><span class="hx-eyebrow">04 · Overlays &amp; navigation</span><h2 class="hx-headline hx-headline--md">Navigation.<span class="hx-headline__sub">Always know where you are.</span></h2><p>Overlays use native <code>&lt;dialog&gt;</code> for focus handling and Escape. Navigation marks the current place with <code>aria-current</code>.</p></div>
+
+<section class="ds-sec" id="tooltip">
+  <header><h3>Tooltip &amp; Popover <code>.hx-tooltip · [data-hx-popover]</code></h3><p>Tooltips add a short explanation on hover and focus. Popovers hold interactive content such as a quick confirmation.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-row" style="padding-top:40px">
+      <span class="hx-tooltip"><button class="hx-btn hx-btn--outline hx-btn--icon" type="button" aria-label="What is a verified human click?" aria-describedby="tt-1"><svg class="hx-icon" aria-hidden="true"><use href="#i-info"/></svg></button><span class="hx-tooltip__bubble" role="tooltip" id="tt-1">A visit with real browser interaction after scanner screening. Link prefetches are counted separately.</span></span>
+      <span class="hx-tooltip"><span class="hx-badge hx-badge--info" tabindex="0" aria-describedby="tt-2">Confidence 0.62</span><span class="hx-tooltip__bubble" role="tooltip" id="tt-2">Model confidence for this reply class. Below 0.7 goes to human review.</span></span>
+      <div class="hx-popover">
+        <button class="hx-btn hx-btn--outline" type="button" data-hx-popover aria-expanded="false" aria-controls="pop-1"><svg class="hx-icon" aria-hidden="true"><use href="#i-pause"/></svg>Pause tenant</button>
+        <div class="hx-popover__panel" id="pop-1" hidden role="dialog" aria-labelledby="pop-1-t">
+          <strong id="pop-1-t">Pause all simulations for this tenant?</strong>
+          <span class="hx-small">Scheduled sends are held. You can resume at any time.</span>
+          <div class="hx-btn-group"><button class="hx-btn hx-btn--sm hx-btn--secondary" type="button" data-hx-close data-hx-toast="info" data-title="Tenant paused">Pause</button><button class="hx-btn hx-btn--sm hx-btn--ghost" type="button" data-hx-close>Cancel</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>Keyboard</dt><dd>Tooltip shows on focus; <span class="hx-kbd">Esc</span> hides it (WCAG 1.4.13). Popover opens on click, moves focus inside, closes on <span class="hx-kbd">Esc</span> or outside click and returns focus.</dd>
+    <dt>Rules</dt><dd>Tooltips hold no links or buttons and are never the only place information lives. Use the popover for anything clickable.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="dialog">
+  <header><h3>Dialog <code>dialog.hx-dialog</code></h3><p>Modal decisions, mainly confirmations for actions that are hard to undo.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="hx-btn-group">
+      <button class="hx-btn hx-btn--destructive" type="button" data-hx-open="dlg-pause">Activate global kill switch</button>
+      <button class="hx-btn hx-btn--outline" type="button" data-hx-open="dlg-preview"><svg class="hx-icon" aria-hidden="true"><use href="#i-eye"/></svg>Preview scenario</button>
+    </div>
+    <dialog class="hx-dialog" id="dlg-pause" aria-labelledby="dlg-pause-t" aria-describedby="dlg-pause-d">
+      <div class="hx-dialog__header"><span class="hx-dialog__icon"><svg class="hx-icon" aria-hidden="true"><use href="#i-pause"/></svg></span><button class="hx-btn hx-btn--ghost hx-btn--icon hx-btn--sm" type="button" data-hx-close aria-label="Close"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <div class="hx-dialog__body"><h2 class="hx-dialog__title" id="dlg-pause-t">Stop all simulations on the platform?</h2><p id="dlg-pause-d">Every queued send for all 38 tenants is held immediately. Tenant admins see a banner until you resume. This is logged to the audit trail.</p>
+        <div class="hx-field"><label class="hx-label" for="dlg-reason">Reason for the audit log</label><input class="hx-input" id="dlg-reason" placeholder="e.g. Complaint from recipient domain"></div></div>
+      <div class="hx-dialog__footer"><button class="hx-btn hx-btn--ghost" type="button" data-hx-close>Cancel</button><button class="hx-btn hx-btn--destructive" type="button" data-hx-close="confirm" data-hx-toast="danger" data-title="Global pause is on" data-body="All sends are held until resumed.">Stop all simulations</button></div>
+    </dialog>
+    <dialog class="hx-dialog" id="dlg-preview" aria-labelledby="dlg-preview-t">
+      <div class="hx-dialog__header"><h2 class="hx-dialog__title" id="dlg-preview-t">Invoice correction from a known supplier</h2><button class="hx-btn hx-btn--ghost hx-btn--icon hx-btn--sm" type="button" data-hx-close aria-label="Close"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <div class="hx-dialog__body">
+        <div class="hx-scenario__preview"><span>From <b>Buchhaltung · Nordbau Lieferservice</b> &lt;rechnung@nordbau-lieferservice.example&gt;</span><span>Subject <b>Korrigierte Rechnung 2026-1184</b></span><span class="hx-mono" style="white-space:normal">Bitte nutzen Sie ab sofort die neue Bankverbindung im Anhang…</span></div>
+        <p>Fictional supplier on an owned domain. The link leads to a safe training page; no real payment details are shown or collected.</p>
+      </div>
+      <div class="hx-dialog__footer"><button class="hx-btn hx-btn--ghost" type="button" data-hx-close>Close</button><button class="hx-btn" type="button" data-hx-close data-hx-toast="success" data-title="Scenario approved">Approve</button></div>
+    </dialog>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>HTML</dt><dd>Native <code>&lt;dialog&gt;</code> opened with <code>showModal()</code> via <code>data-hx-open="id"</code>. Any <code>[data-hx-close]</code> inside closes it; its value becomes <code>returnValue</code>.</dd>
+    <dt>Keyboard</dt><dd>Focus moves into the dialog and stays there; <span class="hx-kbd">Esc</span> closes; focus returns to the trigger.</dd>
+    <dt>Copy</dt><dd>Title asks the question; the confirm button repeats the verb ("Stop all simulations"), never "OK".</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="drawer">
+  <header><h3>Drawer <code>dialog.hx-drawer</code></h3><p>Detail views that keep the list behind them in context, such as one employee's simulation history.</p></header>
+  <div class="ds-demo" data-demo>
+    <div><button class="hx-btn hx-btn--outline" type="button" data-hx-open="drw-1">Open employee detail</button></div>
+    <dialog class="hx-drawer" id="drw-1" aria-labelledby="drw-1-t">
+      <div class="hx-dialog__header"><div><span class="hx-eyebrow">Employee</span><h2 class="hx-dialog__title" id="drw-1-t" style="margin-top:6px">Mara Lindqvist</h2></div><button class="hx-btn hx-btn--ghost hx-btn--icon hx-btn--sm" type="button" data-hx-close aria-label="Close"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <div class="hx-dialog__body">
+        <div class="ds-row"><span class="hx-badge">Finance</span><span class="hx-badge hx-badge--success"><span class="hx-badge__dot"></span>Active</span><span class="hx-risk" data-level="guarded"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Guarded</span></div>
+        <ol class="hx-timeline">
+          <li class="hx-timeline__item" data-kind="human"><span class="hx-timeline__time">21 Oct</span><span class="hx-timeline__node"></span><div class="hx-timeline__body"><span class="hx-timeline__title">Replied asking to verify by phone</span><span class="hx-timeline__meta"><span class="hx-badge hx-badge--success">Verification</span><span class="hx-mono">conf 0.91</span></span></div></li>
+          <li class="hx-timeline__item" data-kind="scanner"><span class="hx-timeline__time">09 Oct</span><span class="hx-timeline__node"></span><div class="hx-timeline__body"><span class="hx-timeline__title">Link fetched by mail scanner</span><span class="hx-timeline__meta"><span class="hx-badge hx-badge--info">Scanner</span>not counted</span></div></li>
+          <li class="hx-timeline__item"><span class="hx-timeline__time">02 Oct</span><span class="hx-timeline__node"></span><div class="hx-timeline__body"><span class="hx-timeline__title">QR poster simulation sent</span><span class="hx-timeline__meta">Provider accepted</span></div></li>
+        </ol>
+      </div>
+      <div class="hx-dialog__footer"><button class="hx-btn hx-btn--outline" type="button" data-hx-close>Exclude from simulations</button><button class="hx-btn hx-btn--secondary" type="button" data-hx-close>Done</button></div>
+    </dialog>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>Responsive</dt><dd>440px from the right on desktop; full width on phones. Body scrolls, header and footer stay.</dd><dt>Keyboard</dt><dd>Same as Dialog.</dd></dl>
+</section>
+
+<section class="ds-sec" id="navbar">
+  <header><h3>Navbar, AppIcon &amp; Headline <code>.hx-navbar · .hx-appicon · .hx-headline</code></h3><p>The marketing frame: a floating white bar, the rounded app icon with its glow, and the two-tone headline with a grey second line. The bar is white and floats 12px below the top.</p></header>
+  <div class="ds-demo ds-demo--plain hx-clouds" data-demo style="padding-bottom:72px">
+    <nav class="hx-navbar" aria-label="Marketing" data-ds-navdemo>
+      <a class="hx-navbar__brand" href="#navbar"><span class="hx-appicon hx-appicon--sm"><svg class="hx-icon" aria-hidden="true"><use href="#i-helvax"/></svg></span>Helvax</a>
+      <ul class="hx-navbar__links"><li><a href="#navbar">Product</a></li><li><a href="#navbar">How it works</a></li><li><a href="#navbar">Pricing</a></li><li><a href="#navbar">FAQ</a></li></ul>
+      <div class="hx-navbar__end"><a class="hx-btn hx-btn--ghost" href="#navbar">Log in</a><a class="hx-btn" href="#navbar">Request demo</a></div>
+    </nav>
+    <div style="display:grid;justify-items:center;text-align:center;gap:20px;padding-top:24px">
+      <span class="hx-appicon"><svg class="hx-icon" aria-hidden="true"><use href="#i-helvax"/></svg></span>
+      <a class="hx-badge hx-badge--link" href="#navbar">€2 per employee per month <svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <h2 class="hx-headline hx-headline--md">No mailbox connection.<span class="hx-headline__sub">Just upload a roster.</span></h2>
+      <div class="hx-btn-group" style="justify-content:center"><a class="hx-btn hx-btn--lg" href="#navbar">Start a pilot</a><a class="hx-btn hx-btn--lg hx-btn--soft" href="#navbar">See pricing</a></div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>Navbar</dt><dd><code>&lt;nav aria-label&gt;</code> with brand, <code>.hx-navbar__links</code> list and <code>.hx-navbar__end</code> actions. Below 860px the links collapse behind a menu button that toggles <code>data-open</code> and <code>aria-expanded</code>. Make it sticky with a wrapper; it floats 12px below the top.</dd>
+    <dt>AppIcon</dt><dd>Sizes <code>--sm</code> 32px, default 64px, <code>--lg</code> 104px. Decorative next to a name; give it <code>role="img"</code> and a label when it stands alone.</dd>
+    <dt>Headline</dt><dd><code>.hx-headline</code> (36–72px) or <code>--md</code> (28–40px). The grey second line uses <code>--headline-2</code> at 3.3:1, so it is only for display sizes; keep the essential claim in the first line.</dd>
+    <dt>Clouds</dt><dd>Add <code>.hx-clouds</code> to any section for the peach haze with a dotted edge. Purely decorative; content sits above it.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="tabs">
+  <header><h3>Tabs <code>[data-hx-tabs]</code></h3><p>Switch between views of the same object. Underline for page sections, track or segmented pill for compact switches.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="hx-tabs" data-hx-tabs>
+      <div class="hx-tabs__list" role="tablist" aria-label="Simulation library">
+        <button class="hx-tabs__tab" role="tab" aria-selected="true" aria-controls="tp-1" id="tb-1">Approved <span class="hx-badge">24</span></button>
+        <button class="hx-tabs__tab" role="tab" aria-selected="false" aria-controls="tp-2" id="tb-2">Awaiting review <span class="hx-badge hx-badge--warning">3</span></button>
+        <button class="hx-tabs__tab" role="tab" aria-selected="false" aria-controls="tp-3" id="tb-3">Retired</button>
+      </div>
+      <div class="hx-tabs__panel" role="tabpanel" id="tp-1" aria-labelledby="tb-1" tabindex="0"><p class="hx-small">24 scenarios in rotation across 6 categories and 3 languages.</p></div>
+      <div class="hx-tabs__panel" role="tabpanel" id="tp-2" aria-labelledby="tb-2" tabindex="0" hidden><p class="hx-small">3 generated scenarios passed safety checks and need an admin's approval.</p></div>
+      <div class="hx-tabs__panel" role="tabpanel" id="tp-3" aria-labelledby="tb-3" tabindex="0" hidden><p class="hx-small">Retired scenarios keep their history in past reports.</p></div>
+    </div>
+    <div class="hx-tabs hx-tabs--track hx-tabs--caps" data-hx-tabs>
+      <div class="hx-tabs__list" role="tablist" aria-label="Scenario family" style="display:inline-flex;max-width:100%">
+        <button class="hx-tabs__tab" role="tab" aria-selected="false" aria-controls="cp-1">Email</button>
+        <button class="hx-tabs__tab" role="tab" aria-selected="true" aria-controls="cp-2">Supplier fraud</button>
+        <button class="hx-tabs__tab" role="tab" aria-selected="false" aria-controls="cp-3">QR codes</button>
+      </div>
+      <div role="tabpanel" id="cp-1" hidden></div><div role="tabpanel" id="cp-2"></div><div role="tabpanel" id="cp-3" hidden></div>
+    </div>
+    <div class="hx-tabs hx-tabs--segmented" data-hx-tabs>
+      <div class="hx-tabs__list" role="tablist" aria-label="Chart period">
+        <button class="hx-tabs__tab" role="tab" aria-selected="false" aria-controls="sp-1">Week</button>
+        <button class="hx-tabs__tab" role="tab" aria-selected="true" aria-controls="sp-2">Month</button>
+        <button class="hx-tabs__tab" role="tab" aria-selected="false" aria-controls="sp-3">Quarter</button>
+      </div>
+      <div role="tabpanel" id="sp-1" hidden></div><div role="tabpanel" id="sp-2"></div><div role="tabpanel" id="sp-3" hidden></div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>Keyboard</dt><dd>Roving tabindex: <span class="hx-kbd">←</span> <span class="hx-kbd">→</span> move and select, <span class="hx-kbd">Home</span> / <span class="hx-kbd">End</span> jump, <span class="hx-kbd">Tab</span> enters the panel.</dd><dt>Responsive</dt><dd>The list scrolls horizontally on narrow screens rather than wrapping.</dd></dl>
+</section>
+
+<section class="ds-sec" id="stepper">
+  <header><h3>Stepper <code>.hx-stepper</code></h3><p>The import wizard: upload, validate, choose consent scope, confirm.</p></header>
+  <div class="ds-demo" data-demo>
+    <ol class="hx-stepper" aria-label="Import progress">
+      <li class="hx-stepper__item" data-state="done"><span class="hx-stepper__bar"></span><span class="hx-stepper__label"><span class="hx-stepper__text">Upload CSV</span></span></li>
+      <li class="hx-stepper__item" data-state="done"><span class="hx-stepper__bar"></span><span class="hx-stepper__label"><span class="hx-stepper__text">Dry-run check</span></span></li>
+      <li class="hx-stepper__item" aria-current="step"><span class="hx-stepper__bar"></span><span class="hx-stepper__label"><span class="hx-stepper__text">Consent scope</span></span></li>
+      <li class="hx-stepper__item"><span class="hx-stepper__bar"></span><span class="hx-stepper__label"><span class="hx-stepper__text">Confirm import</span></span></li>
+    </ol>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>States</dt><dd><code>data-state="done"</code>, <code>aria-current="step"</code>, <code>data-state="error"</code>, upcoming (no attribute).</dd><dt>Responsive</dt><dd>Below 640px only the current step's label shows; the others stay available to screen readers.</dd></dl>
+</section>
+
+<section class="ds-sec" id="pagination">
+  <header><h3>Pagination <code>[data-hx-pagination]</code></h3><p>Rendered from three attributes; truncates long ranges.</p></header>
+  <div class="ds-demo" data-demo>
+    <nav class="hx-pagination" aria-label="Employee list pages" data-hx-pagination data-pages="17" data-current="4" data-per-page="25" data-total="412">
+      <span data-hx-page-status aria-live="polite"></span>
+      <ul class="hx-pagination__list"></ul>
+    </nav>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>Attributes</dt><dd><code>data-pages</code> <code>data-current</code> <code>data-per-page</code> <code>data-total</code>. Fires <code>hx:page</code>.</dd><dt>A11y</dt><dd>Inside a labelled <code>&lt;nav&gt;</code>; current page has <code>aria-current="page"</code>; arrows have labels.</dd></dl>
+</section>
+
+<section class="ds-sec" id="app-shell">
+  <header><h3>Sidebar &amp; Topbar <code>.hx-shell</code></h3><p>The authenticated app frame. It responds to its own width: switch the frame size to see the sidebar collapse into a menu.</p></header>
+  <div class="ds-vp" role="group" aria-label="Preview width">
+    <button class="hx-chip" type="button" data-vp="390px" aria-pressed="false">Mobile 390</button>
+    <button class="hx-chip" type="button" data-vp="768px" aria-pressed="false">Tablet 768</button>
+    <button class="hx-chip" type="button" data-vp="100%" aria-pressed="true">Desktop</button>
+  </div>
+  <div class="ds-demo" data-demo style="padding:clamp(12px,2vw,24px)">
+    <div class="ds-frame" id="shell-frame">
+      <div class="hx-shell">
+        <nav class="hx-sidebar" aria-label="Main">
+          <a class="hx-sidebar__brand" href="#app-shell"><svg class="hx-signal-mark" aria-hidden="true"><use href="#mark"/></svg>Helvax</a>
+          <div class="hx-sidebar__section">
+            <a class="hx-sidebar__link" href="#app-shell" aria-current="page"><svg class="hx-icon" aria-hidden="true"><use href="#i-overview"/></svg>Overview</a>
+            <a class="hx-sidebar__link" href="#app-shell"><svg class="hx-icon" aria-hidden="true"><use href="#i-users"/></svg>Employees</a>
+            <a class="hx-sidebar__link" href="#app-shell"><svg class="hx-icon" aria-hidden="true"><use href="#i-target"/></svg>Simulations<span class="hx-badge hx-badge--warning">3</span></a>
+            <a class="hx-sidebar__link" href="#app-shell"><svg class="hx-icon" aria-hidden="true"><use href="#i-activity"/></svg>Activity</a>
+            <a class="hx-sidebar__link" href="#app-shell"><svg class="hx-icon" aria-hidden="true"><use href="#i-report"/></svg>Reports</a>
+          </div>
+          <div class="hx-sidebar__section">
+            <span class="hx-eyebrow hx-sidebar__heading">Account</span>
+            <a class="hx-sidebar__link" href="#app-shell"><svg class="hx-icon" aria-hidden="true"><use href="#i-gear"/></svg>Settings</a>
+            <a class="hx-sidebar__link" href="#app-shell"><svg class="hx-icon" aria-hidden="true"><use href="#i-invoice"/></svg>Billing</a>
+          </div>
+          <div class="hx-sidebar__footer"><strong style="color:var(--ink)">Annual plan · 412 seats</strong><span>Renews 1 Feb 2027</span><div class="hx-progress"><progress max="450" value="412" aria-label="412 of 450 seats used"></progress></div></div>
+        </nav>
+        <div class="hx-shell__main">
+          <header class="hx-topbar">
+            <button class="hx-btn hx-btn--ghost hx-btn--icon hx-topbar__menu" type="button" data-hx-nav-toggle aria-expanded="false" aria-label="Open navigation"><svg class="hx-icon" aria-hidden="true"><use href="#i-menu"/></svg></button>
+            <h2 class="hx-topbar__title">Security overview</h2>
+            <div class="hx-input-wrap hx-topbar__search"><svg class="hx-icon" aria-hidden="true"><use href="#i-search"/></svg><input class="hx-input" type="search" placeholder="Search" aria-label="Search employees and reports" id="shell-search"></div>
+            <button class="hx-btn hx-btn--ghost hx-btn--icon" type="button" aria-label="Notifications"><svg class="hx-icon" aria-hidden="true"><use href="#i-bell"/></svg></button>
+            <span class="hx-avatar" aria-label="Signed in as Jonas Albers" role="img">JA</span>
+          </header>
+          <div class="hx-shell__content">
+            <nav class="hx-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="#app-shell">Kessler Wohnbau</a></li><li><span aria-current="page">Overview</span></li></ol></nav>
+            <div class="ds-grid-3">
+              <div class="hx-card hx-stat"><span class="hx-stat__label">Simulations sent</span><span class="hx-stat__value">1,284</span><span class="hx-stat__delta" data-trend="flat">last 30 days</span></div>
+              <div class="hx-card hx-stat"><span class="hx-stat__label">Verified human clicks</span><span class="hx-stat__value">4.8<small>%</small></span><span class="hx-stat__delta" data-trend="better">↓ 1.3 pts</span></div>
+              <div class="hx-card hx-stat"><span class="hx-stat__label">High-risk replies</span><span class="hx-stat__value">7</span><span class="hx-stat__delta" data-trend="worse">↑ 2</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>HTML</dt><dd><code>&lt;nav aria-label="Main"&gt;</code> with <code>aria-current="page"</code> on the active link; topbar is a <code>&lt;header&gt;</code>; breadcrumbs are an <code>&lt;ol&gt;</code> in a labelled nav.</dd>
+    <dt>Responsive</dt><dd>Container query at 760px: sidebar becomes an overlay opened by <code>[data-hx-nav-toggle]</code>, search hides, padding tightens.</dd>
+    <dt>Keyboard</dt><dd>Menu button toggles <code>aria-expanded</code> and moves focus to the first link; <span class="hx-kbd">Esc</span> closes and returns focus.</dd>
+  </dl>
+</section>
+
+<!-- ============================ DATA & PRODUCT ============================ -->
+<div class="ds-group-title"><span class="hx-eyebrow">05 · Data &amp; product</span><h2 class="hx-headline hx-headline--md">Measurement.<span class="hx-headline__sub">Honest about what we know.</span></h2><p>Numbers are set in Plex Mono with tabular figures. Each one names what was measured, and the limits of measurement are said out loud.</p></div>
+
+<section class="ds-sec" id="card">
+  <header><h3>Card <code>.hx-card</code></h3><p>A white surface with a 1px line. Use it to group one subject; don't nest cards.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-grid-2">
+      <article class="hx-card">
+        <div class="hx-card__header"><div><h4 class="hx-card__title">Recommended next step</h4><span class="hx-card__meta">Based on the last 30 days</span></div><span class="hx-badge hx-badge--brand">Suggestion</span></div>
+        <p class="hx-small">Finance replied to 3 of 5 supplier-fraud simulations without verifying. Add a 2-minute training moment for this group.</p>
+        <div class="hx-card__footer"><a class="hx-link hx-link--arrow" href="#card">Enable for Finance <svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a><button class="hx-btn hx-btn--ghost hx-btn--sm" type="button">Dismiss</button></div>
+      </article>
+      <a class="hx-card hx-card--interactive hx-card--warm" href="#reportpreview" style="text-decoration:none;color:inherit;display:grid;gap:8px">
+        <span class="hx-eyebrow">Report · Oct 2026</span>
+        <h4 class="hx-card__title">Monthly summary is ready</h4>
+        <p class="hx-small">Sent to 3 admins on 1 Nov, 07:00 CET.</p>
+      </a>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>Variants</dt><dd><code>--warm</code> <code>--flush</code> (no padding, for tables) <code>--interactive</code> (whole card is a link)</dd><dt>A11y</dt><dd>Use <code>&lt;article&gt;</code> for standalone content. An interactive card is one <code>&lt;a&gt;</code>, with no nested buttons.</dd></dl>
+</section>
+
+<section class="ds-sec" id="statcard">
+  <header><h3>StatCard <code>.hx-stat</code></h3><p>One KPI with its trend. The delta says whether the change is better or worse, because "up" means different things for different metrics.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-grid-3">
+      <div class="hx-card hx-stat">
+        <span class="hx-stat__label">Verified human clicks</span>
+        <span class="hx-stat__value">4.8<small>%</small></span>
+        <svg class="hx-stat__spark" data-hx-spark="[7.2,6.8,7.1,6.4,6.1,5.9,6.0,5.4,5.1,4.8]" aria-hidden="true"></svg>
+        <span class="hx-stat__foot"><span class="hx-stat__delta" data-trend="better">↓ 1.3 pts</span>vs September · 62 of 1,284 sends</span>
+      </div>
+      <div class="hx-card hx-stat">
+        <span class="hx-stat__label">Verification replies</span>
+        <span class="hx-stat__value">38</span>
+        <svg class="hx-stat__spark" data-hx-spark="[12,15,14,19,22,21,27,30,34,38]" aria-hidden="true"></svg>
+        <span class="hx-stat__foot"><span class="hx-stat__delta" data-trend="better">↑ 11</span>people who checked before acting</span>
+      </div>
+      <div class="hx-card hx-stat hx-stat--hero">
+        <span class="hx-stat__label">Employees covered</span>
+        <span class="hx-stat__value">412<small>/ 450</small></span>
+        <span class="hx-stat__foot">38 seats free on the annual plan</span>
+      </div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>Props</dt><dd>label, value (+ unit in <code>&lt;small&gt;</code>), optional sparkline <code>data-hx-spark="[…]"</code>, delta with <code>data-trend="better|worse|flat"</code>, foot text with the basis.</dd><dt>A11y</dt><dd>Sparklines are decorative; the delta and foot text carry the meaning.</dd></dl>
+</section>
+
+<section class="ds-sec" id="datatable">
+  <header><h3>DataTable <code>table[data-hx-table]</code></h3><p>Sortable, selectable, horizontally scrollable on small screens. Numbers align right.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="hx-card hx-card--flush">
+      <div class="hx-toolbar">
+        <div class="hx-input-wrap" style="width:min(260px,100%)"><svg class="hx-icon" aria-hidden="true"><use href="#i-search"/></svg><input class="hx-input" type="search" placeholder="Filter employees" aria-label="Filter employees" id="tbl-filter"></div>
+        <div class="hx-btn-group"><button class="hx-btn hx-btn--outline hx-btn--sm" type="button"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-download"/></svg>Export</button><button class="hx-btn hx-btn--sm" type="button"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-plus"/></svg>Add</button></div>
+      </div>
+      <div class="hx-table-wrap" style="border:0;border-radius:0">
+        <table class="hx-table" data-hx-table>
+          <caption class="hx-visually-hidden">Employees and their simulation results, last 90 days</caption>
+          <thead><tr>
+            <th class="is-check" scope="col"><label class="hx-check"><input type="checkbox" data-hx-select-all aria-label="Select all rows"></label></th>
+            <th scope="col" aria-sort="ascending"><button class="hx-table__sort" type="button">Employee</button></th>
+            <th scope="col"><button class="hx-table__sort" type="button">Group</button></th>
+            <th scope="col" class="is-num"><button class="hx-table__sort" type="button">Sent</button></th>
+            <th scope="col" class="is-num"><button class="hx-table__sort" type="button">Human clicks</button></th>
+            <th scope="col">Risk</th>
+            <th scope="col">Status</th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="is-check"><label class="hx-check"><input type="checkbox" aria-label="Select Ana Brandt"></label></td><td data-value="Brandt"><div class="hx-table__person"><span class="hx-avatar">AB</span><span>Ana Brandt<small>a.brandt@kessler-wohnbau.de</small></span></div></td><td>Facility</td><td class="is-num">6</td><td class="is-num">0</td><td><span class="hx-risk" data-level="low"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Low</span></td><td><span class="hx-badge hx-badge--success"><span class="hx-badge__dot"></span>Active</span></td></tr>
+            <tr><td class="is-check"><label class="hx-check"><input type="checkbox" aria-label="Select Tobias Kranz"></label></td><td data-value="Kranz"><div class="hx-table__person"><span class="hx-avatar">TK</span><span>Tobias Kranz<small>t.kranz@kessler-wohnbau.de</small></span></div></td><td>Finance</td><td class="is-num">7</td><td class="is-num">3</td><td><span class="hx-risk" data-level="high"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>High risk</span></td><td><span class="hx-badge hx-badge--success"><span class="hx-badge__dot"></span>Active</span></td></tr>
+            <tr><td class="is-check"><label class="hx-check"><input type="checkbox" aria-label="Select Mara Lindqvist"></label></td><td data-value="Lindqvist"><div class="hx-table__person"><span class="hx-avatar">ML</span><span>Mara Lindqvist<small>m.lindqvist@kessler-wohnbau.de</small></span></div></td><td>Finance</td><td class="is-num">5</td><td class="is-num">1</td><td><span class="hx-risk" data-level="guarded"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Guarded</span></td><td><span class="hx-badge hx-badge--success"><span class="hx-badge__dot"></span>Active</span></td></tr>
+            <tr><td class="is-check"><label class="hx-check"><input type="checkbox" aria-label="Select Selin Yıldız"></label></td><td data-value="Yildiz"><div class="hx-table__person"><span class="hx-avatar">SY</span><span>Selin Yıldız<small>s.yildiz@kessler-wohnbau.de</small></span></div></td><td>Lettings</td><td class="is-num">4</td><td class="is-num">2</td><td><span class="hx-risk" data-level="elevated"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Elevated</span></td><td><span class="hx-badge hx-badge--warning"><span class="hx-badge__dot"></span>On leave</span></td></tr>
+            <tr><td class="is-check"><label class="hx-check"><input type="checkbox" aria-label="Select Pieter de Vries"></label></td><td data-value="Vries"><div class="hx-table__person"><span class="hx-avatar">PV</span><span>Pieter de Vries<small>p.devries@kessler-wohnbau.de</small></span></div></td><td>IT</td><td class="is-num">0</td><td class="is-num">0</td><td><span class="hx-risk" data-level="unknown"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Not enough data</span></td><td><span class="hx-badge">Excluded</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>HTML</dt><dd>Real <code>&lt;table&gt;</code> with <code>&lt;caption&gt;</code> and <code>scope="col"</code>. Sort buttons live inside <code>&lt;th&gt;</code>; the header carries <code>aria-sort</code>. Put a sortable value in <code>data-value</code> when the cell shows rich content.</dd>
+    <dt>Keyboard</dt><dd>Tab to each sort button and checkbox. Select-all shows indeterminate when some rows are selected.</dd>
+    <dt>Events</dt><dd><code>hx:selection</code> with the number of selected rows, for a bulk-action bar.</dd>
+    <dt>Responsive</dt><dd>Wrapper scrolls sideways; the page never does. Header stays sticky inside a scrolling wrapper.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="chartframe">
+  <header><h3>ChartFrame <code>figure.hx-chart</code></h3><p>Title, legend, plot, method note and a data table. Neutrals carry context, orange carries the series that matters, red is never a series color.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-grid-2">
+      <figure class="hx-card hx-chart">
+        <div class="hx-chart__head">
+          <div><figcaption class="hx-chart__title">Verified human click rate</figcaption><p class="hx-chart__sub">Weekly, share of delivered simulations</p></div>
+          <ul class="hx-chart__legend"><li><span class="hx-chart__swatch"></span>2026</li><li><span class="hx-chart__swatch hx-chart__swatch--dashed"></span>Prior 12 weeks</li></ul>
+        </div>
+        <div class="hx-chart__plot" data-hx-chart='{"type":"line","label":"Verified human click rate by week, falling from 7.2% to 4.8%","suffix":"%","yMax":10,"labels":["W32","W33","W34","W35","W36","W37","W38","W39","W40","W41","W42","W43"],"series":[{"name":"Prior 12 weeks","tone":"neutral","dashed":true,"values":[8.1,7.9,8.3,7.6,7.8,7.4,7.7,7.2,7.5,7.1,7.3,7.0]},{"name":"2026","tone":"highlight","values":[7.2,6.9,7.1,6.4,6.1,5.9,6.0,5.4,5.3,5.1,4.9,4.8]}]}'></div>
+        <p class="hx-chart__note"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-info"/></svg>Scanner prefetches excluded. A page fetch is not a click until browser interaction is observed.</p>
+        <button class="hx-link hx-link--quiet" type="button" style="justify-self:start;background:none;border:0;padding:0;cursor:pointer;font-size:12px" data-hx-chart-table aria-controls="ct-1" aria-expanded="false">Show data table</button>
+        <div class="hx-table-wrap" id="ct-1" hidden><table class="hx-table"><thead><tr><th scope="col">Week</th><th scope="col" class="is-num">2026</th><th scope="col" class="is-num">Prior</th></tr></thead><tbody><tr><td>W32</td><td class="is-num">7.2%</td><td class="is-num">8.1%</td></tr><tr><td>W37</td><td class="is-num">5.9%</td><td class="is-num">7.4%</td></tr><tr><td>W43</td><td class="is-num">4.8%</td><td class="is-num">7.0%</td></tr></tbody></table></div>
+      </figure>
+      <figure class="hx-card hx-chart">
+        <div class="hx-chart__head"><div><figcaption class="hx-chart__title">Interactions by scenario</figcaption><p class="hx-chart__sub">Verified human clicks, October</p></div></div>
+        <div class="hx-chart__plot" data-hx-chart='{"type":"bar","label":"Verified human clicks by scenario; supplier fraud is highest at 21","unit":"clicks","highlight":1,"labels":["Phishing","Supplier","Exec","QR","Doc link","Form"],"values":[14,21,9,6,8,4]}'></div>
+        <p class="hx-chart__note"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-info"/></svg>Supplier fraud is highlighted as the largest category. Hover or focus a bar for its value.</p>
+      </figure>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec">
+    <dt>API</dt><dd><code>data-hx-chart='{"type":"line"|"bar", labels, series|values, suffix, yMax, highlight}'</code>, or call <code>HelvaxUI.lineChart(el, cfg)</code> / <code>barChart</code> directly. One y-axis only.</dd>
+    <dt>Keyboard</dt><dd>Line plot is focusable: <span class="hx-kbd">←</span> <span class="hx-kbd">→</span> step through points, <span class="hx-kbd">Esc</span> hides the tooltip. Each bar is focusable.</dd>
+    <dt>A11y</dt><dd>The SVG has a summary <code>aria-label</code>; legend uses solid vs dashed so series differ without color; a data table is one click away.</dd>
+  </dl>
+</section>
+
+<section class="ds-sec" id="timeline">
+  <header><h3>Activity timeline <code>.hx-timeline</code></h3><p>The delivery and interaction log. Every event carries an honesty label: verified human, likely scanner, or unconfirmed.</p></header>
+  <div class="ds-demo" data-demo>
+    <ol class="hx-timeline" style="max-width:640px">
+      <li class="hx-timeline__item" data-kind="risk"><span class="hx-timeline__time">10:42</span><span class="hx-timeline__node"></span><div class="hx-timeline__body"><span class="hx-timeline__title">Reply offered to change bank details</span><span class="hx-timeline__meta"><span class="hx-badge hx-badge--danger">Risky intent</span><span class="hx-mono">conf 0.88</span>· Supplier fraud · Finance</span></div></li>
+      <li class="hx-timeline__item" data-kind="human"><span class="hx-timeline__time">10:17</span><span class="hx-timeline__node"></span><div class="hx-timeline__body"><span class="hx-timeline__title">Landing page opened with interaction</span><span class="hx-timeline__meta"><span class="hx-badge hx-badge--brand">Verified human</span>· Document link · Lettings</span></div></li>
+      <li class="hx-timeline__item" data-kind="scanner"><span class="hx-timeline__time">10:16</span><span class="hx-timeline__node"></span><div class="hx-timeline__body"><span class="hx-timeline__title">Link fetched 2s after delivery</span><span class="hx-timeline__meta"><span class="hx-badge hx-badge--info">Likely scanner</span>not counted as a click</span></div></li>
+      <li class="hx-timeline__item"><span class="hx-timeline__time">10:15</span><span class="hx-timeline__node"></span><div class="hx-timeline__body"><span class="hx-timeline__title">Accepted by receiving server</span><span class="hx-timeline__meta"><span class="hx-badge">Unconfirmed inbox</span>· 38 messages</span></div></li>
+      <li class="hx-timeline__item"><span class="hx-timeline__time">09:58</span><span class="hx-timeline__node"></span><div class="hx-timeline__body"><span class="hx-timeline__title">Batch queued inside business window</span><span class="hx-timeline__meta">planned → queued → sent</span></div></li>
+    </ol>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>Props</dt><dd><code>data-kind</code>: <code>human</code> (filled orange), <code>scanner</code> (dashed), <code>risk</code> (filled red), default (outline). The badge repeats the kind in words.</dd><dt>HTML</dt><dd>An ordered list, newest first. Times in the tenant's timezone.</dd></dl>
+</section>
+
+<section class="ds-sec" id="scenariocard">
+  <header><h3>ScenarioCard <code>.hx-scenario</code></h3><p>One entry in the scenario library: category, difficulty, languages, approval state and a safe preview.</p></header>
+  <div class="ds-demo" data-demo>
+    <div class="ds-grid-2">
+      <article class="hx-scenario">
+        <div class="hx-scenario__top"><span class="hx-scenario__glyph"><svg class="hx-icon" aria-hidden="true"><use href="#i-invoice"/></svg></span><span class="hx-badge hx-badge--success"><span class="hx-badge__dot"></span>Approved</span></div>
+        <div style="display:grid;gap:6px"><span class="hx-eyebrow">Supplier fraud</span><h4 class="hx-scenario__title">Invoice correction from a known supplier</h4><p class="hx-scenario__desc">Asks finance to use new bank details. Tests whether people verify by phone.</p></div>
+        <div class="hx-scenario__preview"><span>Subject <b>Korrigierte Rechnung 2026-1184</b></span><span class="hx-mono">rechnung@nordbau-lieferservice.example</span></div>
+        <div class="hx-scenario__meta"><span class="hx-difficulty" data-level="3"><span class="hx-difficulty__dots" aria-hidden="true"><i></i><i></i><i></i></span>Hard</span><span class="hx-mono">DE · EN · NL</span><span class="hx-mono">v4</span></div>
+        <div class="hx-scenario__actions"><button class="hx-btn hx-btn--outline hx-btn--sm" type="button" data-hx-open="dlg-preview"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-eye"/></svg>Preview</button><button class="hx-btn hx-btn--ghost hx-btn--sm" type="button">Retire</button></div>
+      </article>
+      <article class="hx-scenario">
+        <div class="hx-scenario__top"><span class="hx-scenario__glyph"><svg class="hx-icon" aria-hidden="true"><use href="#i-qr"/></svg></span><span class="hx-badge hx-badge--warning"><span class="hx-badge__dot"></span>Awaiting review</span></div>
+        <div style="display:grid;gap:6px"><span class="hx-eyebrow">QR phishing</span><h4 class="hx-scenario__title">Parking permit renewal poster</h4><p class="hx-scenario__desc">A QR code leads to a safe page with a dummy sign-in form. No values are stored.</p></div>
+        <div class="hx-scenario__preview"><span>Landing <b>permits.sim-owned.example</b></span><span>Safety checks <b>5 of 5 passed</b></span></div>
+        <div class="hx-scenario__meta"><span class="hx-difficulty" data-level="1"><span class="hx-difficulty__dots" aria-hidden="true"><i></i><i></i><i></i></span>Easy</span><span class="hx-mono">DE · EN</span><span class="hx-mono">v1</span></div>
+        <div class="hx-scenario__actions"><button class="hx-btn hx-btn--sm" type="button" data-hx-toast="success" data-title="Scenario approved">Approve</button><button class="hx-btn hx-btn--outline hx-btn--sm" type="button">Request changes</button></div>
+      </article>
+    </div>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>Props</dt><dd>category, title, description, preview lines, approval badge, <code>.hx-difficulty[data-level=1|2|3]</code>, locales, version, actions.</dd><dt>Rules</dt><dd>Preview only shows fictional identities and owned domains. Approval actions appear only to customer admins.</dd></dl>
+</section>
+
+<section class="ds-sec" id="reportpreview">
+  <header><h3>ReportPreview <code>.hx-report</code></h3><p>The monthly summary as admins see it in the email and the dashboard. Figures are a frozen snapshot, so a later reclassification never rewrites a sent report.</p></header>
+  <div class="ds-demo" data-demo>
+    <article class="hx-report" style="max-width:720px">
+      <header class="hx-report__cover"><span class="hx-eyebrow">Monthly security summary</span><h4 class="hx-report__title">Kessler Wohnbau GmbH · October 2026</h4><span class="hx-report__period">01.10.2026 – 31.10.2026 · Europe/Berlin · snapshot rpt_2610_a1</span></header>
+      <dl class="hx-report__grid">
+        <div class="hx-report__metric"><dt>Employees targeted</dt><dd>412</dd></div>
+        <div class="hx-report__metric"><dt>Simulations sent</dt><dd>1,284</dd></div>
+        <div class="hx-report__metric"><dt>Verified interactions</dt><dd>62</dd></div>
+        <div class="hx-report__metric"><dt>High-risk replies</dt><dd>7</dd></div>
+      </dl>
+      <div class="hx-report__body">
+        <div class="ds-row"><span class="hx-risk" data-level="elevated"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Elevated · Finance</span><span class="hx-risk" data-level="guarded"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Guarded · Lettings</span><span class="hx-risk" data-level="low"><span class="hx-risk__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Low · Facility</span></div>
+        <div style="display:grid;gap:8px"><strong>Recommendations</strong>
+          <ul class="hx-report__recs"><li>Add a supplier-verification training moment for Finance; 5 of 7 risky replies came from this group.</li><li>Verification replies rose from 27 to 38. Share this in the next team update.</li><li>Fix SPF for the sender domain so the QR series can resume.</li></ul></div>
+        <p class="hx-help">Measured: sends, provider acceptance, bounces, signed-link visits, page interactions and replies to platform mailboxes. Not measured: inbox reads, internal forwarding or reports to your security team.</p>
+      </div>
+      <footer class="hx-report__foot"><a class="hx-link hx-link--arrow" href="#reportpreview">Open in dashboard <svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-arrow"/></svg></a><div class="hx-btn-group"><button class="hx-btn hx-btn--outline hx-btn--sm" type="button"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-download"/></svg>PDF</button><button class="hx-btn hx-btn--outline hx-btn--sm" type="button"><svg class="hx-icon hx-icon--sm" aria-hidden="true"><use href="#i-download"/></svg>CSV</button></div></footer>
+    </article>
+  </div>
+  <div class="ds-code"></div>
+  <dl class="ds-spec"><dt>Props</dt><dd>tenant, period, timezone, snapshot id, four headline metrics, group risk pills, recommendations, measurement note, export actions.</dd><dt>HTML</dt><dd>Metrics are a <code>&lt;dl&gt;</code>. The dashboard link always requires sign-in; there are no public report links.</dd><dt>Localization</dt><dd>All copy comes from the DE/EN/NL string tables; dates and numbers format by locale.</dd></dl>
+</section>
+
+</main>
+</div>
+</div>
+
+<footer class="ds-footer ds-pad"><div class="ds-wrap"><span>Helvax UI v0.3 · tokens.css · components.css · components.js</span><span>Example data is fictional.</span></div></footer>
+</div>
+
+<script>
+(function () {
+  /* Swatches */
+  document.querySelectorAll("[data-swatches]").forEach(function (box) {
+    box.getAttribute("data-swatches").split("|").forEach(function (entry) {
+      var p = entry.split(":"), name = p[0], use = p[1];
+      var b = document.createElement("button"); b.type = "button"; b.className = "ds-swatch";
+      var val = getComputedStyle(document.documentElement).getPropertyValue("--" + name).trim();
+      b.innerHTML = '<span class="ds-swatch__chip" style="background:var(--' + name + ')"></span><span class="ds-swatch__info"><b>--' + name + '</b><span class="hex"></span><i></i></span>';
+      b.querySelector(".hex").textContent = val; b.querySelector("i").textContent = use;
+      b.setAttribute("aria-label", "Copy --" + name + ", " + use);
+      b.addEventListener("click", function () { copy("var(--" + name + ")", "Copied var(--" + name + ")"); });
+      box.appendChild(b);
+    });
+  });
+  /* Spacing scale */
+  var sc = document.getElementById("space-scale");
+  [1,2,3,4,5,6,8,10,12,16,20,24].forEach(function (n) {
+    var px = getComputedStyle(document.documentElement).getPropertyValue("--space-" + n).trim();
+    var r = document.createElement("div"); r.className = "ds-scale__row";
+    r.innerHTML = "<span>--space-" + n + "</span><span>" + px + '</span><span class="ds-scale__bar" style="width:var(--space-' + n + ')"></span>';
+    sc.appendChild(r);
+  });
+  /* Icon grid */
+  var ig = document.getElementById("icon-grid");
+  ["helvax","block","checkc","scan","reply","signal","overview","users","target","activity","report","gear","search","bell","upload","download","check","x","plus","info","warn","calendar","arrow","menu","mail","qr","invoice","person","doc","pause","eye","more","sun","moon"].forEach(function (n) {
+    var d = document.createElement("div"); d.innerHTML = '<svg class="hx-icon" aria-hidden="true"><use href="#i-' + n + '"/></svg>' + n; ig.appendChild(d);
+  });
+  /* Motion */
+  var track = document.getElementById("motion-track");
+  document.querySelectorAll("[data-motion]").forEach(function (b) {
+    b.addEventListener("click", function () { track.style.setProperty("--d", b.getAttribute("data-motion")); track.toggleAttribute("data-on"); });
+  });
+  /* Viewport switcher for the app shell */
+  var frame = document.getElementById("shell-frame"), vps = document.querySelectorAll("[data-vp]");
+  vps.forEach(function (b) { b.addEventListener("click", function () { frame.style.maxWidth = b.getAttribute("data-vp"); vps.forEach(function (x) { x.setAttribute("aria-pressed", x === b); }); }); });
+
+  /* Code snippets: captured from each live demo before behaviour runs */
+  function dedent(s) {
+    var lines = s.replace(/^\n+|\s+$/g, "").split("\n");
+    var min = Math.min.apply(null, lines.filter(function (l) { return l.trim(); }).map(function (l) { return l.match(/^\s*/)[0].length; }));
+    return lines.map(function (l) { return l.slice(min); }).join("\n");
+  }
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function highlight(code) {
+    return esc(code).replace(/(&lt;\/?)([a-z0-9-]+)/g, '$1<span class="t">$2</span>').replace(/\s([a-z-:]+)=(&quot;|")/g, ' <span class="a">$1</span>=$2').replace(/(&lt;!--.*?--&gt;)/g, '<span class="c">$1</span>');
+  }
+  document.querySelectorAll("[data-demo]").forEach(function (demo) {
+    var code = dedent(demo.innerHTML.replace(/ data-demo=""/g, ""));
+    var host = demo.nextElementSibling; if (!host || !host.classList.contains("ds-code")) return;
+    var id = demo.parentElement.id;
+    host.innerHTML = '<div class="ds-code__bar"><button class="ds-code__toggle" type="button" aria-expanded="false" aria-controls="code-' + id + '">Show HTML</button><button class="hx-btn hx-btn--ghost hx-btn--sm" type="button" aria-label="Copy HTML for ' + id + '">Copy</button></div><pre id="code-' + id + '" tabindex="0" aria-label="HTML for ' + id + '" hidden><code></code></pre>';
+    host.querySelector("code").innerHTML = highlight(code);
+    var toggle = host.querySelector(".ds-code__toggle"), pre = host.querySelector("pre");
+    toggle.addEventListener("click", function () { var open = pre.hidden; pre.hidden = !open; toggle.setAttribute("aria-expanded", open); toggle.textContent = open ? "Hide HTML" : "Show HTML"; });
+    host.querySelector(".hx-btn").addEventListener("click", function () { copy(code, "HTML copied"); });
+  });
+
+  function copy(text, msg) {
+    var done = function () { window.HelvaxUI && HelvaxUI.toast({ tone: "success", title: msg, timeout: 2500 }); };
+    try { navigator.clipboard.writeText(text).then(done, function () { fallback(text); }); } catch (e) { fallback(text); }
+    function fallback(t) { var ta = document.createElement("textarea"); ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); done(); } catch (e2) {} ta.remove(); }
+  }
+
+  /* Showcase navbar menu (mobile) */
+  document.querySelectorAll("[data-ds-navtoggle]").forEach(function (b) { b.addEventListener("click", function () { var n = b.closest(".hx-navbar"), o = !n.hasAttribute("data-open"); n.toggleAttribute("data-open", o); b.setAttribute("aria-expanded", o); }); });
+
+  /* Index highlight */
+  var links = Array.prototype.slice.call(document.querySelectorAll(".ds-index a"));
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) links.forEach(function (l) { l.setAttribute("aria-current", l.getAttribute("href") === "#" + e.target.id); }); }); }, { rootMargin: "-20% 0px -70% 0px" });
+    document.querySelectorAll(".ds-sec").forEach(function (s) { io.observe(s); });
+  }
+  if (location.hash) { var t = document.getElementById(location.hash.slice(1)); if (t) setTimeout(function () { t.scrollIntoView(); }, 50); }
+})();
+</script>
+<script src="components.js"></script>
+</body>
+</html>
