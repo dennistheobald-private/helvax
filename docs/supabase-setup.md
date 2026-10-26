@@ -17,10 +17,10 @@ Authentication → Emails → Templates: in both **Magic Link** and **Confirm si
 
 ## 4. Send auth email through Resend
 Authentication → Emails → SMTP Settings → enable custom SMTP:
-- Host `smtp.resend.com`, port `465`, user `resend`, password = a Resend API key
+- Host `smtp.resend.com`, port `465`, user `resend`, password = the **Supabase SMTP** key from Resend
 - Sender `hello@mail.helvax.ch`, name `Helvax`
 
-The domain `mail.helvax.ch` must be verified in Resend first (Resend shows the DNS records).
+The domain `mail.helvax.ch` must be verified in Resend first. All Resend steps are in [resend-setup.md](resend-setup.md).
 
 ## 5. MFA
 Authentication → Multi-Factor → enable TOTP (App Authenticator). Owners and admins must use it; the app sends them to set it up after their first sign-in.
@@ -33,7 +33,7 @@ On the **app.helvax.ch** project:
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://bdslminoysfjsetgljlb.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | the `sb_publishable_…` key |
 | `NEXT_PUBLIC_APP_URL` | `https://app.helvax.ch` |
-| `RESEND_API_KEY` | Resend API key (for invitation emails) |
+| `RESEND_API_KEY` | the **app.helvax.ch** sending key from Resend (invitation emails) |
 
 On the **helvax.ch** project: `RESEND_API_KEY`, `DEMO_REQUEST_TO` (the inbox for demo requests) and `NEXT_PUBLIC_APP_URL`.
 
