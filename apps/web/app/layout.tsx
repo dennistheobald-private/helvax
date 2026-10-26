@@ -8,8 +8,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Helvax · Security awareness simulations", template: "%s · Helvax" },
-  description: "Continuous, realistic security-awareness simulations for your team. No mailbox connection needed: upload a roster and get a monthly report.",
+  title: { default: "Helvax · Realistic attacks. Verified results.", template: "%s · Helvax" },
+  description: "Security-awareness simulations that only count a failure when the evidence shows a real person took a risky action. No mailbox connection needed.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

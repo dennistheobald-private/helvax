@@ -15,7 +15,13 @@ export function SiteFooter() {
             <li><Link href="/privacy">Privacy</Link></li>
           </ul>
         </nav>
-        <small>© {new Date().getFullYear()} Helvax. Made in Switzerland.</small>
+        <small className="site-footer__made">
+          © {new Date().getFullYear()} Helvax. Made in Switzerland.
+          <svg className="swiss-flag" viewBox="0 0 32 32" role="img" aria-label="Swiss flag">
+            <rect width="32" height="32" rx="4" fill="#DA291C" />
+            <path fill="#FFFFFF" d="M13 6h6v7h7v6h-7v7h-6v-7H6v-6h7z" />
+          </svg>
+        </small>
       </div>
     </footer>
   );
