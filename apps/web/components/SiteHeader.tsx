@@ -1,0 +1,32 @@
+import Link from "next/link";
+import { AppIcon, Navbar, buttonClass } from "@helvax/ui/react";
+import { APP_URL } from "@/lib/urls";
+
+export function SiteHeader() {
+  return (
+    <div className="site-header">
+      <Navbar
+        label="Main"
+        brand={
+          <Link className="hx-navbar__brand" href="/">
+            <AppIcon size="sm" />
+            Helvax
+          </Link>
+        }
+        links={
+          <>
+            <li><Link href="/#how-it-works">How it works</Link></li>
+            <li><Link href="/#pricing">Pricing</Link></li>
+            <li><Link href="/#faq">FAQ</Link></li>
+          </>
+        }
+        actions={
+          <>
+            <a className={buttonClass({ variant: "ghost" })} href={`${APP_URL}/login`}>Log in</a>
+            <Link className={buttonClass({})} href="/#demo">Request demo</Link>
+          </>
+        }
+      />
+    </div>
+  );
+}

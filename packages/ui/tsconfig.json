@@ -1,0 +1,4 @@
+{
+  "extends": "@helvax/config/tsconfig.base.json",
+  "include": ["react/**/*.ts", "react/**/*.tsx"]
+}
