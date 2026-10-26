@@ -90,6 +90,20 @@ html, body { margin: 0; background: var(--warm); }
 .dial__eyebrow { font: 600 11px/1 var(--font-body); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
 .dial__scenario { font: var(--weight-bold) clamp(1.1rem, 0.9rem + 1vw, 1.5rem)/1.15 var(--font-display); letter-spacing: -0.03em; color: var(--ink); text-wrap: balance; }
 .dial__time { font: 600 var(--text-sm)/1 var(--font-mono); color: var(--brand-700); }
+/* Month strip: one cell per working day, filled where a test lands */
+.month { display: grid; gap: 6px; width: min(100%, 260px); margin: 8px auto 0; }
+.month__head, .month__grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.month__head span { text-align: center; font: 600 10px/1 var(--font-mono); color: var(--subtle); }
+.month__grid i { height: 14px; border-radius: 4px; background: var(--sunken); transition: background 300ms var(--ease), box-shadow 300ms var(--ease); }
+.month__grid i[data-test="next"] { background: color-mix(in srgb, var(--brand-500) 30%, var(--sunken)); }
+.month__grid i[data-test="done"] { background: color-mix(in srgb, var(--brand-500) 55%, var(--sunken)); }
+.month__grid i[data-test="now"] { background: var(--brand-500); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 25%, transparent); }
+@media (prefers-reduced-motion: no-preference) {
+  .month__grid i[data-test] { animation: drop 420ms var(--ease) both; }
+  .month__grid i[data-test="now"] { animation: drop 420ms var(--ease) both, beat var(--beat) var(--ease) infinite; }
+}
+@keyframes drop { from { transform: translateY(-8px) scale(0.6); opacity: 0; } }
+@keyframes beat { 0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 25%, transparent); } 50% { box-shadow: 0 0 0 6px transparent; } }
 .dial__legend { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .dial__pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: var(--soft); font-size: var(--text-sm); font-weight: 500; }
 .dial__swatch { width: 12px; height: 12px; border-radius: 50%; background: var(--brand-500); }
