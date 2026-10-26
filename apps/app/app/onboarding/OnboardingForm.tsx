@@ -17,7 +17,7 @@ export function OnboardingForm() {
         <select id="tz" name="timezone" className="hx-select" defaultValue="Europe/Zurich">
           {ZONES.map((z) => <option key={z} value={z}>{z.replace("_", " ")}</option>)}
         </select>
-        <span className="hx-help">Simulations are only sent inside business hours in this time zone.</span>
+        <span className="hx-help">Used for reports and the testing schedule.</span>
       </div>
       <Button type="submit" size="lg" block loading={pending}>Create company</Button>
     </form>
