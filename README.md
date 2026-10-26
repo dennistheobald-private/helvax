@@ -53,10 +53,10 @@ Vercel detects Next.js and pnpm on its own. Functions run in Frankfurt (`fra1`, 
 
 ## Roadmap
 
-1. Foundation: monorepo, React wrappers, app shells, Vercel (this step)
-2. Marketing site with animations and country-based pricing (CHF, or EUR in the EU)
-3. Supabase auth with MFA, tenants, teams and roles, schema with row-level security
-4. App screens on realistic seed data
+1. ✓ Foundation: monorepo, React wrappers, app shells, Vercel
+2. ✓ Marketing site with animations and country-based pricing (CHF, or EUR in the EU)
+3. ✓ Supabase auth with MFA, tenants, teams and roles, schema with row-level security
+4. ✓ Employees, company domains, scenario library, schedule, evidence-based results ([how results are verified](docs/verification.md)) and sample data
 5. Simulation engine with safety controls (no real sending before then)
 6. Monthly reports and exports
 7. Billing, German and Dutch, admin console, pilot

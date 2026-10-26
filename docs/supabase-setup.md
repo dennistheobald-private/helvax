@@ -34,6 +34,7 @@ On the **app.helvax.ch** project:
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | the `sb_publishable_…` key |
 | `NEXT_PUBLIC_APP_URL` | `https://app.helvax.ch` |
 | `RESEND_API_KEY` | the **app.helvax.ch** sending key from Resend (invitation emails) |
+| `SUPABASE_SECRET_KEY` | the `sb_secret_…` key (Supabase → Project Settings → API keys). Server-only, used to mark a company domain verified after its DNS check. Never prefix it with `NEXT_PUBLIC_`. |
 
 On the **helvax.ch** project: `RESEND_API_KEY`, `DEMO_REQUEST_TO` (the inbox for demo requests) and `NEXT_PUBLIC_APP_URL`.
 

@@ -1,0 +1,23 @@
+-- Starter scenario library. All identities are fictional and links point to
+-- Helvax-owned landing domains only. Every scenario is safe: no attachments,
+-- no real credential collection, no real payment instructions.
+
+insert into public.scenarios (slug, category, difficulty, title, description, subject, sender_name, preview, locales, approval_state) values
+  ('parcel-redelivery', 'phishing', 1, 'Parcel could not be delivered', 'A courier asks to reschedule a delivery through a link. Tests whether people check the sender before clicking.', 'Your parcel is waiting: choose a new delivery date', 'ParcelPoint Delivery', 'We tried to deliver your parcel today but nobody was available…', '{en,de}', 'approved'),
+  ('shared-document', 'document_link', 1, 'Colleague shared a document', 'A cloud-storage style notification about a shared spreadsheet. Tests link hovering and sender checks.', 'Q4 budget review.xlsx was shared with you', 'DocShare', 'Lukas shared a file with you. Open it before Friday''s meeting.', '{en,de,nl}', 'approved'),
+  ('password-expiry', 'credential_form', 2, 'Password expires today', 'An IT-style notice leads to a safe practice sign-in page with dummy fields. Nothing typed is stored.', 'Action required: your password expires in 24 hours', 'IT Service Desk', 'To keep access to your mailbox, confirm your password today…', '{en,de,nl}', 'approved'),
+  ('invoice-correction', 'supplier_fraud', 3, 'Invoice correction from a known supplier', 'A supplier asks finance to pay to new bank details. Tests whether people verify by phone before acting.', 'Corrected invoice 2026-1184: new bank details', 'Nordbau Supplies – Accounts', 'Please note our bank details have changed. Please use the corrected details for this and future payments…', '{en,de}', 'approved'),
+  ('overdue-reminder', 'supplier_fraud', 2, 'Overdue payment reminder', 'A polite but urgent reminder about an unpaid invoice with a link to a payment portal.', 'Second reminder: invoice 88412 is overdue', 'Alpine Office Supply', 'Our records show invoice 88412 is 14 days overdue. Please settle it today to avoid…', '{en,de}', 'approved'),
+  ('ceo-urgent-payment', 'executive_impersonation', 3, 'Urgent request from the CEO', 'A short message from a lookalike executive address asking for a confidential payment today.', 'Are you at your desk?', 'Managing Director', 'I need you to handle a confidential payment today before 3pm. Reply when you see this.', '{en,de}', 'approved'),
+  ('gift-cards', 'executive_impersonation', 2, 'Gift cards for a client event', 'An executive asks for gift card codes to be sent by reply. Tests whether people verify unusual requests.', 'Quick favour', 'Head of Sales', 'Can you buy 5 gift cards for a client event this afternoon? I''ll explain later.', '{en,de,nl}', 'approved'),
+  ('parking-permit-qr', 'qr_phishing', 1, 'Parking permit renewal poster', 'A QR code asks staff to renew their parking permit. It leads to a safe page with a dummy form.', 'New parking permits: scan to renew', 'Facility Management', 'All parking permits must be renewed by the end of the month. Scan the QR code…', '{en,de}', 'approved'),
+  ('mfa-reset-qr', 'qr_phishing', 2, 'Re-register your authenticator', 'An email with a QR code to "re-register" multi-factor authentication. Tests QR caution.', 'Security update: re-register your authenticator app', 'IT Security', 'Due to a security update you must re-register your authenticator by scanning…', '{en,de,nl}', 'approved'),
+  ('hr-policy-update', 'document_link', 2, 'Updated HR policy to sign', 'HR asks everyone to read and acknowledge an updated policy through a document link.', 'Please acknowledge the updated remote work policy', 'People & Culture', 'The remote work policy has been updated. Please read and confirm by Friday…', '{en,de,nl}', 'approved'),
+  ('voicemail', 'phishing', 2, 'New voicemail message', 'A voicemail notification with a "listen now" link. Tests unexpected-notification caution.', 'You have a new voicemail (0:42)', 'Voice Services', 'A caller left you a message. Listen to it online…', '{en,de}', 'approved'),
+  ('webmail-storage', 'credential_form', 1, 'Mailbox almost full', 'A storage warning leads to a safe practice sign-in page. No values are stored.', 'Your mailbox is 98% full', 'Mail Administrator', 'You will soon stop receiving new messages. Increase your storage now…', '{en,de,nl}', 'approved')
+on conflict (slug) do nothing;
+
+-- Existing companies get the new scenarios enabled by default.
+insert into public.tenant_scenarios (tenant_id, scenario_id)
+select t.id, s.id from public.tenants t cross join public.scenarios s where s.approval_state = 'approved'
+on conflict do nothing;
