@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AppIcon, Navbar, buttonClass } from "@helvax/ui/react";
+import { Logo, Navbar, buttonClass } from "@helvax/ui/react";
 import { APP_URL } from "@/lib/urls";
 
 export function SiteHeader() {
@@ -8,9 +8,8 @@ export function SiteHeader() {
       <Navbar
         label="Main"
         brand={
-          <Link className="hx-navbar__brand" href="/">
-            <AppIcon size="sm" />
-            Helvax
+          <Link className="hx-navbar__brand" href="/" aria-label="Helvax home">
+            <Logo height={26} title="Helvax" />
           </Link>
         }
         links={

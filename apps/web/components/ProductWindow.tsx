@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Icon, LogoMark, useCountUp, useInView, type BadgeTone, type IconName } from "@helvax/ui/react";
+import { Badge, Icon, Logo, LogoMark, useCountUp, useInView, type BadgeTone, type IconName } from "@helvax/ui/react";
 
 // The monthly report as it looks in app.helvax.ch, with a sample company and made-up data.
 // Built from the same Helvax UI classes as the app: sidebar, topbar, tabs, stat cards, table, badges.
@@ -33,7 +33,7 @@ export function ProductWindow() {
     <div ref={ref} className="pw hx-grain" data-in={inView || undefined}>
       <figure className="pw__window" aria-label="Example monthly report in the Helvax app, with made-up data">
         <aside className="pw__side hx-sidebar" aria-hidden="true">
-          <span className="hx-sidebar__brand"><LogoMark width={24} height={24} className="pw__logo" />helvax</span>
+          <span className="hx-sidebar__brand"><Logo height={22} className="pw__logo" /></span>
           <span className="pw__company"><span className="pw__company-icon">AB</span>Alpenbau AG<Icon name="arrow" size="sm" /></span>
           {NAV.map((group) => (
             <div key={group.label} className="hx-sidebar__section">

@@ -1,7 +1,7 @@
 export { cx } from "./cx";
 export { icons, type IconName } from "./icons";
 export { Icon, type IconProps } from "./Icon";
-export { LogoMark, AppIcon } from "./Logo";
+export { Logo, LogoMark, AppIcon } from "./Logo";
 export { Button, ButtonLink, buttonClass, type ButtonProps, type ButtonLinkProps } from "./Button";
 export { Badge, type BadgeTone } from "./Badge";
 export { Card, StatCard, type StatCardProps } from "./Card";

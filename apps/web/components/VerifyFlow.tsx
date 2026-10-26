@@ -1,12 +1,13 @@
 "use client";
 
-import { Badge, LogoMark, useInView, type BadgeTone } from "@helvax/ui/react";
+import { Icon, LogoMark, useInView } from "@helvax/ui/react";
 
 // Three things that can happen to one simulation, and how Helvax judges each. Example data.
-const LANES: { signal: string; verdict: string; tone: BadgeTone; counts?: boolean }[] = [
-  { signal: "Link opened 3 seconds after delivery", verdict: "Mail scanner", tone: "info" },
-  { signal: "Page opened, nothing else", verdict: "Inconclusive", tone: "outline" },
-  { signal: "Fake bank change confirmed", verdict: "Verified risky action", tone: "danger", counts: true },
+type Outcome = "filtered" | "none" | "risk";
+const LANES: { signal: string; outcome: Outcome; verdict: string; reason: string }[] = [
+  { signal: "Link opened 3 seconds after delivery", outcome: "filtered", verdict: "Filtered out", reason: "Automated mail scanner" },
+  { signal: "Page opened, nothing else", outcome: "none", verdict: "No verdict", reason: "Not enough evidence" },
+  { signal: "Fake bank change confirmed", outcome: "risk", verdict: "Counts as a risk", reason: "Confirmed by the employee" },
 ];
 
 export function VerifyFlow() {
@@ -14,14 +15,19 @@ export function VerifyFlow() {
   return (
     <ol ref={ref} className="vflow" data-in={inView || undefined} aria-label="How Helvax judges what happened">
       {LANES.map((l, i) => (
-        <li key={l.signal} className="vflow__lane" style={{ ["--i" as string]: i }}>
+        <li key={l.signal} className="vflow__lane" data-outcome={l.outcome} style={{ ["--i" as string]: i }}>
           <span className="vflow__signal">{l.signal}</span>
           <span className="vflow__wire" aria-hidden="true"><i /></span>
           <span className="vflow__hub" aria-hidden="true"><LogoMark width={18} height={18} /></span>
           <span className="vflow__wire" aria-hidden="true"><i /></span>
           <span className="vflow__verdict">
-            <Badge tone={l.tone}>{l.verdict}</Badge>
-            <small className={l.counts ? "vflow__counts" : undefined}>{l.counts ? "Counts" : "Not counted"}</small>
+            <span className="vflow__icon" aria-hidden="true">
+              {l.outcome === "filtered" ? <Icon name="scan" size="sm" /> : l.outcome === "risk" ? <Icon name="warn" size="sm" /> : <i className="vflow__dash" />}
+            </span>
+            <span className="vflow__text">
+              <strong>{l.verdict}</strong>
+              <small>{l.reason}</small>
+            </span>
           </span>
         </li>
       ))}
