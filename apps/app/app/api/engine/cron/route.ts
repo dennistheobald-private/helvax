@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { dispatchDue } from "@/lib/engine/dispatch";
+import { runMonthlyReports } from "@/lib/engine/reports";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -14,8 +15,8 @@ function authorized(request: NextRequest) {
 }
 
 // Runs the engine: closes observation windows, plans the next 30 days for companies that
-// are allowed to send, then sends what is due. Safe to run any time; with sending off
-// at any level it only closes windows.
+// are allowed to send, sends what is due, then builds and emails last month's reports.
+// Safe to run any time; with sending off at any level nothing is sent to employees.
 export async function GET(request: NextRequest) {
   if (!authorized(request)) return new NextResponse("Unauthorized", { status: 401 });
   const admin = createAdminClient();
@@ -26,5 +27,7 @@ export async function GET(request: NextRequest) {
     admin.rpc("engine_plan_all"),
   ]);
   const dispatched = await dispatchDue();
-  return NextResponse.json({ closed, planned, ...dispatched });
+  const origin = (process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin).replace(/\/$/, "");
+  const reports = await runMonthlyReports(origin);
+  return NextResponse.json({ closed, planned, ...dispatched, reports });
 }

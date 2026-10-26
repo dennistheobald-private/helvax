@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Icon } from "@helvax/ui/react";
 import { OutcomeBar } from "@/components/OutcomeBar";
+import { PrintButton } from "@/components/PrintButton";
 import type { ReportSnapshot } from "@/lib/database.types";
 import { count, formatMonth, rate } from "@/lib/results";
 import { requireSession } from "@/lib/session";
@@ -34,7 +36,13 @@ export default async function ReportPage({ params }: { params: Promise<{ period:
 
   return (
     <div className="page">
-      <Link className="hx-link back-link" href="/reports">← All reports</Link>
+      <div className="report-actions">
+        <Link className="hx-link back-link" href="/reports">← All reports</Link>
+        <div className="report-actions__buttons">
+          <a className="hx-btn hx-btn--outline" href={`/reports/${period}/csv`} download><Icon name="doc" size="sm" />Download CSV</a>
+          <PrintButton />
+        </div>
+      </div>
       <article className="hx-report report-full">
         <header className="hx-report__cover">
           <span className="hx-eyebrow">Monthly security summary{report.is_demo ? " · sample data" : ""}</span>
