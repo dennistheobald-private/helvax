@@ -1,0 +1,61 @@
+# Simulation engine and safety controls
+
+The engine plans, sends and observes simulations. It is built so that nothing reaches an employee unless several independent people and checks allow it. **Sending is off.** Turning it on is Dennis's decision.
+
+## The switches
+
+Every message needs all of these. Any one of them off means nothing is sent.
+
+| Switch | Who | Where |
+| --- | --- | --- |
+| Platform sending | Helvax superadmin with MFA | `set_platform_sending(true)`; off by default. Turning it off returns queued messages to planned |
+| Company approval | Helvax superadmin with MFA, after the safety review | `approve_tenant_sending(t, true)`. Revoking it also turns the company off and cancels planned simulations |
+| Awareness notice | Company owner with MFA | Simulations page, "I confirm employees were informed" |
+| Company sending | Owner with MFA turns it on, any admin turns it off | Simulations page. Turning off cancels everything planned |
+
+Then, for every single message, `engine_claim_due` checks again: the employee is active and not excluded, their domain is verified, the address isn't suppressed after a bounce or complaint, the scenario is approved and turned on, and the message is not more than a day late. Sample data is never sent.
+
+## How it runs
+
+`GET /api/engine/cron` (with `Authorization: Bearer $CRON_SECRET`) does three things:
+
+1. Closes observation windows: results still pending 72 hours after sending are decided.
+2. Plans the next 30 days for companies that are allowed to send: a random business day and time per person, inside the schedule, at least the cooldown apart, with the scenario they've seen least recently.
+3. Sends what is due through Resend, from the simulation domain, with a signed link and a signed reply address. Messages carry the header `X-Helvax-Simulation: 1`, so a company's gateway can recognise them.
+
+No schedule is configured yet. When sending is released, add a Vercel cron for this route (every 15 minutes needs a Pro plan) or call it from Supabase `pg_cron`.
+
+## Practice pages
+
+Links go to `https://$SIMULATION_HOST/p/<token>`. Once `SIMULATION_HOST` is set, that domain serves only practice pages, and practice pages are served nowhere else. They never read or set Helvax sign-in cookies.
+
+- Opening the link records a link request (L1), labelled scanner, automation or unknown from the user agent, the request method and the time since delivery.
+- JavaScript reports pointer and key activity; only then can later steps be attributed to a person.
+- Pressing the first button records a deliberate interaction (L2).
+- Submitting the practice form records the completed action (L3). **The fields have no names, are cleared on submit and are never read or sent.** Only the fact that the step happened is recorded.
+- The page then says it was a simulation from the company, with tips (the training moment).
+
+## Replies and bounces
+
+`POST /api/engine/inbound` receives Resend webhooks, verified with `RESEND_WEBHOOK_SECRET`:
+
+- `email.received` to `r<token>@$SIMULATION_REPLY_DOMAIN`: the reply's own words (quotes and signatures removed) are classified by deterministic rules in English, German and Dutch (`lib/engine/classify.ts`, `rules-v1`). Only a 280-character excerpt is stored. Risky and ambiguous replies wait for review before they can count.
+- `email.bounced` and `email.complained`: the simulation is marked undelivered and the address suppressed.
+
+## Environment variables (app.helvax.ch project)
+
+| Name | Value |
+| --- | --- |
+| `SIMULATION_TOKEN_SECRET` | 32+ random characters, e.g. `openssl rand -hex 32`. Changing it invalidates all links |
+| `SIMULATION_HOST` | the simulation domain, e.g. `secure-notice.example`, pointed at the app project |
+| `SIMULATION_FROM_DOMAIN` | the sending domain, verified in Resend |
+| `SIMULATION_REPLY_DOMAIN` | the domain whose inbound mail Resend forwards to `/api/engine/inbound` |
+| `RESEND_WEBHOOK_SECRET` | the signing secret of that webhook (`whsec_…`) |
+| `CRON_SECRET` | random secret for the cron route |
+
+## Before the first real send
+
+- Choose and register the simulation domains (separate from helvax.ch), set up SPF, DKIM and DMARC in Resend.
+- Run a pilot with Helvax's own addresses, with the platform switch on only for that pilot company.
+- Review the practice pages and emails in German and Dutch (phase 7).
+- Dennis decides when the platform switch goes on.

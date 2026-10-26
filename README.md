@@ -57,6 +57,6 @@ Vercel detects Next.js and pnpm on its own. Functions run in Frankfurt (`fra1`, 
 2. ✓ Marketing site with animations and country-based pricing (CHF, or EUR in the EU)
 3. ✓ Supabase auth with MFA, tenants, teams and roles, schema with row-level security
 4. ✓ Employees, company domains, scenario library, schedule, evidence-based results ([how results are verified](docs/verification.md)) and sample data
-5. Simulation engine with safety controls (no real sending before then)
+5. ✓ Simulation engine with safety controls ([how sending is controlled](docs/engine.md)); sending stays off until released
 6. Monthly reports and exports
 7. Billing, German and Dutch, admin console, pilot

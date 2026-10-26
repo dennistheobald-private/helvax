@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { Button } from "@helvax/ui/react";
 import type { SimulationSettings } from "@/lib/database.types";
-import { updateSettings } from "./actions";
+import { setSending, updateSettings } from "./actions";
 
 const DAYS = [[1, "Mon"], [2, "Tue"], [3, "Wed"], [4, "Thu"], [5, "Fri"], [6, "Sat"], [7, "Sun"]] as const;
 const FREQUENCY = [
@@ -75,6 +75,21 @@ export function SettingsForm({ settings, disabled }: { settings: SimulationSetti
           {state.ok && <p className="form-status" role="status">{state.ok}</p>}
         </div>
       )}
+    </form>
+  );
+}
+
+export function SendingSwitch({ enabled, canTurnOn, canTurnOff }: { enabled: boolean; canTurnOn: boolean; canTurnOff: boolean }) {
+  const [state, action, pending] = useActionState(setSending, {});
+  const allowed = enabled ? canTurnOff : canTurnOn;
+  return (
+    <form action={action} className="sending__switch">
+      <input type="hidden" name="enabled" value={String(!enabled)} />
+      <Button type="submit" variant={enabled ? "destructive" : "primary"} loading={pending} disabled={!allowed}>
+        {enabled ? "Stop sending now" : "Turn sending on"}
+      </Button>
+      {state.error && <p className="form-status form-status--error" role="alert">{state.error}</p>}
+      {state.ok && <p className="form-status" role="status">{state.ok}</p>}
     </form>
   );
 }

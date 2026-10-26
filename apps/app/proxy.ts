@@ -3,6 +3,9 @@ import { updateSession } from "./lib/supabase/proxy";
 
 // Pages anyone can open without being signed in.
 const PUBLIC = ["/login", "/auth/"];
+// Practice pages and engine endpoints: no sign-in, and Helvax session cookies are never
+// read or set there.
+const ENGINE = ["/p/", "/api/engine/"];
 
 function contentSecurityPolicy(nonce: string): string {
   const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -29,9 +32,26 @@ export async function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("Content-Security-Policy", csp);
+  const { pathname, search } = request.nextUrl;
+
+  // On the simulation domain only practice pages exist. Once that domain is set up,
+  // practice pages are served nowhere else.
+  const simHost = process.env.SIMULATION_HOST;
+  const onSimHost = Boolean(simHost) && request.headers.get("host") === simHost;
+  const isPractice = pathname.startsWith("/p/");
+  if (simHost && onSimHost !== isPractice) {
+    return new NextResponse("Not found", { status: 404 });
+  }
+  if (ENGINE.some((p) => pathname.startsWith(p))) {
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
+    response.headers.set("Content-Security-Policy", csp);
+    response.headers.set("Referrer-Policy", "no-referrer");
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    response.headers.set("Cache-Control", "no-store");
+    return response;
+  }
 
   const { response, userId } = await updateSession(request, requestHeaders);
-  const { pathname, search } = request.nextUrl;
 
   if (!userId && !PUBLIC.some((p) => pathname.startsWith(p))) {
     const url = request.nextUrl.clone();

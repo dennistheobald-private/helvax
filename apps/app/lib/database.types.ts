@@ -14,7 +14,7 @@ type Table<Row, Insert = Partial<Row>, Update = Partial<Row>, Relationships exte
 };
 
 export type Profile = { id: string; email: string; full_name: string; locale: string; is_superadmin: boolean; created_at: string };
-export type Tenant = { id: string; name: string; timezone: string; locale: string; status: TenantStatus; created_at: string };
+export type Tenant = { id: string; name: string; timezone: string; locale: string; status: TenantStatus; created_at: string; awareness_confirmed_at: string | null; sending_approved_at: string | null };
 export type Membership = { tenant_id: string; user_id: string; role: MemberRole; created_at: string };
 export type Invitation = { id: string; tenant_id: string; email: string; role: MemberRole; token_hash: string; invited_by: string | null; expires_at: string; accepted_at: string | null; created_at: string };
 export type AuditLog = { id: number; tenant_id: string | null; actor_id: string | null; action: string; target: string | null; metadata: Record<string, unknown>; created_at: string };
@@ -75,6 +75,11 @@ export type ReportSnapshot = {
 };
 export type Report = { id: string; tenant_id: string; period: string; snapshot: ReportSnapshot; created_at: string; sent_at: string | null; is_demo: boolean };
 
+export type PlatformSettings = { id: boolean; sending_enabled: boolean; updated_at: string; updated_by: string | null };
+export type SendingBlocker = "platform_off" | "not_approved" | "awareness_not_confirmed" | "no_verified_domain" | "no_scenarios" | "no_eligible_employees" | "sample_data_loaded";
+export type SendingReadiness = { sending_enabled: boolean; platform_enabled: boolean; approved_at: string | null; awareness_confirmed_at: string | null; blockers: SendingBlocker[]; planned: number };
+export type DueSimulation = { simulation_id: string; tenant_id: string; email: string; first_name: string; last_name: string; locale: string; scenario_slug: string; subject: string; sender_name: string; preview: string };
+
 export type OutcomeSummary = { sent: number; eligible: number; outcomes: Partial<Record<OutcomeResult, number>> };
 export type EmployeeStats = { employee_id: string; simulations: number; verified_risky: number; verified_safe: number; last_sent_at: string | null };
 
@@ -108,6 +113,7 @@ export type Database = {
       outcome_decisions: Table<OutcomeDecision, never, never, [FK<"outcome_decisions_decided_by_fkey", "decided_by", "profiles">]>;
       outcomes: Table<Outcome, never, never, [{ foreignKeyName: "outcomes_simulation_id_fkey"; columns: ["simulation_id"]; isOneToOne: true; referencedRelation: "simulations"; referencedColumns: ["id"] }]>;
       reports: Table<Report, never, never>;
+      platform_settings: Table<PlatformSettings, never, never>;
     };
     Views: Record<string, never>;
     Functions: {
@@ -119,6 +125,21 @@ export type Database = {
       review_outcome: { Args: { sim: string; confirm: boolean; note: string }; Returns: undefined };
       outcome_summary: { Args: { t: string; since: string; until?: string }; Returns: OutcomeSummary };
       employee_stats: { Args: { t: string }; Returns: EmployeeStats[] };
+      sending_readiness: { Args: { t: string }; Returns: SendingReadiness };
+      confirm_awareness_notice: { Args: { t: string }; Returns: undefined };
+      set_sending_enabled: { Args: { t: string; enabled: boolean }; Returns: undefined };
+      set_platform_sending: { Args: { enabled: boolean }; Returns: undefined };
+      approve_tenant_sending: { Args: { t: string; approved: boolean }; Returns: undefined };
+      // Service role only.
+      engine_plan_all: { Args: Record<string, never>; Returns: number };
+      engine_claim_due: { Args: { max_count?: number }; Returns: DueSimulation[] };
+      engine_mark_sent: { Args: { sim: string; accepted: boolean; provider_signals?: Record<string, unknown> }; Returns: undefined };
+      engine_mark_bounced: { Args: { provider_id: string; complaint?: boolean }; Returns: undefined };
+      engine_start_session: { Args: { sim: string; ip_hash: string | null; user_agent_family: string; network_class: string }; Returns: string };
+      engine_touch_session: { Args: { session: string; pointer_events: number }; Returns: undefined };
+      engine_record: { Args: { sim: string; session: string | null; kind: EventType; who: EventActor; detection?: Record<string, unknown>; simulated_action?: string | null }; Returns: string };
+      engine_record_reply: { Args: { sim: string; category: ReplyCategory; confidence: number; rule_hits: string[]; marker_found: boolean; classifier_version: string; excerpt: string }; Returns: string };
+      engine_close_windows: { Args: Record<string, never>; Returns: number };
     };
     Enums: { member_role: MemberRole; tenant_status: TenantStatus; employee_status: EmployeeStatus; outcome_result: OutcomeResult; reply_category: ReplyCategory };
     CompositeTypes: Record<string, never>;
