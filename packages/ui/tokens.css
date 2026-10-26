@@ -1,0 +1,125 @@
+/* ==========================================================================
+   Helvax UI · Design tokens
+   Orange-first identity for the security simulation platform.
+   Light only, by design: one calm, bright theme for app and marketing.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Brand ---------------------------------------------------------------- */
+  --brand-500: #F36B32;   /* signature orange: fills, accents, focus rings */
+  --brand-600: #D94F1C;   /* hover/pressed fill; large text on white only (4.1:1) */
+  --brand-700: #B4400F;   /* orange TEXT on white or brand-100 (5.7:1, AA) */
+  --brand-100: #FFF0E8;   /* subtle orange background */
+  --brand-50:  #FFF8F4;
+  --on-brand:  #17191D;   /* text on brand-500: dark ink, 5.8:1 */
+
+  /* Neutrals (warm-biased, never pure grey) ------------------------------- */
+  --ink:     #17191D;     /* ink-950: headings, dark sections */
+  --muted:   #444850;     /* ink-700: secondary text */
+  --subtle:  #6B6F78;     /* placeholder, captions (5.0:1 on white) */
+  --canvas:  #FFFFFF;     /* main UI surface */
+  --warm:    #F7F6F4;     /* warm-50: page / marketing background */
+  --sunken:  #F3F1ED;     /* wells, table headers, skeletons */
+  --border:  #E6E5E1;     /* line: dividers and borders */
+  --soft:    #EFEEEB;     /* soft grey pill: secondary buttons, badges */
+  --soft-hover: #E5E3DF;
+  --headline-2: #8E8D92;  /* grey second line of a display headline (large text only, 3.3:1) */
+  --cloud-1: #FFE1CF;     /* hero cloud: peach */
+  --cloud-2: #F4EEE8;     /* hero cloud: warm haze */
+  --nav-bg:  #FFFFFF;     /* floating navbar */
+  --nav-fg:  #2B2D33;
+  --stone-1: #EDEBE9;     /* warm stone panel ground */
+  --stone-2: #F1EAE6;
+  --border-strong: #CFCDC7;
+  --overlay: rgb(23 25 29 / 0.48);
+
+  /* Semantics (each ships with an icon + label, never color alone) ------- */
+  --success: #157A55;  --success-soft: #E7F4EE;
+  --warning: #A96608;  --warning-soft: #FBF1E1;
+  --danger:  #C13F3F;  --danger-soft:  #FBEAEA;
+  --info:    #2563A6;  --info-soft:    #E8F0F9;
+
+  /* Charts: restrained neutrals, orange for the highlighted series -------- */
+  --chart-highlight: var(--brand-500);
+  --chart-neutral:   #8E9199;
+  --chart-grid:      #ECEAE6;
+  --chart-axis:      var(--subtle);
+
+  /* Typography ------------------------------------------------------------ */
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body:    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:    "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --text-xs:   0.75rem;   /* 12 */
+  --text-sm:   0.875rem;  /* 14 */
+  --text-md:   1rem;      /* 16 */
+  --text-lg:   1.125rem;  /* 18 */
+  --text-xl:   1.375rem;  /* 22 */
+  --text-2xl:  1.75rem;   /* 28 */
+  --text-3xl:  clamp(1.75rem, 1.2rem + 1.8vw, 2.5rem);  /* 28–40 section */
+  --text-4xl:  clamp(2.25rem, 1.4rem + 3.4vw, 4.5rem);  /* 36–72 display */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-heavy: 800;
+
+  --leading-tight: 1.08;
+  --leading-snug: 1.3;
+  --leading-body: 1.55;
+  --tracking-display: -0.025em;
+  --tracking-label: 0.08em;
+
+  /* Spacing: 8px grid, 4px micro steps ------------------------------------ */
+  --space-1: 4px;   --space-2: 8px;   --space-3: 12px;  --space-4: 16px;
+  --space-5: 20px;  --space-6: 24px;  --space-8: 32px;  --space-10: 40px;
+  --space-12: 48px; --space-16: 64px; --space-20: 80px; --space-24: 96px;
+
+  /* Radii ----------------------------------------------------------------- */
+  --radius-xs: 4px;
+  --radius-control: 12px;   /* inputs, selects */
+  --radius-btn: 999px;      /* buttons are pills */
+  --radius-card-sm: 14px;
+  --radius-card: 20px;
+  --radius-panel: 28px;     /* hero panels, dialogs, floating nav */
+  --radius-pill: 999px;
+
+  /* Borders & shadows (minimal) ------------------------------------------ */
+  --border-width: 1px;
+  --shadow-xs: 0 1px 2px rgb(23 25 29 / 0.04);
+  --shadow-sm: 0 1px 2px rgb(23 25 29 / 0.03), 0 10px 30px -14px rgb(23 25 29 / 0.14);
+  --shadow-md: 0 2px 6px rgb(23 25 29 / 0.04), 0 20px 48px -16px rgb(23 25 29 / 0.18);
+  --shadow-lg: 0 32px 80px -20px rgb(23 25 29 / 0.32);
+  /* soft orange glow under primary pills and the app icon */
+  --glow-brand: 0 10px 28px -8px rgb(243 107 50 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.28), inset 0 -1px 0 rgb(0 0 0 / 0.08);
+  --glow-brand-hover: 0 14px 34px -8px rgb(243 107 50 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.3), inset 0 -1px 0 rgb(0 0 0 / 0.08);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--brand-500);
+
+  /* Control sizing -------------------------------------------------------- */
+  --control-h: 44px;      /* minimum hit area */
+  --control-h-sm: 36px;   /* dense tables only; keep 44px touch target via padding */
+
+  /* Motion ---------------------------------------------------------------- */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur: 200ms;
+  --dur-slow: 250ms;
+
+  /* Layout ---------------------------------------------------------------- */
+  --bp-sm: 640px;   /* 4-col mobile below this */
+  --bp-md: 960px;   /* 8-col tablet */
+  --bp-lg: 1280px;  /* 12-col desktop */
+  --container: 1240px;
+  --sidebar-w: 248px;
+  --topbar-h: 64px;
+
+  /* Z-index scale --------------------------------------------------------- */
+  --z-sticky: 20; --z-drawer: 40; --z-dialog: 50; --z-toast: 60; --z-tooltip: 70;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur: 0ms; --dur-slow: 0ms; }
+}
