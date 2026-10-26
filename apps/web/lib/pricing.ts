@@ -2,9 +2,10 @@
 
 export const PRICE_CHF = {
   helvax: { monthly: 2, annual: 12 },
-  // TODO(Dennis): Pro price is a placeholder until it's decided.
-  pro: { monthly: 4, annual: 24 },
 } as const;
+
+/** Helvax Pro has no list price yet; set one here (e.g. { monthly: 4, annual: 24 }) to show it. */
+export const PRO_PRICE_CHF: Price | null = null;
 
 /** Employees included in the Free plan. */
 export const FREE_EMPLOYEES = 1;
@@ -50,15 +51,16 @@ export interface Price {
 export interface PriceList {
   currency: Currency;
   helvax: Price;
-  pro: Price;
+  /** Null while Pro is priced on request. */
+  pro: Price | null;
 }
 
 export async function priceListFor(country: string | null | undefined): Promise<PriceList> {
   const currency = currencyFor(country);
-  if (currency === "CHF") return { currency, ...PRICE_CHF };
+  if (currency === "CHF") return { currency, helvax: PRICE_CHF.helvax, pro: PRO_PRICE_CHF };
   const rate = await chfToEur();
   const convert = (p: Price): Price => ({ monthly: Math.round(p.monthly * rate * 100) / 100, annual: Math.round(p.annual * rate * 100) / 100 });
-  return { currency, helvax: convert(PRICE_CHF.helvax), pro: convert(PRICE_CHF.pro) };
+  return { currency, helvax: convert(PRICE_CHF.helvax), pro: PRO_PRICE_CHF && convert(PRO_PRICE_CHF) };
 }
 
 /** Formats a price the same way on server and browser (Intl output differs between ICU versions). */

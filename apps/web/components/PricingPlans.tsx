@@ -53,13 +53,14 @@ export function PricingPlans({ prices }: { prices: PriceList }) {
       limit: "Any number of employees", foot: "For teams of every size",
     },
     {
-      key: "pro", name: "Helvax Pro", price: paid(prices.pro), featured: true,
+      key: "pro", name: "Helvax Pro", featured: true,
+      price: prices.pro ? paid(prices.pro) : () => ({ amount: "On request", note: "Priced with you for your team size" }),
       features: [
         { text: "Everything in Helvax" },
         { text: "Deepfake voice simulations", soon: true, tip: "Calls in a cloned executive voice, made only from samples your company provides and approves." },
         { text: "Kick-off call on request", tip: "A call with our team to set goals, scenarios and the testing rhythm." },
       ],
-      cta: { label: "Request a demo", href: "/#demo" },
+      cta: { label: prices.pro ? "Request a demo" : "Talk to us", href: "/#demo" },
       limit: "Any number of employees", foot: "Fraud protection beyond email",
     },
     {
