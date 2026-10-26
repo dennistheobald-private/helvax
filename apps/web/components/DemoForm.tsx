@@ -25,7 +25,7 @@ export function DemoForm() {
       </div>
       <div className="demo__row">
         <Field label="Company" name="company" autoComplete="organization" required error={f.company} />
-        <Field label="Number of employees" name="employees" inputMode="numeric" help="Optional" />
+        <Field label={<>Number of employees <span className="hx-optional">Optional</span></>} name="employees" inputMode="numeric" />
       </div>
       <div className="hx-field">
         <label className="hx-label" htmlFor="demo-message">What would you like to see? <span className="hx-optional">Optional</span></label>

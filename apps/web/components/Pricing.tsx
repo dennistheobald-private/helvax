@@ -7,9 +7,9 @@ import { formatCount, formatMoney, type PriceList } from "@/lib/pricing";
 const included = [
   "All scenario types: phishing, supplier fraud, executive impersonation, QR and document links",
   "Randomized sending inside your business hours",
-  "Scanner visits labelled apart from human clicks",
+  "Verified risky action rate, with scanners filtered out",
   "Monthly report by email, with PDF and CSV export",
-  "Short training moment after a risky click",
+  "Short learning moment right after a risky action",
   "Admin and viewer roles, MFA for admins",
 ];
 
