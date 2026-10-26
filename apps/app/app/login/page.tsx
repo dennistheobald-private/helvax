@@ -1,24 +1,21 @@
 import type { Metadata } from "next";
-import { Alert, Button, Field, LogoMark } from "@helvax/ui/react";
+import { redirect } from "next/navigation";
+import { AuthCard } from "@/components/AuthCard";
+import { getUser } from "@/lib/session";
+import { safeNext } from "@/lib/urls";
+import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = { title: "Log in" };
 
-export default function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
+  const { next, error } = await searchParams;
+  const target = safeNext(next);
+  if (await getUser()) redirect(target);
+
   return (
-    <div className="login">
-      <div className="login__card hx-card">
-        <span className="login__brand"><LogoMark width={28} height={28} />helvax</span>
-        <div>
-          <h1 className="login__title">Log in</h1>
-          <p className="login__lead">We&apos;ll email you a one-time sign-in link. Admins confirm with their authenticator app.</p>
-        </div>
-        {/* Phase 3 wires this form to Supabase Auth (email OTP + TOTP MFA). */}
-        <form className="login__form" action="#">
-          <Field label="Work email" type="email" name="email" autoComplete="email" required placeholder="name@company.ch" />
-          <Button type="submit" size="lg" block disabled>Email me a link</Button>
-        </form>
-        <Alert title="Sign-in isn&apos;t connected yet">This preview shows the app layout with sample screens.</Alert>
-      </div>
-    </div>
+    <AuthCard title="Log in" lead="We'll email you a one-time code. Admins then confirm with their authenticator app.">
+      {error && <div className="hx-alert hx-alert--danger" role="alert"><div><div className="hx-alert__title">That link didn&apos;t work</div><div className="hx-alert__body">It may have expired or been used already. Request a new code below.</div></div></div>}
+      <LoginForm next={target} />
+    </AuthCard>
   );
 }
