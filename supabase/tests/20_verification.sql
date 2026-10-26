@@ -39,7 +39,9 @@ select pg_temp.fails($$insert into public.employees (tenant_id, email, first_nam
 select pg_temp.fails($$update public.simulation_settings set sending_enabled = true where tenant_id = '$$ || :'d' || $$'$$, 'the sending switch cannot be flipped directly');
 reset role;
 select pg_temp.as_user('00000000-0000-0000-0000-0000000000d2');
-select pg_temp.fails($$select public.create_tenant('Gmail Fans')$$, 'a public email provider cannot be a company domain');
+select public.create_tenant('Gmail Fans') \gset g_
+reset role;
+select pg_temp.check(not exists (select 1 from public.company_domains where tenant_id = :'g_create_tenant'), 'a public email provider is never added as a company domain');
 reset role;
 
 -- Sample data
