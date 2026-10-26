@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import type { MemberRole } from "@/lib/database.types";
 import { emailLayout, p, strong } from "@helvax/ui/email";
 import { escapeHtml, sendEmail } from "@/lib/email";
+import { allow } from "@/lib/ratelimit";
 import { requireSession } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { appOrigin } from "@/lib/urls";
@@ -49,6 +50,7 @@ export async function inviteMember(_prev: FormState, form: FormData): Promise<Fo
   if (!EMAIL.test(email)) return { error: "Enter a valid email address." };
   if (role !== "viewer" && role !== "admin") return { error: "Choose a role." };
   if (role === "admin" && !s.isOwner) return { error: "Only owners can invite admins." };
+  if (!(await allow("invite", s.tenant.id, 50, 86400))) return { error: "Too many invitations today. Try again tomorrow." };
 
   const token = randomBytes(32).toString("base64url");
   const tokenHash = createHash("sha256").update(token).digest("hex");

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { detectRequest, pageActor } from "@/lib/engine/detect";
 import { ACTIONS, loadLanding } from "@/lib/engine/landing";
 import { verifyToken } from "@/lib/engine/token";
+import { allow, clientIp } from "@/lib/ratelimit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const KINDS = ["js", "interaction", "action", "training"] as const;
@@ -17,6 +18,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (Number(request.headers.get("content-length") ?? 0) > 512) return none;
   const origin = request.headers.get("origin");
   if (origin && origin !== request.nextUrl.origin) return none;
+  if (!(await allow("practice-ip", await clientIp(request.headers), 120, 60))) return none;
 
   const body = (await request.json().catch(() => null)) as { s?: unknown; k?: unknown; p?: unknown } | null;
   const simulationId = verifyToken("link", token);

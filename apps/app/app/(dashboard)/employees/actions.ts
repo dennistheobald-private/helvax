@@ -4,6 +4,7 @@ import { resolveTxt } from "node:dns/promises";
 import { revalidatePath } from "next/cache";
 import type { EmployeeStatus } from "@/lib/database.types";
 import { toLocale, type Locale } from "@/lib/engine/practice-copy";
+import { allow } from "@/lib/ratelimit";
 import { requireSession } from "@/lib/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -242,6 +243,7 @@ export async function verifyDomain(_prev: FormState, form: FormData): Promise<Fo
     .eq("tenant_id", ctx.s.tenant.id).eq("id", String(form.get("id"))).single();
   if (!d) return { error: "Domain not found." };
   if (d.verified_at) return { ok: `${d.domain} is verified.` };
+  if (!(await allow("verify-domain", ctx.s.tenant.id, 30, 3600))) return { error: "Too many checks. Wait a while and try again." };
 
   let records: string[][] = [];
   try {

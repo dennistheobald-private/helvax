@@ -164,6 +164,7 @@ export type Database = {
       engine_build_reports: { Args: { as_of?: string }; Returns: number };
       engine_reports_to_send: { Args: Record<string, never>; Returns: { report_id: string; tenant_id: string; tenant_name: string; period: string; snapshot: ReportSnapshot; recipients: string[] }[] };
       engine_mark_report_sent: { Args: { report: string }; Returns: undefined };
+      rate_limit_hit: { Args: { bucket: string; max_hits: number; window_seconds: number }; Returns: boolean };
     };
     Enums: { member_role: MemberRole; tenant_status: TenantStatus; employee_status: EmployeeStatus; outcome_result: OutcomeResult; reply_category: ReplyCategory };
     CompositeTypes: Record<string, never>;

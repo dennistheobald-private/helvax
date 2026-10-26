@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { allow } from "@/lib/ratelimit";
 import { TENANT_COOKIE } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,6 +13,9 @@ export async function createCompany(_prev: { error?: string }, form: FormData): 
   if (!Intl.supportedValuesOf("timeZone").includes(timezone)) return { error: "Choose a time zone." };
 
   const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) redirect("/login");
+  if (!(await allow("create-tenant", auth.user.id, 5, 86400))) return { error: "Too many companies created today. Try again tomorrow." };
   const { data, error } = await supabase.rpc("create_tenant", { tenant_name: name, tenant_timezone: timezone });
   if (error || !data) return { error: "We couldn't create the company. Try again." };
 
