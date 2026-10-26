@@ -76,7 +76,7 @@ export type ReportSnapshot = {
 export type Report = { id: string; tenant_id: string; period: string; snapshot: ReportSnapshot; created_at: string; sent_at: string | null; is_demo: boolean };
 
 export type PlatformSettings = { id: boolean; sending_enabled: boolean; updated_at: string; updated_by: string | null };
-export type SendingBlocker = "platform_off" | "not_approved" | "awareness_not_confirmed" | "no_verified_domain" | "no_scenarios" | "no_eligible_employees";
+export type SendingBlocker = "platform_off" | "not_approved" | "awareness_not_confirmed" | "no_verified_domain" | "no_scenarios" | "no_eligible_employees" | "sample_data_loaded";
 export type SendingReadiness = { sending_enabled: boolean; platform_enabled: boolean; approved_at: string | null; awareness_confirmed_at: string | null; blockers: SendingBlocker[]; planned: number };
 export type DueSimulation = { simulation_id: string; tenant_id: string; email: string; first_name: string; last_name: string; locale: string; scenario_slug: string; subject: string; sender_name: string; preview: string };
 

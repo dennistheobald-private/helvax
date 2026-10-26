@@ -184,7 +184,9 @@ language sql stable security definer set search_path = '' as $$
       select 1 from public.employees e
       join public.company_domains d on d.tenant_id = e.tenant_id and d.domain = private.email_domain(e.email) and d.verified_at is not null
       where e.tenant_id = t and e.status = 'active' and e.consent_scope = 'standard' and not e.is_demo
-    ) then 'no_eligible_employees' end
+    ) then 'no_eligible_employees' end,
+    -- Real results and sample data must never mix.
+    case when exists (select 1 from public.employees where tenant_id = t and is_demo) then 'sample_data_loaded' end
   ], null)
 $$;
 revoke execute on function private.sending_blockers(uuid) from public;

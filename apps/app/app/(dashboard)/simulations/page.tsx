@@ -13,6 +13,7 @@ const CHECKS: { key: SendingBlocker; label: string; hint?: string }[] = [
   { key: "no_verified_domain", label: "A verified company domain", hint: "Add the DNS record on the Employees page." },
   { key: "no_eligible_employees", label: "Active employees on a verified domain" },
   { key: "no_scenarios", label: "At least one scenario turned on" },
+  { key: "sample_data_loaded", label: "Sample data removed", hint: "Remove it from the Overview page, so real results don't mix with made-up ones." },
   { key: "awareness_not_confirmed", label: "Employees informed through your awareness notice", hint: "An owner confirms this once." },
   { key: "not_approved", label: "Safety review with Helvax", hint: "We check your setup with you before the first send." },
   { key: "platform_off", label: "Helvax sending enabled", hint: "Turned on by Helvax once sending is released." },

@@ -52,6 +52,9 @@ select public.approve_tenant_sending(:'d', true);
 reset role;
 select pg_temp.as_user('00000000-0000-0000-0000-0000000000d1');
 select pg_temp.check(public.sending_readiness(:'d') -> 'blockers' = '["platform_off"]', 'only the platform switch is left');
+select public.load_sample_data(:'d');
+select pg_temp.check(public.sending_readiness(:'d') -> 'blockers' ? 'sample_data_loaded', 'sample data blocks real sending');
+select public.clear_sample_data(:'d');
 select pg_temp.fails($$select public.set_sending_enabled('$$ || :'d' || $$', true)$$, 'sending stays off while the platform is off');
 reset role;
 
