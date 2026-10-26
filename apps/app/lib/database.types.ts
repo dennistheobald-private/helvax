@@ -102,7 +102,8 @@ type EmployeeWrite = Pick<Employee, "email" | "first_name" | "last_name"> & Part
 export type Database = {
   public: {
     Tables: {
-      profiles: Table<Profile, never, Partial<Pick<Profile, "full_name" | "locale">>>;
+      profiles: Table<Profile, Pick<Profile, "id" | "email">, // insert: service role only
+         Partial<Pick<Profile, "full_name" | "locale">>>;
       tenants: Table<Tenant, never, Partial<Pick<Tenant, "name" | "timezone" | "locale">>>;
       memberships: Table<Membership, never, Pick<Membership, "role">, [
         { foreignKeyName: "memberships_tenant_id_fkey"; columns: ["tenant_id"]; isOneToOne: false; referencedRelation: "tenants"; referencedColumns: ["id"] },

@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import type { MemberRole, Profile, Tenant } from "./database.types";
+import { createAdminClient } from "./supabase/admin";
 import { createClient } from "./supabase/server";
 
 export const TENANT_COOKIE = "hx_tenant";
@@ -27,6 +28,19 @@ export const getUser = cache(async () => {
   return { id: claims.sub as string, email: (claims.email as string) ?? "", aal: (claims.aal as "aal1" | "aal2") ?? "aal1" };
 });
 
+async function ensureProfile(id: string, email: string): Promise<Profile | null> {
+  const admin = createAdminClient();
+  if (!admin) {
+    console.error("Profile missing and SUPABASE_SECRET_KEY is not set", id);
+    return null;
+  }
+  const { data, error } = await admin.from("profiles").upsert({ id, email }, { onConflict: "id", ignoreDuplicates: true }).select("*").maybeSingle();
+  if (error) console.error("Couldn't create the missing profile", id, error.message);
+  if (data) return data;
+  const { data: existing } = await admin.from("profiles").select("*").eq("id", id).maybeSingle();
+  return existing;
+}
+
 /**
  * Everything a dashboard page needs: user, profile, companies and the current company.
  * Sends people to /login, /onboarding or /mfa when they aren't ready for the dashboard yet.
@@ -36,11 +50,14 @@ export const requireSession = cache(async (): Promise<SessionContext> => {
   if (!user) redirect("/login");
 
   const supabase = await createClient();
-  const [{ data: profile }, { data: rows }] = await Promise.all([
-    supabase.from("profiles").select("*").eq("id", user.id).single(),
+  const [{ data: found }, { data: rows }] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("memberships").select("role, tenants(*)").eq("user_id", user.id),
   ]);
-  if (!profile) redirect("/login");
+  // Accounts created before the profiles trigger existed have no profile yet. Create it on
+  // the server, and never send a signed-in user back to /login (that loops).
+  const profile = found ?? (await ensureProfile(user.id, user.email));
+  if (!profile) redirect("/login?error=account");
 
   const tenants = (rows ?? [])
     .map((r) => {
