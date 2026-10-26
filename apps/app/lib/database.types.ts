@@ -68,7 +68,7 @@ export type Outcome = {
   simulation_id: string; tenant_id: string; decision_id: string; result: OutcomeResult; evidence_level: number; counts_as_failure: boolean; decided_at: string; is_demo: boolean;
 };
 export type ReportSnapshot = {
-  period: string; timezone: string; rule_version: string; employees_targeted: number; simulations_sent: number; eligible: number; link_requests: number;
+  period: string; timezone: string; rule_version: string; sample_data?: boolean; employees_targeted: number; simulations_sent: number; eligible: number; link_requests: number;
   outcomes: Record<OutcomeResult, number>; levels: { l3: number; l4: number };
   previous: { eligible: number; verified_risky: number } | null;
   groups: { name: string; eligible: number; verified_risky: number; verified_safe: number }[];
@@ -140,6 +140,9 @@ export type Database = {
       engine_record: { Args: { sim: string; session: string | null; kind: EventType; who: EventActor; detection?: Record<string, unknown>; simulated_action?: string | null }; Returns: string };
       engine_record_reply: { Args: { sim: string; category: ReplyCategory; confidence: number; rule_hits: string[]; marker_found: boolean; classifier_version: string; excerpt: string }; Returns: string };
       engine_close_windows: { Args: Record<string, never>; Returns: number };
+      engine_build_reports: { Args: { as_of?: string }; Returns: number };
+      engine_reports_to_send: { Args: Record<string, never>; Returns: { report_id: string; tenant_id: string; tenant_name: string; period: string; snapshot: ReportSnapshot; recipients: string[] }[] };
+      engine_mark_report_sent: { Args: { report: string }; Returns: undefined };
     };
     Enums: { member_role: MemberRole; tenant_status: TenantStatus; employee_status: EmployeeStatus; outcome_result: OutcomeResult; reply_category: ReplyCategory };
     CompositeTypes: Record<string, never>;
