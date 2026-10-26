@@ -10,3 +10,5 @@ export { Field, type FieldProps } from "./Field";
 export { EmptyState } from "./EmptyState";
 export { Navbar, type NavbarProps } from "./Navbar";
 export { AppShell, type AppShellProps } from "./AppShell";
+export { CountUp, useCountUp, useInView, prefersReducedMotion, type CountUpProps } from "./motion";
+export { InfoTip } from "./InfoTip";

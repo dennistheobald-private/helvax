@@ -1,6 +1,14 @@
 // Prices are set in CHF. Visitors in the EU see EUR, converted at the daily ECB rate.
 
-export const PRICE_CHF = { monthly: 2, annual: 12 } as const;
+export const PRICE_CHF = {
+  helvax: { monthly: 2, annual: 12 },
+} as const;
+
+/** Helvax Pro has no list price yet; set one here (e.g. { monthly: 4, annual: 24 }) to show it. */
+export const PRO_PRICE_CHF: Price | null = null;
+
+/** Employees included in the Free plan. */
+export const FREE_EMPLOYEES = 1;
 
 export type Currency = "CHF" | "EUR";
 
@@ -33,20 +41,26 @@ export async function chfToEur(): Promise<number> {
   }
 }
 
-export interface PriceList {
-  currency: Currency;
+export interface Price {
   /** Price per employee per month, monthly billing. */
   monthly: number;
   /** Price per employee per year, annual billing. */
   annual: number;
 }
 
+export interface PriceList {
+  currency: Currency;
+  helvax: Price;
+  /** Null while Pro is priced on request. */
+  pro: Price | null;
+}
+
 export async function priceListFor(country: string | null | undefined): Promise<PriceList> {
   const currency = currencyFor(country);
-  if (currency === "CHF") return { currency, ...PRICE_CHF };
+  if (currency === "CHF") return { currency, helvax: PRICE_CHF.helvax, pro: PRO_PRICE_CHF };
   const rate = await chfToEur();
-  const round = (n: number) => Math.round(n * rate * 100) / 100;
-  return { currency, monthly: round(PRICE_CHF.monthly), annual: round(PRICE_CHF.annual) };
+  const convert = (p: Price): Price => ({ monthly: Math.round(p.monthly * rate * 100) / 100, annual: Math.round(p.annual * rate * 100) / 100 });
+  return { currency, helvax: convert(PRICE_CHF.helvax), pro: PRO_PRICE_CHF && convert(PRO_PRICE_CHF) };
 }
 
 /** Formats a price the same way on server and browser (Intl output differs between ICU versions). */

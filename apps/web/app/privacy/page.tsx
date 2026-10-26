@@ -19,6 +19,9 @@ export default function PrivacyPage() {
         <li><strong>No tracking.</strong> We don&apos;t use advertising cookies or third-party analytics on this site. Fonts are served from our own domain.</li>
       </ul>
 
+      <h2 id="newsletter">Newsletter</h2>
+      <p>If you sign up for the newsletter we store your email address, the time you signed up and when you confirmed. We send one confirmation email first and add you only after you press Confirm (double opt-in). Unconfirmed sign-ups are deleted after 7 days. Addresses are stored with Supabase in the EU and emails are sent through Resend. Every newsletter has an unsubscribe link, and you can also write to {company.email}. After you unsubscribe we keep only a record that you did, so you don&apos;t receive it again.</p>
+
       <h2>The Helvax app</h2>
       <p>For customers, Helvax processes employee names, work email addresses and groups, and the results of simulations, on behalf of the customer under a data processing agreement. Data is stored with Supabase in the EU. Helvax never collects real passwords, MFA codes, banking details or documents.</p>
 

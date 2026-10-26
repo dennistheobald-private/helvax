@@ -761,3 +761,33 @@ th[aria-sort="descending"] .hx-table__sort::after { content: "↓"; opacity: 1; 
 .hx-incident__person b { display: block; font-weight: var(--weight-semibold); color: var(--ink); }
 .hx-incident__person div > span { display: block; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 560px) { .hx-mailrow { grid-template-columns: 44px minmax(0, 1fr); } .hx-mailrow__check, .hx-mailrow__line { display: none; } }
+
+
+/* ==========================================================================
+   v0.4 · Motion and marketing helpers
+   Split mark motion, info tooltips, count-up numbers.
+   ========================================================================== */
+
+/* Split mark: the two halves join, then pull apart into the logo. Add .hx-split-in
+   to any LogoMark or AppIcon; it plays once and is static with reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .hx-split-in path:first-of-type { animation: hx-split-l 900ms var(--ease) both; }
+  .hx-split-in path:last-of-type { animation: hx-split-r 900ms var(--ease) both; }
+  .hx-split-loop path:first-of-type { animation: hx-split-l 2.4s var(--ease) infinite alternate; }
+  .hx-split-loop path:last-of-type { animation: hx-split-r 2.4s var(--ease) infinite alternate; }
+}
+@keyframes hx-split-l { from { transform: translate(6px, -6px); } }
+@keyframes hx-split-r { from { transform: translate(-6px, 6px); } }
+
+/* Info tooltip: a quiet (i) after a label */
+.hx-infotip { vertical-align: middle; margin-left: 4px; }
+.hx-infotip__btn { display: inline-grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--subtle); cursor: help; }
+.hx-infotip__btn:hover, .hx-infotip__btn:focus-visible { color: var(--ink); }
+.hx-infotip__btn:focus-visible { box-shadow: var(--focus-ring); outline: 0; }
+.hx-infotip .hx-tooltip__bubble { white-space: normal; text-align: left; }
+/* Anchored to the right of the icon so it never runs off the edge of a card or the page */
+.hx-infotip .hx-tooltip__bubble { left: auto; right: -9px; transform: translateY(4px); }
+.hx-infotip:hover .hx-tooltip__bubble, .hx-infotip:focus-within .hx-tooltip__bubble { transform: none; }
+.hx-infotip .hx-tooltip__bubble::after { left: auto; right: 14px; margin-left: 0; }
+
+.hx-countup { font-variant-numeric: tabular-nums; }
