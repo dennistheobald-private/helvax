@@ -78,7 +78,7 @@ ${body}
 ${codeBlock}${buttonBlock}${noteBlock}
 </td></tr>
 <tr><td style="padding:24px 8px 0;font-family:${SANS};font-size:13px;line-height:1.6;color:${C.subtle}">
-Helvax · Realistic attacks. Verified results.<br>
+Helvax · Trust. Trained. Tested.<br>
 &copy; 2026 Helvax. Made in Switzerland. · <a href="https://helvax.ch" style="color:${C.brandText};text-decoration:none">helvax.ch</a>
 </td></tr>
 </table>
