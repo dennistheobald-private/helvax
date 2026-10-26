@@ -54,7 +54,7 @@ A link request alone can never lead to `suspected` or `verified_risky`.
 - Each decision stores the rule version, the event ids it used and a plain-language explanation. The current result points to the latest decision; earlier ones stay visible in the app.
 - Running the rules again on the same evidence gives the same result and adds no new decision.
 - Reviewer decisions are new decisions with the reviewer's name and reason. The engine's decision is kept.
-- Monthly reports are frozen snapshots. A later review never changes a report that was already sent.
+- Monthly reports are frozen snapshots. A database trigger rejects any change to a report's contents, so a later review never changes a report that was already created. A report counts either real simulations or sample data, never both. Reports can be downloaded as CSV (company and group totals) or printed and saved as a PDF.
 - Results tables are written only by the engine. Members can read their own company's results; nobody can write them from the browser.
 
 ## Techniques
@@ -76,4 +76,4 @@ These are engineering targets to validate in pilots. They are not claims.
 - Every result can be explained from its stored evidence and rule version (covered by a database test).
 - Each result category is reported separately.
 
-The database tests in `supabase/tests/20_verification.sql` check the rules that can be checked automatically.
+The database tests in `supabase/tests/20_verification.sql` and `40_reports.sql` check the rules that can be checked automatically.

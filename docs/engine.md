@@ -17,11 +17,12 @@ Then, for every single message, `engine_claim_due` checks again: the employee is
 
 ## How it runs
 
-`GET /api/engine/cron` (with `Authorization: Bearer $CRON_SECRET`) does three things:
+`GET /api/engine/cron` (with `Authorization: Bearer $CRON_SECRET`) does four things:
 
 1. Closes observation windows: results still pending 72 hours after sending are decided.
 2. Plans the next 30 days for companies that are allowed to send: a random business day and time per person, inside the schedule, at least the cooldown apart, with the scenario they've seen least recently.
 3. Sends what is due through Resend, from the simulation domain, with a signed link and a signed reply address. Messages carry the header `X-Helvax-Simulation: 1`, so a company's gateway can recognise them.
+4. Builds monthly reports. From the 4th of each month (company time zone), once the last observation windows have closed, `engine_build_reports` freezes last month's report for every company that sent real simulations, replacing a sample report for the same month. `engine_reports_to_send` then lists unsent reports with their owners and admins, who get one email each with company totals only (no names or per-person results) and a link to `/reports/YYYY-MM`. A report is marked sent once at least one person received it; until then it is retried, and Resend idempotency keys prevent duplicates.
 
 No schedule is configured yet. When sending is released, add a Vercel cron for this route (every 15 minutes needs a Pro plan) or call it from Supabase `pg_cron`.
 
