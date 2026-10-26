@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="packages/ui/logo/helvax-split-lockup.svg" alt="Helvax" width="280">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="packages/ui/logo/helvax-split-lockup-dark.svg">
+    <img src="packages/ui/logo/helvax-split-lockup.svg" alt="Helvax" width="280">
+  </picture>
 </p>
 
 <p align="center"><strong>Security-awareness simulations that run all year, with no mailbox connection.</strong></p>

@@ -19,7 +19,7 @@ Reusable HTML/CSS component library for the security simulation platform (Phase 
 - Fonts: Plus Jakarta Sans, Inter and IBM Plex Mono are all SIL OFL. The showcase loads them from Google Fonts; for production self-host the WOFF2 files with `font-display: swap`.
 - Contrast: `brand-600` (#D94F1C) is 4.1:1 on white, below AA for small text, so the library adds `brand-700` (#B4400F, 5.7:1) for orange text. Primary buttons use ink text on orange (5.8:1).
 - Open `index.html` directly in a browser (or serve this folder) to view the showcase. A hosted copy is at https://claude.ai/artifact/UCZjvCZCEqUTHNDkhLy6sY.
-- Product name: Helvax. The logo is the Split mark (a flat orange disc pulled apart, the breach a simulation finds) beside a lowercase "helvax" wordmark in Plus Jakarta Sans ExtraBold, outlined. SVGs for the mark, horizontal lockup and favicon are in `logo/`. All example data is fictional.
+- Product name: Helvax. The logo is the Split mark (a flat orange disc pulled apart, the breach a simulation finds) beside a lowercase "helvax" wordmark in Plus Jakarta Sans ExtraBold, outlined. SVGs for the mark, horizontal lockup (plus `-dark` with a white wordmark for dark backgrounds) and favicon are in `logo/`. All example data is fictional.
 - React wrappers live in `react/` and are imported as `@helvax/ui/react`: `Icon`, `LogoMark`, `AppIcon`, `Button`, `ButtonLink`, `buttonClass`, `Badge`, `Card`, `StatCard`, `Alert`, `Field`, `EmptyState`, `Navbar` and `AppShell`. They render the same markup as the snippets, which stay the contract. Apps import `@helvax/ui/tokens.css` and `@helvax/ui/components.css` once in their root layout. More wrappers get added as screens need them.
 
 ## v0.3: light only
