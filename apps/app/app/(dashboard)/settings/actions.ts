@@ -3,6 +3,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import type { MemberRole } from "@/lib/database.types";
+import { emailLayout, p, strong } from "@helvax/ui/email";
 import { escapeHtml, sendEmail } from "@/lib/email";
 import { requireSession } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
@@ -64,7 +65,13 @@ export async function inviteMember(_prev: FormState, form: FormData): Promise<Fo
     to: email,
     subject: `${inviter} invited you to ${company} on Helvax`,
     text: `${inviter} invited you to join ${company} on Helvax as ${role}.\n\nAccept the invitation: ${link}\n\nThe link works for 7 days.`,
-    html: `<p>${escapeHtml(inviter)} invited you to join <strong>${escapeHtml(company)}</strong> on Helvax as ${role}.</p><p><a href="${link}">Accept the invitation</a></p><p>The link works for 7 days.</p>`,
+    html: emailLayout({
+      preheader: `Join ${escapeHtml(company)} on Helvax.`,
+      title: `Join ${escapeHtml(company)} on Helvax`,
+      body: p(`${strong(escapeHtml(inviter))} invited you to join ${strong(escapeHtml(company))} on Helvax as ${role}.`),
+      button: { label: "Accept the invitation", url: link },
+      note: "The link works for 7 days. If you weren't expecting this, you can ignore this email.",
+    }),
     idempotencyKey: `invite/${tokenHash}`,
   });
   revalidatePath("/settings");

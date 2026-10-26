@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
+import { emailLayout, p } from "@helvax/ui/email";
 import { SITE_URL } from "./urls";
 
 // Newsletter sign-ups with double opt-in. Addresses are stored in Supabase only
@@ -53,13 +54,13 @@ export async function sendConfirmation(email: string, token: string): Promise<bo
         "",
         "Helvax, Switzerland",
       ].join("\n"),
-      html: `<div style="font-family:Inter,Arial,sans-serif;font-size:16px;line-height:1.55;color:#17191D;max-width:520px">
-<p>Hi,</p>
-<p>Please confirm that you'd like the Helvax newsletter: one short email a month on new attack patterns and how teams stop them.</p>
-<p><a href="${confirm}" style="display:inline-block;padding:12px 20px;border-radius:999px;background:#F36B32;color:#17191D;text-decoration:none;font-weight:600">Confirm subscription</a></p>
-<p style="color:#6B6F78;font-size:14px">If you didn't sign up, ignore this email and nothing happens. The link expires in 7 days.</p>
-<p style="color:#6B6F78;font-size:14px">Helvax, Switzerland</p>
-</div>`,
+      html: emailLayout({
+        preheader: "One click to confirm your Helvax newsletter subscription.",
+        title: "Confirm your subscription",
+        body: p("Please confirm that you'd like the Helvax newsletter: one short email a month on new attack patterns and how teams stop them."),
+        button: { label: "Confirm subscription", url: confirm },
+        note: "If you didn't sign up, ignore this email and nothing happens. The link expires in 7 days.",
+      }),
       headers: { "List-Unsubscribe": `<${unsubscribe}>` },
     }),
   });
