@@ -7,12 +7,15 @@ interface Mail {
   html: string;
   /** Resend drops a repeat send with the same key for 24 hours. One key per email event. */
   idempotencyKey?: string;
+  from?: string;
+  replyTo?: string;
+  headers?: Record<string, string>;
 }
 
 const ATTEMPTS = 3;
 
-/** Sends a transactional email through Resend. Returns false when it couldn't be sent. */
-export async function sendEmail(mail: Mail): Promise<boolean> {
+/** Sends an email through Resend. Returns Resend's message id, or false when it couldn't be sent. */
+export async function sendEmail(mail: Mail): Promise<string | false> {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.error("RESEND_API_KEY is not set; email not sent:", mail.subject);
@@ -20,7 +23,15 @@ export async function sendEmail(mail: Mail): Promise<boolean> {
   }
   const headers: Record<string, string> = { Authorization: `Bearer ${key}`, "Content-Type": "application/json" };
   if (mail.idempotencyKey) headers["Idempotency-Key"] = mail.idempotencyKey;
-  const body = JSON.stringify({ from: process.env.EMAIL_FROM ?? "Helvax <hello@mail.helvax.ch>", to: [mail.to], subject: mail.subject, text: mail.text, html: mail.html });
+  const body = JSON.stringify({
+    from: mail.from ?? process.env.EMAIL_FROM ?? "Helvax <hello@mail.helvax.ch>",
+    to: [mail.to],
+    subject: mail.subject,
+    text: mail.text,
+    html: mail.html,
+    ...(mail.replyTo && { reply_to: mail.replyTo }),
+    ...(mail.headers && { headers: mail.headers }),
+  });
 
   // Retry network errors, 429 and 5xx with backoff; other 4xx won't succeed on a retry.
   for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
@@ -35,7 +46,7 @@ export async function sendEmail(mail: Mail): Promise<boolean> {
     if (res.ok) {
       const { id } = (await res.json().catch(() => ({}))) as { id?: string };
       console.info("Resend accepted email", id);
-      return true;
+      return id ?? "accepted";
     }
     const retryable = res.status === 429 || res.status >= 500;
     console.error("Resend rejected an email", res.status, await res.text());

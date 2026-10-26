@@ -49,3 +49,22 @@ export async function toggleScenario(form: FormData) {
     .eq("tenant_id", s.tenant.id).eq("scenario_id", String(form.get("scenario")));
   revalidatePath("/simulations");
 }
+
+export async function confirmAwareness(): Promise<void> {
+  const s = await requireSession();
+  if (!s.isOwner) return;
+  const supabase = await createClient();
+  await supabase.rpc("confirm_awareness_notice", { t: s.tenant.id });
+  revalidatePath("/simulations");
+}
+
+export async function setSending(_prev: FormState, form: FormData): Promise<FormState> {
+  const s = await requireSession();
+  const enabled = form.get("enabled") === "true";
+  if (enabled ? !s.isOwner : !s.isAdmin) return { error: enabled ? "Only an owner can turn sending on." : "Only admins can turn sending off." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_sending_enabled", { t: s.tenant.id, enabled });
+  if (error) return { error: enabled ? "Sending can't be turned on yet. Check the list below." : "Couldn't turn sending off. Try again." };
+  revalidatePath("/simulations");
+  return { ok: enabled ? "Sending is on." : "Sending is off. Planned simulations were cancelled." };
+}

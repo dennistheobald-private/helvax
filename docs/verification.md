@@ -57,7 +57,7 @@ A link request alone can never lead to `suspected` or `verified_risky`.
 - Monthly reports are frozen snapshots. A later review never changes a report that was already sent.
 - Results tables are written only by the engine. Members can read their own company's results; nobody can write them from the browser.
 
-## Techniques (phase 5)
+## Techniques
 
 - Signed, expiring tokens per simulation and recipient.
 - Landing-page sessions that correlate the link request, interactions and the completed action.

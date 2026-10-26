@@ -204,3 +204,35 @@ html, body { margin: 0; background: var(--warm); }
 .report-full__rate { font: var(--weight-semibold) 3rem/1 var(--font-mono); letter-spacing: -0.03em; color: var(--brand-600); }
 .report-full__recs { display: grid; gap: 8px; }
 @media (max-width: 720px) { .report-full__kpi { grid-template-columns: 1fr; } }
+
+/* Practice landing pages: deliberately neutral until the reveal */
+.practice { min-height: 100dvh; background: #F4F5F7; color: #1F2329; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.practice--center { display: grid; place-items: center; padding: 24px 16px; }
+.practice__bar { display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: #fff; border-bottom: 1px solid #E3E5E8; font-weight: 600; font-size: 15px; }
+.practice__logo { width: 22px; height: 22px; border-radius: 6px; background: #3A5BA0; }
+.practice__body { display: grid; place-items: center; padding: 48px 16px; }
+.practice__card { width: min(420px, 100%); display: grid; gap: 16px; padding: 28px; background: #fff; border: 1px solid #E3E5E8; border-radius: 12px; box-shadow: 0 6px 24px rgb(0 0 0 / 0.06); }
+.practice__card h1 { margin: 0; font-size: 22px; line-height: 1.25; }
+.practice__card h2 { margin: 8px 0 0; font-size: 16px; }
+.practice__card p, .practice__card ul { margin: 0; font-size: 15px; line-height: 1.5; color: #444A52; }
+.practice__card ul { padding-left: 20px; display: grid; gap: 6px; }
+.practice__details { margin: 0; display: grid; gap: 8px; padding: 14px; background: #F7F8FA; border-radius: 8px; font-size: 14px; }
+.practice__details div { display: flex; justify-content: space-between; gap: 12px; }
+.practice__details dt { color: #6B717A; }
+.practice__details dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.practice__field { display: grid; gap: 6px; font-size: 14px; font-weight: 500; }
+.practice__field input { height: 42px; padding: 0 12px; border: 1px solid #C9CDD3; border-radius: 8px; font: inherit; font-weight: 400; }
+.practice__field input:focus { outline: 2px solid #3A5BA0; outline-offset: 1px; }
+.practice__btn { height: 44px; border: 0; border-radius: 8px; background: #3A5BA0; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.practice__btn:hover { background: #2F4B86; }
+.practice__card--reveal { width: min(520px, 100%); border-top: 4px solid var(--brand-500); }
+.practice__card--reveal .practice__btn { background: var(--ink); }
+.practice__badge { justify-self: start; padding: 4px 10px; border-radius: 999px; background: var(--brand-100); color: var(--brand-700); font-size: 12px; font-weight: 600; }
+.practice__muted { color: #6B717A; }
+.sending__switch { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
+.checks li > span { display: grid; gap: 2px; }
+.checks small { font-size: var(--text-xs); color: var(--subtle); }
+.checks__action { display: inline; }
+.checks__action .hx-link { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; font-size: var(--text-xs); }
+.checks li { align-items: flex-start; }
+.checks li .hx-icon { margin-top: 2px; }
