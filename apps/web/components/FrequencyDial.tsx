@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { prefersReducedMotion, useInView } from "./useInView";
+import { LogoMark, prefersReducedMotion, useInView } from "@helvax/ui/react";
 
 // A 24-hour dial: the business-hours window the company sets, with tests landing
 // at random times inside it. Example data only.
@@ -88,6 +88,7 @@ export function FrequencyDial() {
           </g>
         </svg>
         <div className="dial__center" aria-live="polite">
+          <LogoMark width={22} height={22} className="dial__mark" />
           <span className="dial__eyebrow">Next test</span>
           <span key={`s${current.id}`} className="dial__scenario">{current.scenario}</span>
           <span className="dial__time">{current.day} · {fmt(current.hour)}</span>

@@ -1,5 +1,8 @@
 "use server";
 
+import { headers } from "next/headers";
+import { hashToken, newToken, rateLimited, rpc, sendConfirmation } from "@/lib/newsletter";
+
 export interface DemoState {
   status: "idle" | "sent" | "error";
   message?: string;
@@ -53,4 +56,41 @@ export async function requestDemo(_prev: DemoState, form: FormData): Promise<Dem
     return { status: "error", message: "We couldn't send your request right now. Please try again in a minute." };
   }
   return { status: "sent" };
+}
+
+export interface NewsletterState {
+  status: "idle" | "sent" | "error";
+  message?: string;
+}
+
+/** Starts a double opt-in: stores a pending sign-up and emails a confirmation link. */
+export async function subscribeNewsletter(_prev: NewsletterState, form: FormData): Promise<NewsletterState> {
+  if (form.get("website")) return { status: "sent" };
+  const email = String(form.get("email") ?? "").trim().toLowerCase().slice(0, 254);
+  if (!EMAIL.test(email)) return { status: "error", message: "Enter a valid email, for example name@company.ch." };
+
+  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  if (rateLimited(ip)) return { status: "error", message: "Too many attempts. Please try again in a few minutes." };
+
+  const token = newToken();
+  const next = await rpc<"send" | "wait" | "confirmed">("newsletter_request", { p_email: email, p_token_hash: hashToken(token) });
+  if (!next) return { status: "error", message: "We couldn't sign you up right now. Please try again later." };
+  // Same answer whether or not the address is already subscribed, so nobody can probe the list.
+  if (next === "send" && !(await sendConfirmation(email, token))) {
+    return { status: "error", message: "We couldn't send the confirmation email. Please try again later." };
+  }
+  return { status: "sent" };
+}
+
+export interface TokenState {
+  status: "idle" | "done" | "invalid";
+}
+
+/** Confirms or cancels a subscription. A button press, so mail scanners opening the link change nothing. */
+export async function updateSubscription(_prev: TokenState, form: FormData): Promise<TokenState> {
+  const token = String(form.get("token") ?? "");
+  const fn = form.get("mode") === "unsubscribe" ? "newsletter_unsubscribe" : "newsletter_confirm";
+  if (!/^[\w-]{20,64}$/.test(token)) return { status: "invalid" };
+  const ok = await rpc<boolean>(fn, { p_token_hash: hashToken(token) });
+  return { status: ok ? "done" : "invalid" };
 }

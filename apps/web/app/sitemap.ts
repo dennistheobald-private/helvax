@@ -2,5 +2,5 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/urls";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return ["", "/imprint", "/privacy"].map((path) => ({ url: `${SITE_URL}${path}` }));
+  return ["", "/pricing", "/imprint", "/privacy"].map((path) => ({ url: `${SITE_URL}${path}` }));
 }
