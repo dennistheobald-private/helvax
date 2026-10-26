@@ -5,6 +5,7 @@ import { FREE_EMPLOYEES } from "@/lib/pricing";
 type Cell = boolean | string;
 const ALL: Cell[] = [true, true, true, true];
 const PLANS = ["Free", "Helvax", "Pro", "Enterprise"];
+const RECOMMENDED = "Helvax";
 
 const GROUPS: { title: string; rows: [string, Cell[]][] }[] = [
   { title: "Simulations", rows: [
@@ -54,7 +55,12 @@ export function ComparePlans() {
           <span className="hx-eyebrow">Compare plans</span>
           <h2 id="compare-title" className="hx-title">Find the right plan.</h2>
         </div>
-        {PLANS.map((p) => <span key={p} className="compare__plan" aria-hidden="true">{p}</span>)}
+        {PLANS.map((p) => (
+          <span key={p} className="compare__plan" data-plan={p} aria-hidden="true">
+            {p === RECOMMENDED && <span className="hx-badge hx-badge--brand">Recommended</span>}
+            {p}
+          </span>
+        ))}
       </div>
       {GROUPS.map((g, i) => (
         <details key={g.title} className="compare__group" open={i < 2}>

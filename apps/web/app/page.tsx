@@ -28,6 +28,7 @@ const faqs: { q: string; a: string }[] = [
 export default async function HomePage() {
   const prices = await priceListFor((await headers()).get("x-vercel-ip-country"));
   const from = formatMoney(prices.helvax.annual / 12, prices.currency);
+  const monthly = formatMoney(prices.helvax.monthly, prices.currency);
 
   return (
     <>
@@ -90,7 +91,7 @@ export default async function HomePage() {
         <Reveal as="section" className="teaser" aria-labelledby="teaser-title">
           <div>
             <h2 id="teaser-title" className="hx-title">Start free with one employee.</h2>
-            <p>Then {from} per employee per month, billed yearly. Pro adds deepfake voice simulations.</p>
+            <p>Then Helvax, the plan we recommend for every company: {monthly} per employee per month, or {from} a month billed yearly.</p>
           </div>
           <Link className={buttonClass({ size: "lg" })} href="/pricing">Compare plans <Icon name="arrow" size="sm" /></Link>
         </Reveal>

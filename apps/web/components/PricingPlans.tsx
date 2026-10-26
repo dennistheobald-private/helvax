@@ -15,7 +15,7 @@ interface Plan {
   cta: { label: string; href: string };
   limit: string;
   foot: string;
-  featured?: boolean;
+  recommended?: boolean;
 }
 
 const perMonth = (p: Price, c: Cycle) => (c === "annual" ? p.annual / 12 : p.monthly);
@@ -42,7 +42,7 @@ export function PricingPlans({ prices }: { prices: PriceList }) {
       limit: `${FREE_EMPLOYEES} employee`, foot: "To see Helvax for yourself",
     },
     {
-      key: "helvax", name: "Helvax", price: paid(prices.helvax),
+      key: "helvax", name: "Helvax", recommended: true, price: paid(prices.helvax),
       features: [
         { text: "Everything in Free, for your whole team" },
         { text: "Unpredictable testing schedule", tip: "You set how often. Helvax picks the day, time and scenario at random." },
@@ -50,10 +50,10 @@ export function PricingPlans({ prices }: { prices: PriceList }) {
         { text: "Two-minute training moments", tip: "Shown right after a risky action, in private. Nobody is named or shamed." },
       ],
       cta: { label: "Request a demo", href: "/#demo" },
-      limit: "Any number of employees", foot: "For teams of every size",
+      limit: "Any number of employees", foot: "Recommended for every company",
     },
     {
-      key: "pro", name: "Helvax Pro", featured: true,
+      key: "pro", name: "Helvax Pro",
       price: prices.pro ? paid(prices.pro) : () => ({ amount: "On request", note: "Priced with you for your team size" }),
       features: [
         { text: "Everything in Helvax" },
@@ -91,9 +91,12 @@ export function PricingPlans({ prices }: { prices: PriceList }) {
         {plans.map((p) => {
           const price = p.price(cycle);
           return (
-            <li key={p.key} className={p.featured ? "plan plan--featured" : "plan"}>
+            <li key={p.key} className={p.recommended ? "plan plan--featured" : "plan"}>
               <div className="plan__body">
-                <h2 className="plan__name">{p.name}</h2>
+                <div className="plan__top">
+                  <h2 className="plan__name">{p.name}</h2>
+                  {p.recommended && <Badge tone="brand">Recommended</Badge>}
+                </div>
                 <p className="plan__price" aria-live="polite">
                   <span className="plan__amount">{price.amount}</span>
                   {price.unit && <span className="plan__unit">{price.unit}</span>}
@@ -108,10 +111,10 @@ export function PricingPlans({ prices }: { prices: PriceList }) {
                     </li>
                   ))}
                 </ul>
-                <a className={buttonClass({ variant: p.featured ? "primary" : "secondary", block: true })} href={p.cta.href}>{p.cta.label}</a>
+                <a className={buttonClass({ variant: p.recommended ? "primary" : "secondary", block: true })} href={p.cta.href}>{p.cta.label}</a>
                 <p className="plan__limit">{p.limit}</p>
               </div>
-              <p className="plan__foot">{p.featured && <Icon name="checkc" size="sm" />}{p.foot}</p>
+              <p className="plan__foot">{p.recommended && <Icon name="checkc" size="sm" />}{p.foot}</p>
             </li>
           );
         })}
