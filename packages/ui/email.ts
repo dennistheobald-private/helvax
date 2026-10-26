@@ -7,7 +7,7 @@
 export const LOGO_URL = "https://helvax.ch/email/helvax-logo.png";
 
 const C = {
-  brand: "#F36B32",
+  brandFill: "#CF4818",
   brandText: "#B4400F",
   brandSoft: "#FFF0E8",
   ink: "#17191D",
@@ -51,7 +51,7 @@ export function emailLayout({ preheader, title, body, code, button, note }: Emai
     ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:4px 0 24px"><tr><td style="background:${C.brandSoft};border-radius:12px;padding:16px 24px;font-family:${MONO};font-size:32px;font-weight:600;letter-spacing:8px;color:${C.ink}">${code}</td></tr></table>`
     : "";
   const buttonBlock = button
-    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:4px 0 24px"><tr><td style="border-radius:999px;background:${C.brand}"><a href="${button.url}" style="display:inline-block;padding:14px 28px;font-family:${SANS};font-size:16px;font-weight:600;color:${C.ink};text-decoration:none;border-radius:999px">${button.label}</a></td></tr></table>`
+    ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:4px 0 24px"><tr><td bgcolor="${C.brandFill}" style="border-radius:8px;background:${C.brandFill}"><a href="${button.url}" style="display:inline-block;padding:13px 22px;font-family:${SANS};font-size:16px;font-weight:500;line-height:1.2;color:#FFFFFF;text-decoration:none;border-radius:8px">${button.label}</a></td></tr></table>`
     : "";
   const noteBlock = note
     ? `<p style="margin:0;font-family:${SANS};font-size:14px;line-height:1.55;color:${C.subtle}">${note}</p>`
