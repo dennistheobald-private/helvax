@@ -59,4 +59,4 @@ Vercel detects Next.js and pnpm on its own. Functions run in Frankfurt (`fra1`, 
 4. ✓ Employees, company domains, scenario library, schedule, evidence-based results ([how results are verified](docs/verification.md)) and sample data
 5. ✓ Simulation engine with safety controls ([how sending is controlled](docs/engine.md)); sending stays off until released
 6. ✓ Monthly reports: built automatically, frozen, emailed to owners and admins, with CSV and print/PDF export
-7. Admin console and audit log ✓; simulations in German and Dutch ✓; billing, pilot
+7. Admin console and audit log ✓; simulations in German and Dutch ✓; Stripe billing ✓ ([setup](docs/billing.md)); pilot

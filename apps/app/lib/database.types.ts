@@ -87,6 +87,12 @@ export type AdminTenant = {
   blockers: SendingBlocker[]; sent_30d: number; has_sample_data: boolean;
 };
 
+export type BillingAccount = {
+  tenant_id: string; stripe_customer_id: string; stripe_subscription_id: string | null; subscription_item_id: string | null; status: string;
+  interval: "month" | "year" | null; currency: "chf" | "eur" | null; quantity: number | null; current_period_end: string | null;
+  cancel_at_period_end: boolean; updated_at: string;
+};
+
 export type OutcomeSummary = { sent: number; eligible: number; outcomes: Partial<Record<OutcomeResult, number>> };
 export type EmployeeStats = { employee_id: string; simulations: number; verified_risky: number; verified_safe: number; last_sent_at: string | null };
 
@@ -109,6 +115,9 @@ export type Database = {
       company_domains: Table<CompanyDomain, Pick<CompanyDomain, "tenant_id" | "domain">, Pick<CompanyDomain, "verified_at">>; // verified_at: service role only
       scenarios: Table<Scenario, never, never>;
       scenario_translations: Table<ScenarioTranslation, never, never>;
+      // Written by the server (service role) only.
+      billing_accounts: Table<BillingAccount, Pick<BillingAccount, "tenant_id" | "stripe_customer_id"> & Partial<BillingAccount>, Partial<BillingAccount>>;
+      billing_events: Table<{ id: string; type: string; received_at: string }, { id: string; type: string }, never>;
       tenant_scenarios: Table<TenantScenario, TenantScenario, Pick<TenantScenario, "enabled">, [FK<"tenant_scenarios_scenario_id_fkey", "scenario_id", "scenarios">]>;
       simulation_settings: Table<SimulationSettings, never, Partial<Omit<SimulationSettings, "tenant_id" | "sending_enabled" | "updated_at">>>;
       simulations: Table<Simulation, never, never, [
@@ -150,6 +159,7 @@ export type Database = {
       engine_close_windows: { Args: Record<string, never>; Returns: number };
       admin_tenants: { Args: Record<string, never>; Returns: AdminTenant[] };
       admin_platform_log: { Args: { max_rows?: number }; Returns: { created_at: string; action: string; actor: string }[] };
+      billable_employees: { Args: { t: string }; Returns: number };
       engine_build_reports: { Args: { as_of?: string }; Returns: number };
       engine_reports_to_send: { Args: Record<string, never>; Returns: { report_id: string; tenant_id: string; tenant_name: string; period: string; snapshot: ReportSnapshot; recipients: string[] }[] };
       engine_mark_report_sent: { Args: { report: string }; Returns: undefined };
