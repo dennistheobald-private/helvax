@@ -9,7 +9,8 @@
     "./components.css": "./components.css",
     "./components.js": "./components.js",
     "./logo/*": "./logo/*",
-    "./react": "./react/index.ts"
+    "./react": "./react/index.ts",
+    "./email": "./email.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"

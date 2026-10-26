@@ -13,7 +13,21 @@ Authentication → URL Configuration:
 ## 3. Email sign-in
 Authentication → Sign In / Providers → Email: enabled. "Confirm email" can stay on.
 
-Authentication → Emails → Templates: in both **Magic Link** and **Confirm signup**, set the subject to `Your Helvax sign-in code` and paste the body of `supabase/templates/sign-in.html`. It contains the 6-digit code (`{{ .Token }}`) and a link to `/auth/confirm`.
+Authentication → Emails. Paste each file from `supabase/templates/` as the body and set the subject:
+
+| Template | Subject | File |
+| --- | --- | --- |
+| Confirm signup | Your Helvax sign-in code | `sign-in.html` |
+| Magic Link | Your Helvax sign-in code | `sign-in.html` |
+| Invite user | You've been invited to Helvax | `invite.html` |
+| Change Email Address | Confirm your new email address | `email-change.html` |
+| Reset Password | Reset your Helvax access | `recovery.html` |
+| Reauthentication | Confirm it's you | `reauthentication.html` |
+| Security: email address changed | Your Helvax email address was changed | `email-changed-notification.html` |
+| Security: MFA method added | Two-factor authentication turned on | `mfa-enrolled-notification.html` |
+| Security: MFA method removed | A sign-in factor was removed | `mfa-unenrolled-notification.html` |
+
+Turn the three security notifications on. The sign-in email has the 6-digit code (`{{ .Token }}`) and a link to `/auth/confirm`. All templates share the layout in `packages/ui/email.ts`; after changing it, run `node --experimental-strip-types scripts/build-email-templates.mts` and paste the files again. The logo is served from `https://helvax.ch/email/helvax-logo.png`.
 
 ## 4. Send auth email through Resend
 Authentication → Emails → SMTP Settings → enable custom SMTP:

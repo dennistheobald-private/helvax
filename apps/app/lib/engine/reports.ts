@@ -1,5 +1,6 @@
 import "server-only";
 import type { ReportSnapshot } from "../database.types";
+import { emailLayout, facts, p, strong } from "@helvax/ui/email";
 import { escapeHtml, sendEmail } from "../email";
 import { createAdminClient } from "../supabase/admin";
 
@@ -31,11 +32,14 @@ export function reportEmail(company: string, period: string, snap: ReportSnapsho
     "Only actions verified by evidence count. Link visits alone never do.", "",
     `Open the full report: ${url}`,
   ].join("\n");
-  const rows = lines.map(([k, v]) => `<tr><td style="padding:6px 16px 6px 0;color:#555">${escapeHtml(k)}</td><td style="padding:6px 0;font-weight:600">${escapeHtml(v)}</td></tr>`).join("");
-  const html = `<p>Your Helvax summary for <strong>${escapeHtml(month)}</strong> is ready.</p>`
-    + `<table style="border-collapse:collapse;font-size:14px">${rows}</table>`
-    + `<p style="color:#555;font-size:13px">Only actions verified by evidence count. Link visits alone never do.</p>`
-    + `<p><a href="${escapeHtml(url)}">Open the full report</a></p>`;
+  const html = emailLayout({
+    preheader: `Verified risky action rate: ${pct(o.verified_risky, snap.eligible)}`,
+    title: `Your ${escapeHtml(month)} summary`,
+    body: p(`Here are the totals for ${strong(escapeHtml(company))}.`)
+      + facts(lines.map(([k, v]) => [escapeHtml(k), escapeHtml(v)]))
+      + p("Only actions verified by evidence count. Link visits alone never do."),
+    button: { label: "Open the full report", url: escapeHtml(url) },
+  });
   return { subject, text, html };
 }
 
