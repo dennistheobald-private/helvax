@@ -545,20 +545,21 @@ th[aria-sort="descending"] .hx-table__sort::after { content: "↓"; opacity: 1; 
    ========================================================================== */
 
 /* Buttons: pills ---------------------------------------------------------- */
-.hx-btn { border-radius: var(--radius-btn); padding: 0 22px; letter-spacing: -0.005em; box-shadow: var(--btn-shadow, none); transition: background var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease), transform var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
-.hx-btn { --btn-shadow: var(--glow-brand); --btn-shadow-hover: var(--glow-brand-hover); --btn-img: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0)); background: var(--btn-img), var(--btn-bg); }
-.hx-btn:hover { background: var(--btn-img), var(--btn-hover); box-shadow: var(--btn-shadow-hover); }
-.hx-btn--secondary, .hx-btn--soft, .hx-btn--outline, .hx-btn--ghost, .hx-btn--destructive { --btn-img: linear-gradient(transparent, transparent); }
-.hx-btn--ghost, .hx-btn--soft { --btn-shadow: none; --btn-shadow-hover: none; }
-.hx-btn--soft { --btn-bg: var(--soft); --btn-fg: var(--ink); --btn-hover: var(--soft-hover); }
-.hx-btn--secondary { --btn-shadow: 0 8px 22px -10px rgb(23 25 29 / 0.55); --btn-shadow-hover: 0 12px 26px -10px rgb(23 25 29 / 0.6); }
-.hx-btn--outline { --btn-bd: var(--border); --btn-bg: var(--canvas); --btn-shadow: var(--shadow-xs); --btn-shadow-hover: var(--shadow-sm); }
-.hx-btn--destructive { --btn-shadow: 0 10px 26px -10px color-mix(in srgb, var(--danger) 70%, transparent); --btn-shadow-hover: 0 12px 30px -10px color-mix(in srgb, var(--danger) 80%, transparent); }
-.hx-btn--lg { min-height: 56px; padding: 0 30px; font-size: var(--text-lg); border-radius: var(--radius-btn); }
-.hx-btn--sm { padding: 0 14px; }
+/* Buttons: flat fill, white label, small radius. Primary uses --brand-fill, the brand
+   orange darkened just enough for white text to pass AA (4.6:1). */
+.hx-btn { --btn-bg: var(--brand-fill); --btn-fg: #FFFFFF; --btn-hover: var(--brand-700); border-radius: var(--radius-btn); padding: 0 18px; font-weight: var(--weight-medium); letter-spacing: -0.005em; box-shadow: none; transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+.hx-btn:hover { background: var(--btn-hover); }
+.hx-btn:active { transform: none; background: var(--btn-hover); }
+.hx-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.hx-btn--secondary, .hx-btn--outline { --btn-bg: var(--canvas); --btn-fg: var(--ink); --btn-bd: var(--border-strong); --btn-hover: var(--sunken); }
+.hx-btn--soft { --btn-bg: var(--sunken); --btn-fg: var(--ink); --btn-bd: var(--border); --btn-hover: color-mix(in srgb, var(--sunken) 80%, var(--ink) 6%); }
+.hx-btn--ghost { --btn-bg: transparent; --btn-fg: var(--ink); --btn-bd: transparent; --btn-hover: var(--sunken); }
+.hx-btn--destructive { --btn-bg: var(--danger); --btn-fg: #FFFFFF; --btn-hover: color-mix(in srgb, var(--danger) 85%, #000); }
+.hx-btn--lg { min-height: 50px; padding: 0 24px; font-size: var(--text-md); border-radius: var(--radius-btn-lg); }
+.hx-btn--sm { padding: 0 12px; }
 .hx-btn--icon { padding: 0; }
 .hx-btn:disabled, .hx-btn[aria-disabled="true"] { box-shadow: none; transform: none; }
-.hx-btn:disabled:hover { background: var(--btn-img), var(--btn-bg); box-shadow: none; }
+.hx-btn:disabled:hover { background: var(--btn-bg); }
 .hx-switch, .hx-tabs__tab, .hx-table__sort { box-shadow: none; }
 
 /* Badges & chips: soft pills --------------------------------------------- */
@@ -767,6 +768,9 @@ th[aria-sort="descending"] .hx-table__sort::after { content: "↓"; opacity: 1; 
    v0.4 · Motion and marketing helpers
    Split mark motion, info tooltips, count-up numbers.
    ========================================================================== */
+
+/* Logo lockup (mark + wordmark) */
+.hx-logo { display: block; flex: none; overflow: visible; }
 
 /* Split mark: the two halves join, then pull apart into the logo. Add .hx-split-in
    to any LogoMark or AppIcon; it plays once and is static with reduced motion. */

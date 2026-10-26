@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { LogoMark } from "@helvax/ui/react";
+import { Logo } from "@helvax/ui/react";
 
 export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
-        <span className="site-footer__brand"><LogoMark width={22} height={22} />helvax</span>
+        <span className="site-footer__brand"><Logo height={22} /></span>
         <nav aria-label="Footer">
           <ul className="site-footer__links">
             <li><Link href="/pricing">Pricing</Link></li>

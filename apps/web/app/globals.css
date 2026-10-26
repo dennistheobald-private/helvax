@@ -14,7 +14,13 @@ html, body { margin: 0; background: var(--warm); }
 
 .site-header { position: sticky; top: 12px; z-index: var(--z-sticky); max-width: 1240px; margin: 12px auto 0; padding: 0 16px; }
 
-.hero { display: grid; justify-items: center; gap: 24px; text-align: center; padding: 72px 16px 128px; }
+.hero { position: relative; isolation: isolate; overflow: hidden; display: grid; justify-items: center; gap: 24px; text-align: center; padding: 96px 16px 128px; }
+.hero__gap { --gap: 0.6; position: absolute; z-index: -1; left: 50%; top: 50%; width: min(1100px, 150vw); translate: -50% -50%; overflow: visible; pointer-events: none; }
+.hero__gap path { fill: var(--brand-500); opacity: 0.07; will-change: transform; }
+.hero__gap path:first-of-type { transform: translate(calc(var(--gap) * -22px), calc(var(--gap) * 6px)); }
+.hero__gap path:last-of-type { transform: translate(calc(var(--gap) * 22px), calc(var(--gap) * -6px)); }
+.hero__gap-note { margin: 8px 0 0; font-size: var(--text-sm); color: var(--muted); }
+.hero__gap-note strong { color: var(--brand-700); font-weight: var(--weight-semibold); }
 .hero .hx-headline { max-width: 18ch; }
 .hero .hx-lead { margin: 0 auto; }
 .hero .hx-btn-group { justify-content: center; }
@@ -157,8 +163,8 @@ html, body { margin: 0; background: var(--warm); }
   .pw:not([data-in]) .pw__table tbody tr { opacity: 0; transform: translateY(10px); }
   .pw:not([data-in]) .pw__detail { opacity: 0; transform: translateX(40px); }
   .pw:not([data-in]) .pw__evidence li { opacity: 0; transform: translateX(8px); }
-  .pw[data-in] .pw__logo path:first-of-type { animation: hx-split-l 900ms 200ms var(--ease) both; }
-  .pw[data-in] .pw__logo path:last-of-type { animation: hx-split-r 900ms 200ms var(--ease) both; }
+  .pw[data-in] .pw__logo .hx-logo__mark path:first-of-type { animation: hx-split-l 900ms 200ms var(--ease) both; }
+  .pw[data-in] .pw__logo .hx-logo__mark path:last-of-type { animation: hx-split-r 900ms 200ms var(--ease) both; }
 }
 @media (max-width: 1080px) { .pw__window { grid-template-columns: minmax(0, 1fr); } .pw__side { display: none; } }
 @media (max-width: 760px) {
@@ -325,11 +331,13 @@ html, body { margin: 0; background: var(--warm); }
 .legal__form { display: grid; gap: 16px; justify-items: start; }
 
 /* Split mark motion on page marks */
-.hero > .hx-appicon, .section__mark, .newsletter__mark, .dial__mark { overflow: visible; }
+.section__mark, .newsletter__mark, .dial__mark { overflow: visible; }
 @media (prefers-reduced-motion: no-preference) {
-  .hero > .hx-appicon path:first-of-type { animation: hx-split-l 1100ms 200ms var(--ease) both; }
-  .hero > .hx-appicon path:last-of-type { animation: hx-split-r 1100ms 200ms var(--ease) both; }
   [data-reveal="shown"] .section__mark path:first-of-type, .newsletter__mark path:first-of-type { animation: hx-split-l 900ms var(--ease) both; }
   [data-reveal="shown"] .section__mark path:last-of-type, .newsletter__mark path:last-of-type { animation: hx-split-r 900ms var(--ease) both; }
 }
 .dial__mark { margin-bottom: 2px; }
+
+/* Header lockup scales down on phones so the nav fits */
+.hx-navbar__brand .hx-logo { width: auto; height: 26px; }
+@media (max-width: 720px) { .hx-navbar__brand .hx-logo { height: 20px; } }

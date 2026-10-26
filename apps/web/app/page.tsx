@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { AppIcon, Icon, LogoMark, buttonClass } from "@helvax/ui/react";
+import { Icon, LogoMark, buttonClass } from "@helvax/ui/react";
 import { DemoForm } from "@/components/DemoForm";
+import { HeroGap } from "@/components/HeroGap";
 import { FrequencyDial } from "@/components/FrequencyDial";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { ProductWindow } from "@/components/ProductWindow";
@@ -33,7 +34,7 @@ export default async function HomePage() {
   return (
     <>
       <section className="hero hx-clouds" aria-labelledby="hero-title">
-        <AppIcon />
+        <HeroGap />
         <Link className="hx-badge hx-badge--link" href="/pricing">
           Start free · then from {from} per employee <Icon name="arrow" size="sm" />
         </Link>
@@ -46,6 +47,7 @@ export default async function HomePage() {
           <Link className={buttonClass({ size: "lg" })} href="/#demo">Request a demo</Link>
           <Link className={buttonClass({ size: "lg", variant: "soft" })} href="/pricing">See pricing</Link>
         </div>
+        <p className="hero__gap-note">There&apos;s a gap between what tests show and what really happens. <strong>You can close it.</strong></p>
       </section>
 
       <div className="wrap">
