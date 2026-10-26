@@ -39,7 +39,7 @@ On the **app.helvax.ch** project:
 On the **helvax.ch** project: `RESEND_API_KEY`, `DEMO_REQUEST_TO` (the inbox for demo requests) and `NEXT_PUBLIC_APP_URL`.
 
 ## Making someone a platform superadmin
-Superadmins can see every tenant in `/admin`. Only the service role can set it, in the SQL editor:
+Superadmins get a "Helvax admin" page at `/admin` (with MFA): every company's sending readiness, approval after the safety review, and the platform sending switch. The superadmin also needs to belong to at least one company to open the app. Only the service role can set the flag, in the SQL editor:
 
 ```sql
 update public.profiles set is_superadmin = true where email = 'you@helvax.ch';

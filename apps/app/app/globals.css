@@ -207,6 +207,16 @@ html, body { margin: 0; background: var(--warm); }
 .report-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; max-width: 920px; }
 .report-actions__buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 
+/* Audit log and admin console */
+.audit__when { white-space: nowrap; }
+.admin-platform { border-left: 4px solid var(--border-strong); }
+.admin-platform[data-on] { border-left-color: var(--danger); }
+.admin-switch { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.admin-switch .hx-field { min-width: 280px; }
+.admin-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: var(--text-xs); color: var(--muted); }
+.admin-approve { display: grid; gap: 4px; justify-items: start; }
+.admin-approved { display: block; font-size: var(--text-xs); margin-bottom: 4px; }
+
 /* Printing a report (or saving it as a PDF) shows only the report itself. */
 @media print {
   @page { size: A4; margin: 16mm; }

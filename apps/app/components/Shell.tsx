@@ -13,6 +13,8 @@ const titles: Record<string, string> = {
   "/activity": "Activity",
   "/reports": "Reports",
   "/settings": "Settings",
+  "/audit": "Audit log",
+  "/admin": "Helvax admin",
 };
 
 const roleLabel = { owner: "Owner", admin: "Admin", viewer: "Viewer" } as const;
@@ -21,17 +23,19 @@ interface ShellProps {
   user: { name: string; email: string; initials: string };
   tenant: { id: string; name: string; role: keyof typeof roleLabel };
   tenants: { id: string; name: string }[];
+  isAdmin: boolean;
+  isSuperadmin: boolean;
   children: ReactNode;
 }
 
-export function Shell({ user, tenant, tenants, children }: ShellProps) {
+export function Shell({ user, tenant, tenants, isAdmin, isSuperadmin, children }: ShellProps) {
   const path = usePathname();
   const title = Object.entries(titles).find(([href]) => path.startsWith(href))?.[1] ?? "Helvax";
   return (
     <AppShell
       sidebar={
         <>
-          <SidebarNav />
+          <SidebarNav isAdmin={isAdmin} isSuperadmin={isSuperadmin} />
           <div className="hx-sidebar__footer">
             {tenants.length > 1 ? (
               <form action={switchTenant} className="tenant-switch">
