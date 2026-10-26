@@ -45,7 +45,7 @@ export function PricingPlans({ prices }: { prices: PriceList }) {
       key: "helvax", name: "Helvax", price: paid(prices.helvax),
       features: [
         { text: "Everything in Free, for your whole team" },
-        { text: "Unpredictable testing schedule", tip: "You set how often. Helvax picks the day, time and scenario inside your business hours." },
+        { text: "Unpredictable testing schedule", tip: "You set how often. Helvax picks the day, time and scenario at random." },
         { text: "Team trends and PDF export" },
         { text: "Two-minute training moments", tip: "Shown right after a risky action, in private. Nobody is named or shamed." },
       ],
