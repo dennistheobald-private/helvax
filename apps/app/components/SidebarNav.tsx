@@ -13,8 +13,10 @@ const main: { href: string; label: string; icon: IconName }[] = [
 ];
 
 const account: typeof main = [{ href: "/settings", label: "Settings", icon: "gear" }];
+const audit: (typeof main)[number] = { href: "/audit", label: "Audit log", icon: "doc" };
+const admin: (typeof main)[number] = { href: "/admin", label: "Helvax admin", icon: "block" };
 
-export function SidebarNav() {
+export function SidebarNav({ isAdmin, isSuperadmin }: { isAdmin: boolean; isSuperadmin: boolean }) {
   const path = usePathname();
   const link = ({ href, label, icon }: (typeof main)[number]) => (
     <Link key={href} className="hx-sidebar__link" href={href} aria-current={path.startsWith(href) ? "page" : undefined}>
@@ -29,7 +31,14 @@ export function SidebarNav() {
       <div className="hx-sidebar__section">
         <span className="hx-eyebrow hx-sidebar__heading">Account</span>
         {account.map(link)}
+        {isAdmin && link(audit)}
       </div>
+      {isSuperadmin && (
+        <div className="hx-sidebar__section">
+          <span className="hx-eyebrow hx-sidebar__heading">Helvax</span>
+          {link(admin)}
+        </div>
+      )}
     </>
   );
 }

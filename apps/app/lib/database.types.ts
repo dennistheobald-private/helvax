@@ -80,6 +80,12 @@ export type SendingBlocker = "platform_off" | "not_approved" | "awareness_not_co
 export type SendingReadiness = { sending_enabled: boolean; platform_enabled: boolean; approved_at: string | null; awareness_confirmed_at: string | null; blockers: SendingBlocker[]; planned: number };
 export type DueSimulation = { simulation_id: string; tenant_id: string; email: string; first_name: string; last_name: string; locale: string; scenario_slug: string; subject: string; sender_name: string; preview: string };
 
+export type AdminTenant = {
+  id: string; name: string; status: TenantStatus; created_at: string; owners: string[]; members: number; employees: number;
+  verified_domains: string[]; sending_enabled: boolean; approved_at: string | null; awareness_confirmed_at: string | null;
+  blockers: SendingBlocker[]; sent_30d: number; has_sample_data: boolean;
+};
+
 export type OutcomeSummary = { sent: number; eligible: number; outcomes: Partial<Record<OutcomeResult, number>> };
 export type EmployeeStats = { employee_id: string; simulations: number; verified_risky: number; verified_safe: number; last_sent_at: string | null };
 
@@ -140,6 +146,8 @@ export type Database = {
       engine_record: { Args: { sim: string; session: string | null; kind: EventType; who: EventActor; detection?: Record<string, unknown>; simulated_action?: string | null }; Returns: string };
       engine_record_reply: { Args: { sim: string; category: ReplyCategory; confidence: number; rule_hits: string[]; marker_found: boolean; classifier_version: string; excerpt: string }; Returns: string };
       engine_close_windows: { Args: Record<string, never>; Returns: number };
+      admin_tenants: { Args: Record<string, never>; Returns: AdminTenant[] };
+      admin_platform_log: { Args: { max_rows?: number }; Returns: { created_at: string; action: string; actor: string }[] };
       engine_build_reports: { Args: { as_of?: string }; Returns: number };
       engine_reports_to_send: { Args: Record<string, never>; Returns: { report_id: string; tenant_id: string; tenant_name: string; period: string; snapshot: ReportSnapshot; recipients: string[] }[] };
       engine_mark_report_sent: { Args: { report: string }; Returns: undefined };

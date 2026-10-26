@@ -8,8 +8,8 @@ Every message needs all of these. Any one of them off means nothing is sent.
 
 | Switch | Who | Where |
 | --- | --- | --- |
-| Platform sending | Helvax superadmin with MFA | `set_platform_sending(true)`; off by default. Turning it off returns queued messages to planned |
-| Company approval | Helvax superadmin with MFA, after the safety review | `approve_tenant_sending(t, true)`. Revoking it also turns the company off and cancels planned simulations |
+| Platform sending | Helvax superadmin with MFA | `/admin` (typing SEND to confirm), or `set_platform_sending(true)`; off by default. Turning it off returns queued messages to planned |
+| Company approval | Helvax superadmin with MFA, after the safety review | `/admin`, or `approve_tenant_sending(t, true)`. Revoking it also turns the company off and cancels planned simulations |
 | Awareness notice | Company owner with MFA | Simulations page, "I confirm employees were informed" |
 | Company sending | Owner with MFA turns it on, any admin turns it off | Simulations page. Turning off cancels everything planned |
 

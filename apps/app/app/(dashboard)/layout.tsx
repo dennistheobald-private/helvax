@@ -11,6 +11,8 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       user={{ name, email: s.email, initials }}
       tenant={{ id: s.tenant.id, name: s.tenant.name, role: s.tenant.role }}
       tenants={s.tenants.map((t) => ({ id: t.id, name: t.name }))}
+      isAdmin={s.isAdmin}
+      isSuperadmin={s.profile.is_superadmin}
     >
       {children}
     </Shell>
