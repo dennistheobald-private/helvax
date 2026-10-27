@@ -13,10 +13,10 @@ type Table<Row, Insert = Partial<Row>, Update = Partial<Row>, Relationships exte
   Relationships: Relationships;
 };
 
-export type Profile = { id: string; email: string; full_name: string; locale: string; is_superadmin: boolean; created_at: string };
+export type Profile = { id: string; email: string; full_name: string; phone: string | null; locale: string; is_superadmin: boolean; created_at: string };
 export type Tenant = { id: string; name: string; timezone: string; locale: string; status: TenantStatus; created_at: string; awareness_confirmed_at: string | null; sending_approved_at: string | null };
 export type Membership = { tenant_id: string; user_id: string; role: MemberRole; created_at: string };
-export type Invitation = { id: string; tenant_id: string; email: string; role: MemberRole; token_hash: string; invited_by: string | null; expires_at: string; accepted_at: string | null; created_at: string };
+export type Invitation = { id: string; tenant_id: string; email: string; role: MemberRole; token_hash: string; invited_by: string | null; phone: string | null; expires_at: string; accepted_at: string | null; created_at: string };
 export type AuditLog = { id: number; tenant_id: string | null; actor_id: string | null; action: string; target: string | null; metadata: Record<string, unknown>; created_at: string };
 
 export type EmployeeStatus = "active" | "paused" | "left";
@@ -30,7 +30,7 @@ export type OutcomeResult = "pending" | "not_delivered" | "no_interaction" | "sc
 
 export type EmployeeGroup = { id: string; tenant_id: string; name: string; is_demo: boolean; created_at: string };
 export type Employee = {
-  id: string; tenant_id: string; email: string; first_name: string; last_name: string; group_id: string | null;
+  id: string; tenant_id: string; email: string; first_name: string; last_name: string; phone: string | null; group_id: string | null;
   locale: "en" | "de" | "nl"; status: EmployeeStatus; consent_scope: "standard" | "excluded"; is_demo: boolean; created_at: string; updated_at: string;
 };
 export type CompanyDomain = { id: string; tenant_id: string; domain: string; verification_token: string; verified_at: string | null; is_demo: boolean; created_at: string };
@@ -97,19 +97,19 @@ export type OutcomeSummary = { sent: number; eligible: number; outcomes: Partial
 export type EmployeeStats = { employee_id: string; simulations: number; verified_risky: number; verified_safe: number; last_sent_at: string | null };
 
 type FK<Name extends string, Col extends string, Ref extends string> = { foreignKeyName: Name; columns: [Col]; isOneToOne: false; referencedRelation: Ref; referencedColumns: ["id"] };
-type EmployeeWrite = Pick<Employee, "email" | "first_name" | "last_name"> & Partial<Pick<Employee, "group_id" | "locale" | "status" | "consent_scope">>;
+type EmployeeWrite = Pick<Employee, "email" | "first_name" | "last_name"> & Partial<Pick<Employee, "phone" | "group_id" | "locale" | "status" | "consent_scope">>;
 
 export type Database = {
   public: {
     Tables: {
       profiles: Table<Profile, Pick<Profile, "id" | "email">, // insert: service role only
-         Partial<Pick<Profile, "full_name" | "locale">>>;
+         Partial<Pick<Profile, "full_name" | "phone" | "locale">>>;
       tenants: Table<Tenant, never, Partial<Pick<Tenant, "name" | "timezone" | "locale">>>;
       memberships: Table<Membership, never, Pick<Membership, "role">, [
         { foreignKeyName: "memberships_tenant_id_fkey"; columns: ["tenant_id"]; isOneToOne: false; referencedRelation: "tenants"; referencedColumns: ["id"] },
         { foreignKeyName: "memberships_user_id_fkey"; columns: ["user_id"]; isOneToOne: false; referencedRelation: "profiles"; referencedColumns: ["id"] },
       ]>;
-      invitations: Table<Invitation, Pick<Invitation, "tenant_id" | "email" | "role" | "token_hash"> & { invited_by?: string }>;
+      invitations: Table<Invitation, Pick<Invitation, "tenant_id" | "email" | "role" | "token_hash"> & { invited_by?: string; phone?: string | null }>;
       audit_logs: Table<AuditLog, never, never>;
       employee_groups: Table<EmployeeGroup, Pick<EmployeeGroup, "tenant_id" | "name">, Pick<EmployeeGroup, "name">>;
       employees: Table<Employee, EmployeeWrite & { tenant_id: string }, Partial<EmployeeWrite>, [FK<"employees_group_id_fkey", "group_id", "employee_groups">]>;

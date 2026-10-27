@@ -29,12 +29,13 @@ export function CompanyForm({ name, timezone, disabled }: { name: string; timezo
   );
 }
 
-export function ProfileForm({ fullName, email }: { fullName: string; email: string }) {
+export function ProfileForm({ fullName, email, phone }: { fullName: string; email: string; phone: string }) {
   const [state, action, pending] = useActionState(updateProfile, {});
   return (
     <form action={action} className="settings-form">
       <Field label="Your name" name="full_name" defaultValue={fullName} autoComplete="name" />
       <Field label="Email" defaultValue={email} disabled help="You sign in with this address." />
+      <Field label="Mobile number (optional)" name="phone" type="tel" defaultValue={phone} autoComplete="tel" placeholder="+41 79 123 45 67" help="International format." />
       <div className="settings-form__actions"><Button type="submit" loading={pending}>Save</Button><Status state={state} /></div>
     </form>
   );
@@ -45,6 +46,7 @@ export function InviteForm({ canInviteAdmins }: { canInviteAdmins: boolean }) {
   return (
     <form action={action} className="invite-form">
       <Field label="Email" name="email" type="email" required placeholder="colleague@company.ch" />
+      <Field label="Mobile number (optional)" name="phone" type="tel" autoComplete="off" placeholder="+41 79 123 45 67" help="International format. They can change it later." />
       <div className="hx-field">
         <label className="hx-label" htmlFor="invite-role">Role</label>
         <select id="invite-role" name="role" className="hx-select" defaultValue="viewer">
