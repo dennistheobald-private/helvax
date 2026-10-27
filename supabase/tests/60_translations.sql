@@ -20,6 +20,7 @@ select pg_temp.check(not exists (
 ), 'every approved scenario has German and Dutch text');
 select pg_temp.check((select bool_and(locales = '{en,de,nl}') from public.scenarios where approval_state = 'approved'), 'the library lists the languages that have text');
 select pg_temp.check(not exists (select 1 from public.scenario_translations where locale = 'de' and (subject || sender_name || preview) like '%ß%'), 'German uses Swiss spelling');
+select pg_temp.check(not exists (select 1 from public.scenario_variants where locale = 'de' and (subject || sender_name || preview) like '%ß%'), 'German variants use Swiss spelling');
 
 -- A German-speaking employee gets the German version.
 select id as d from public.tenants where name = 'Delta Bau AG' \gset
@@ -36,7 +37,14 @@ select :'d', :'lea', id, now() - interval '1 minute' from public.scenarios where
 set role service_role;
 create temp table claimed_de as select * from public.engine_claim_due(10);
 reset role;
-select pg_temp.check((select subject = 'Handlungsbedarf: Ihr Passwort läuft in 24 Stunden ab' and locale = 'de' from claimed_de where email = 'lea.keller@delta-bau.ch'),
+-- A random approved German variant is chosen; it must be one of the scenario's German variants.
+select pg_temp.check((
+  select c.locale = 'de' and exists (
+    select 1 from public.scenario_variants v
+    join public.scenarios s on s.id = v.scenario_id and s.slug = 'password-expiry'
+    where v.locale = 'de' and v.subject = c.subject and v.sender_name = c.sender_name and v.preview = c.preview
+  )
+  from claimed_de c where c.email = 'lea.keller@delta-bau.ch'),
   'the simulation goes out in German');
 
 select pg_temp.as_user('00000000-0000-0000-0000-0000000000f1');

@@ -26,6 +26,14 @@ Then, for every single message, `engine_claim_due` checks again: the employee is
 
 No schedule is configured yet. When sending is released, add a Vercel cron for this route (every 15 minutes needs a Pro plan) or call it from Supabase `pg_cron`.
 
+## Variation
+
+The same person should rarely see the same message twice. Three things vary each send:
+
+- **Scenario and timing**: the planner picks a random day and time per person and the scenario they've seen least recently (see "How it runs").
+- **Template variants**: a scenario can have several interchangeable versions per language in `scenario_variants`. `engine_claim_due` picks one approved, enabled variant at random for the employee's language, falling back to the scenario's translation and then its English base. The scenario's original wording is kept as one variant, so nothing is lost.
+- **Merge tokens**: a variant's subject, preview or sender name may contain placeholders such as `{{invoice_no}}`, `{{due_date}}`, `{{amount}}`, `{{ref}}` or `{{first_name}}`. `lib/engine/merge.ts` fills them per send with plausible generated values, derived from the simulation id so an idempotent resend produces an identical message. Nothing generated is stored or read back; it only shapes what is sent. Unknown placeholders are removed.
+
 ## Languages
 
 Each employee has a language (English, German or Dutch), set when adding them, in the CSV (`language` column: `en`, `de`, `nl`, or the language's name) or later on the Employees page. New people get the company's language. Simulation emails, practice pages and the reveal afterwards use that language; scenario text lives in `scenario_translations` and falls back to English. German uses Swiss spelling.

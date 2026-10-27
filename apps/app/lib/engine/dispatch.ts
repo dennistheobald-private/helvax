@@ -1,6 +1,7 @@
 import "server-only";
 import { escapeHtml, sendEmail } from "../email";
 import { createAdminClient } from "../supabase/admin";
+import { applyMerge, buildMergeContext } from "./merge";
 import { UI, toLocale } from "./practice-copy";
 import { signToken } from "./token";
 
@@ -31,14 +32,21 @@ export async function dispatchDue(limit = 50): Promise<{ sent: number; failed: n
     const link = `${cfg.origin}/p/${signToken("link", d.simulation_id)}`;
     const replyTo = `r${signToken("reply", d.simulation_id)}@${cfg.replyDomain}`;
     const ui = UI[toLocale(d.locale)];
+    // Fill per-send merge tokens (invoice numbers, dates, the recipient's name) so two
+    // copies of the same template never read the same. Derived from the simulation id,
+    // so an idempotent resend produces an identical message.
+    const ctx = buildMergeContext({ simulationId: d.simulation_id, firstName: d.first_name, lastName: d.last_name, locale: d.locale });
+    const subject = applyMerge(d.subject, ctx);
+    const preview = applyMerge(d.preview, ctx);
+    const senderName = applyMerge(d.sender_name, ctx);
     const greeting = ui.greeting(d.first_name);
     const id = await sendEmail({
       to: d.email,
-      from: `${d.sender_name} <${d.scenario_slug}@${cfg.fromDomain}>`,
+      from: `${senderName} <${d.scenario_slug}@${cfg.fromDomain}>`,
       replyTo,
-      subject: d.subject,
-      text: `${greeting}\n\n${d.preview}\n\n${link}\n\n${d.sender_name}`,
-      html: `<p>${escapeHtml(greeting)}</p><p>${escapeHtml(d.preview)}</p><p><a href="${link}">${ui.viewDetails}</a></p><p>${escapeHtml(d.sender_name)}</p>`,
+      subject,
+      text: `${greeting}\n\n${preview}\n\n${link}\n\n${senderName}`,
+      html: `<p>${escapeHtml(greeting)}</p><p>${escapeHtml(preview)}</p><p><a href="${link}">${ui.viewDetails}</a></p><p>${escapeHtml(senderName)}</p>`,
       // Lets the company's mail gateway recognise and allow simulations.
       headers: { "X-Helvax-Simulation": "1" },
       idempotencyKey: `simulation/${d.simulation_id}`,
