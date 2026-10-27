@@ -23,6 +23,7 @@ export function AddEmployeeForm({ groups, domains, defaultLocale }: { groups: Gr
       <Field label="First name" name="first_name" required autoComplete="off" />
       <Field label="Last name" name="last_name" required autoComplete="off" />
       <Field label="Work email" name="email" type="email" required autoComplete="off" placeholder={`name@${domains[0] ?? "company.ch"}`} />
+      <Field label="Mobile number (optional)" name="phone" type="tel" autoComplete="off" placeholder="+41 79 123 45 67" help="For voice simulations later. International format." />
       <div className="hx-field">
         <label className="hx-label" htmlFor="new-group">Group</label>
         <select id="new-group" name="group_id" className="hx-select" defaultValue="">
@@ -49,6 +50,7 @@ const HEADERS: Record<string, keyof ImportRow> = {
   email: "email", emailaddress: "email", mail: "email", workemail: "email",
   group: "group", department: "group", team: "group", abteilung: "group", gruppe: "group", afdeling: "group",
   language: "language", locale: "language", lang: "language", sprache: "language", taal: "language",
+  phone: "phone", mobile: "phone", mobilephone: "phone", phonenumber: "phone", telefon: "phone", handy: "phone", mobil: "phone", telefoon: "phone", mobiel: "phone",
 };
 
 /** Minimal CSV reader: quoted fields, "," or ";" separators (Excel in Switzerland uses ";"). */
@@ -85,11 +87,11 @@ function toRows(text: string): { rows?: ImportRow[]; error?: string } {
   if (!header) return { error: "The file is empty." };
   const cols = header.map((h) => HEADERS[h.toLowerCase().replace(/[^a-z]/g, "")]);
   for (const need of ["first_name", "last_name", "email"] as const) {
-    if (!cols.includes(need)) return { error: "The first row needs the columns first_name, last_name and email (group and language are optional)." };
+    if (!cols.includes(need)) return { error: "The first row needs the columns first_name, last_name and email (group, language and phone are optional)." };
   }
   return {
     rows: body.map((cells) => {
-      const r: ImportRow = { first_name: "", last_name: "", email: "", group: "", language: "" };
+      const r: ImportRow = { first_name: "", last_name: "", email: "", group: "", language: "", phone: "" };
       // The server normalises the language ("Deutsch" → "de").
       cols.forEach((k, i) => { if (k) (r as unknown as Record<string, string>)[k] = (cells[i] ?? "").trim(); });
       return r;
@@ -102,6 +104,7 @@ const VERDICTS: Record<RowVerdict, { label: string; tone: BadgeTone }> = {
   update: { label: "Update", tone: "info" },
   unchanged: { label: "Unchanged", tone: "neutral" },
   invalid_email: { label: "Invalid email", tone: "danger" },
+  invalid_phone: { label: "Phone not in +41… format", tone: "danger" },
   missing_name: { label: "Name missing", tone: "danger" },
   wrong_domain: { label: "Not a company domain", tone: "danger" },
   duplicate: { label: "Duplicate in file", tone: "warning" },
@@ -141,7 +144,7 @@ export function CsvImport() {
       <label className="hx-dropzone">
         <span className="hx-dropzone__icon"><Icon name="upload" /></span>
         <span className="hx-dropzone__title">{fileName && rows ? fileName : "Choose a CSV file"}</span>
-        <span className="hx-dropzone__hint">Columns: first_name, last_name, email, plus optional group and language (en, de, nl) · up to 5,000 people</span>
+        <span className="hx-dropzone__hint">Columns: first_name, last_name, email, plus optional group, language (en, de, nl) and phone (+41…) · up to 5,000 people</span>
         <input type="file" accept=".csv,text/csv" onChange={(e) => onFile(e.currentTarget.files?.[0])} />
       </label>
       {readError && <p className="form-status form-status--error" role="alert">{readError}</p>}

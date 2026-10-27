@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import type { MemberRole } from "@/lib/database.types";
 import { emailLayout, p, strong } from "@helvax/ui/email";
 import { escapeHtml, sendEmail } from "@/lib/email";
+import { normalizePhone } from "@/lib/phone";
 import { allow } from "@/lib/ratelimit";
 import { requireSession } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
@@ -35,8 +36,10 @@ export async function updateCompany(_prev: FormState, form: FormData): Promise<F
 export async function updateProfile(_prev: FormState, form: FormData): Promise<FormState> {
   const s = await requireSession();
   const fullName = String(form.get("full_name") ?? "").trim().slice(0, 120);
+  const phone = normalizePhone(form.get("phone"));
+  if (phone === null) return { error: "Enter the mobile number in international format, such as +41 79 123 45 67." };
   const supabase = await createClient();
-  const { error } = await supabase.from("profiles").update({ full_name: fullName }).eq("id", s.userId);
+  const { error } = await supabase.from("profiles").update({ full_name: fullName, phone: phone || null }).eq("id", s.userId);
   if (error) return { error: "Couldn't save. Try again." };
   revalidatePath("/", "layout");
   return { ok: "Saved." };
@@ -50,6 +53,8 @@ export async function inviteMember(_prev: FormState, form: FormData): Promise<Fo
   if (!EMAIL.test(email)) return { error: "Enter a valid email address." };
   if (role !== "viewer" && role !== "admin") return { error: "Choose a role." };
   if (role === "admin" && !s.isOwner) return { error: "Only owners can invite admins." };
+  const phone = normalizePhone(form.get("phone"));
+  if (phone === null) return { error: "Enter the mobile number in international format, such as +41 79 123 45 67." };
   if (!(await allow("invite", s.tenant.id, 50, 86400))) return { error: "Too many invitations today. Try again tomorrow." };
 
   const token = randomBytes(32).toString("base64url");
@@ -57,7 +62,7 @@ export async function inviteMember(_prev: FormState, form: FormData): Promise<Fo
   const supabase = await createClient();
   // Replace an earlier open invitation to the same address.
   await supabase.from("invitations").delete().eq("tenant_id", s.tenant.id).eq("email", email).is("accepted_at", null);
-  const { error } = await supabase.from("invitations").insert({ tenant_id: s.tenant.id, email, role, token_hash: tokenHash, invited_by: s.userId });
+  const { error } = await supabase.from("invitations").insert({ tenant_id: s.tenant.id, email, role, token_hash: tokenHash, invited_by: s.userId, phone: phone || null });
   if (error) return { error: "Couldn't create the invitation. Try again." };
 
   const link = `${await appOrigin()}/invite/${token}`;

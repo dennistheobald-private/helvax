@@ -2,11 +2,12 @@
 
 import { useActionState } from "react";
 import { Alert, Button, Field } from "@helvax/ui/react";
+import { DomainsInput } from "@/components/DomainsInput";
 import { createCompany } from "./actions";
 
 const ZONES = ["Europe/Zurich", "Europe/Berlin", "Europe/Vienna", "Europe/Amsterdam", "Europe/Brussels", "Europe/Paris", "Europe/London"];
 
-export function OnboardingForm() {
+export function OnboardingForm({ suggestedDomain }: { suggestedDomain: string }) {
   const [state, action, pending] = useActionState(createCompany, {});
   return (
     <form action={action} className="login__form">
@@ -19,6 +20,7 @@ export function OnboardingForm() {
         </select>
         <span className="hx-help">Used for reports and the testing schedule.</span>
       </div>
+      <DomainsInput initial={suggestedDomain} />
       <Button type="submit" size="lg" block loading={pending}>Create company</Button>
     </form>
   );

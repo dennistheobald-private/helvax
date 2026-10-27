@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import type { EmployeeStatus } from "@/lib/database.types";
 import { toLocale, type Locale } from "@/lib/engine/practice-copy";
 import { allow } from "@/lib/ratelimit";
+import { normalizePhone } from "@/lib/phone";
 import { requireSession } from "@/lib/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -52,12 +53,14 @@ export async function addEmployee(_prev: FormState, form: FormData): Promise<For
   const email = clean(form.get("email"), 254).toLowerCase();
   const group_id = String(form.get("group_id") ?? "") || null;
   const locale = toLanguage(form.get("locale")) || toLocale(ctx.s.tenant.locale);
+  const phone = normalizePhone(form.get("phone"));
   if (!first_name || !last_name) return { error: "Enter the first and last name." };
+  if (phone === null) return { error: "Enter the phone number in international format, such as +41 79 123 45 67." };
   if (!EMAIL.test(email)) return { error: "Enter a valid email address." };
   if (!(await companyDomains(ctx.s.tenant.id)).has(domainOf(email))) {
     return { error: `${domainOf(email)} isn't one of your company domains. Add the domain first.` };
   }
-  const { error } = await ctx.supabase.from("employees").insert({ tenant_id: ctx.s.tenant.id, first_name, last_name, email, group_id, locale });
+  const { error } = await ctx.supabase.from("employees").insert({ tenant_id: ctx.s.tenant.id, first_name, last_name, email, phone: phone || null, group_id, locale });
   if (error) return { error: error.code === "23505" ? `${email} is already in the list.` : "Couldn't add the employee. Try again." };
   revalidatePath("/employees");
   return { ok: `Added ${first_name} ${last_name}.` };
@@ -69,8 +72,10 @@ export async function updateEmployee(form: FormData) {
   const status = String(form.get("status")) as EmployeeStatus;
   const group_id = String(form.get("group_id") ?? "") || null;
   const locale = toLanguage(form.get("locale"));
+  const phone = normalizePhone(form.get("phone"));
   if (!STATUSES.includes(status)) return;
-  await ctx.supabase.from("employees").update({ status, group_id, ...(locale && { locale }) }).eq("tenant_id", ctx.s.tenant.id).eq("id", String(form.get("id")));
+  // An invalid number keeps the saved one; the field shows the hint.
+  await ctx.supabase.from("employees").update({ status, group_id, ...(locale && { locale }), ...(phone !== null && { phone: phone || null }) }).eq("tenant_id", ctx.s.tenant.id).eq("id", String(form.get("id")));
   revalidatePath("/employees");
 }
 
@@ -90,9 +95,11 @@ export interface ImportRow {
   group: string;
   /** Normalised language code, or "" to keep the current one (new people get the company's). */
   language: Locale | "";
+  /** E.164 number, "" to keep the current one, or the raw text when it isn't valid. */
+  phone: string;
 }
 
-export type RowVerdict = "new" | "update" | "unchanged" | "invalid_email" | "missing_name" | "wrong_domain" | "duplicate";
+export type RowVerdict = "new" | "update" | "unchanged" | "invalid_email" | "invalid_phone" | "missing_name" | "wrong_domain" | "duplicate";
 
 export interface ImportPreview {
   error?: string;
@@ -110,6 +117,7 @@ function parseRows(json: string): ImportRow[] | null {
       email: clean(r.email, 254).toLowerCase(),
       group: clean(r.group),
       language: toLanguage(r.language),
+      phone: normalizePhone(r.phone) ?? clean(r.phone, 40),
     }));
   } catch {
     return null;
@@ -120,7 +128,7 @@ async function classify(tenantId: string, rows: ImportRow[]) {
   const supabase = await createClient();
   const domains = await companyDomains(tenantId);
   const [{ data: existing }, { data: groups }] = await Promise.all([
-    supabase.from("employees").select("id, email, first_name, last_name, group_id, locale").eq("tenant_id", tenantId).limit(20000),
+    supabase.from("employees").select("id, email, first_name, last_name, phone, group_id, locale").eq("tenant_id", tenantId).limit(20000),
     supabase.from("employee_groups").select("id, name").eq("tenant_id", tenantId),
   ]);
   const byEmail = new Map((existing ?? []).map((e) => [e.email.toLowerCase(), e]));
@@ -131,13 +139,15 @@ async function classify(tenantId: string, rows: ImportRow[]) {
     let verdict: RowVerdict;
     if (!EMAIL.test(row.email)) verdict = "invalid_email";
     else if (!row.first_name || !row.last_name) verdict = "missing_name";
+    else if (row.phone && !row.phone.startsWith("+")) verdict = "invalid_phone";
     else if (!domains.has(domainOf(row.email))) verdict = "wrong_domain";
     else if (seen.has(row.email)) verdict = "duplicate";
     else {
       const e = byEmail.get(row.email);
       const gid = row.group ? groupId.get(row.group.toLowerCase()) ?? "new" : e?.group_id ?? null;
       const sameLanguage = !row.language || e?.locale === row.language;
-      verdict = !e ? "new" : e.first_name === row.first_name && e.last_name === row.last_name && e.group_id === gid && sameLanguage ? "unchanged" : "update";
+      const samePhone = !row.phone || e?.phone === row.phone;
+      verdict = !e ? "new" : e.first_name === row.first_name && e.last_name === row.last_name && e.group_id === gid && sameLanguage && samePhone ? "unchanged" : "update";
     }
     seen.add(row.email);
     return { line: i + 2, row, verdict };
@@ -168,7 +178,7 @@ export async function previewImport(_prev: ImportPreview, form: FormData): Promi
 
   const inserts = usable.filter((r) => r.verdict === "new").map(({ row }) => ({
     tenant_id: ctx.s.tenant.id, first_name: row.first_name, last_name: row.last_name, email: row.email, group_id: gid(row.group) ?? null,
-    locale: row.language || toLocale(ctx.s.tenant.locale),
+    locale: row.language || toLocale(ctx.s.tenant.locale), phone: row.phone || null,
   }));
   for (let i = 0; i < inserts.length; i += 500) {
     const { error } = await ctx.supabase.from("employees").insert(inserts.slice(i, i + 500));
@@ -180,7 +190,7 @@ export async function previewImport(_prev: ImportPreview, form: FormData): Promi
     await Promise.all(updates.slice(i, i + 20).map(({ row }) => {
       const g = gid(row.group);
       return ctx.supabase.from("employees")
-        .update({ first_name: row.first_name, last_name: row.last_name, ...(g !== undefined ? { group_id: g } : {}), ...(row.language && { locale: row.language }) })
+        .update({ first_name: row.first_name, last_name: row.last_name, ...(g !== undefined ? { group_id: g } : {}), ...(row.language && { locale: row.language }), ...(row.phone && { phone: row.phone }) })
         .eq("tenant_id", ctx.s.tenant.id).eq("id", byEmail.get(row.email)!.id);
     }));
   }

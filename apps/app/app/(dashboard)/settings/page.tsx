@@ -4,6 +4,7 @@ import type { MemberRole } from "@/lib/database.types";
 import { requireSession } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { changeRole, removeMember, revokeInvitation } from "./actions";
+import { formatPhone } from "@/lib/phone";
 import { CompanyForm, InviteForm, ProfileForm } from "./forms";
 
 export const metadata: Metadata = { title: "Settings" };
@@ -91,7 +92,7 @@ export default async function SettingsPage() {
 
       <Card className="settings__section">
         <header><h2>Your profile</h2></header>
-        <ProfileForm fullName={s.profile.full_name} email={s.email} />
+        <ProfileForm fullName={s.profile.full_name} email={s.email} phone={formatPhone(s.profile.phone)} />
       </Card>
     </div>
   );

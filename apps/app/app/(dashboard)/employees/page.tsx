@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import { removeDomain, removeEmployee, removeGroup, updateEmployee } from "./actions";
 import { AddDomainForm, AddEmployeeForm, AddGroupForm, CsvImport, VerifyDomainButton } from "./forms";
 import { LANGUAGE_OPTIONS } from "@/lib/engine/practice-copy";
+import { formatPhone } from "@/lib/phone";
 
 export const metadata: Metadata = { title: "Employees" };
 
@@ -31,7 +32,7 @@ export default async function EmployeesPage({ searchParams }: { searchParams: Pr
 
   let query = supabase
     .from("employees")
-    .select("id, first_name, last_name, email, status, group_id, locale, is_demo", { count: "exact" })
+    .select("id, first_name, last_name, email, phone, status, group_id, locale, is_demo", { count: "exact" })
     .eq("tenant_id", s.tenant.id)
     .order("last_name")
     .order("first_name")
@@ -110,7 +111,7 @@ export default async function EmployeesPage({ searchParams }: { searchParams: Pr
                       <td>
                         <div className="hx-table__person">
                           <span className="hx-avatar" aria-hidden="true">{e.first_name[0]}{e.last_name[0]}</span>
-                          <span>{e.first_name} {e.last_name}<small>{e.email}</small></span>
+                          <span>{e.first_name} {e.last_name}<small>{e.email}{e.phone && ` · ${formatPhone(e.phone)}`}</small></span>
                         </div>
                       </td>
                       <td>{e.group_id ? groupName.get(e.group_id) : <span className="muted">–</span>}</td>
@@ -130,6 +131,8 @@ export default async function EmployeesPage({ searchParams }: { searchParams: Pr
                                   <option value="">No group</option>
                                   {(groups ?? []).map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
                                 </select>
+                                <label className="hx-label" htmlFor={`p-${e.id}`}>Mobile number</label>
+                                <input id={`p-${e.id}`} name="phone" type="tel" className="hx-input" defaultValue={formatPhone(e.phone)} placeholder="+41 79 123 45 67" />
                                 <label className="hx-label" htmlFor={`l-${e.id}`}>Language</label>
                                 <select id={`l-${e.id}`} name="locale" className="hx-select" defaultValue={e.locale}>
                                   {LANGUAGE_OPTIONS.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}

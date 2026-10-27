@@ -11,9 +11,13 @@ html, body { margin: 0; background: var(--warm); }
 
 .hx-shell { min-height: 100dvh; }
 
-.login { min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; }
+.login { position: relative; isolation: isolate; overflow: hidden; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; background: var(--warm); }
+.login__gap { position: absolute; z-index: -1; inset: 50% auto auto 50%; width: max(900px, 120vmax); transform: translate(-50%, -50%); pointer-events: none; }
+.login__gap path { fill: var(--brand-500); opacity: 0.06; }
+.login__gap path:first-child { transform: translateX(-6px); }
+.login__gap path:last-child { transform: translateX(6px); }
 .login__card { width: min(420px, 100%); display: grid; gap: 24px; padding: 32px; }
-.login__brand { display: inline-flex; align-items: center; gap: 10px; font: var(--weight-heavy) var(--text-xl)/1 var(--font-display); letter-spacing: -0.03em; }
+.login__brand { display: inline-flex; align-items: center; color: var(--ink); }
 .login__title { font: var(--weight-bold) var(--text-2xl)/1.15 var(--font-display); letter-spacing: -0.03em; }
 .login__lead { margin-top: 8px; color: var(--muted); font-size: var(--text-sm); }
 .login__form { display: grid; gap: 16px; }
@@ -268,3 +272,7 @@ html, body { margin: 0; background: var(--warm); }
 .checks__action .hx-link { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; font-size: var(--text-xs); }
 .checks li { align-items: flex-start; }
 .checks li .hx-icon { margin-top: 2px; }
+.domains-input { display: grid; gap: 8px; }
+.domains-input__row { display: flex; gap: 8px; align-items: center; }
+.domains-input__row .hx-input { flex: 1; min-width: 0; }
+.domains-input__add { justify-self: start; margin-top: 4px; }

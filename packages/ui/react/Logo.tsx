@@ -5,7 +5,7 @@ import { cx } from "./cx";
 export function LogoMark({ brand = true, className, ...rest }: SVGProps<SVGSVGElement> & { brand?: boolean }) {
   const fill = brand ? "var(--brand-500)" : "currentColor";
   return (
-    <svg viewBox="0 0 100 100" className={cx("hx-signal-mark", className)} aria-hidden="true" focusable="false" {...rest}>
+    <svg viewBox="0 0 100 100" className={cx("hx-mark", className)} aria-hidden="true" focusable="false" {...rest}>
       <path fill={fill} d="M44 12A44 44 0 0 0 44 100Z" />
       <path fill={fill} d="M56 0A44 44 0 0 1 56 88Z" />
     </svg>
