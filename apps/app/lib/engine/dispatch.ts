@@ -40,9 +40,13 @@ export async function dispatchDue(limit = 50): Promise<{ sent: number; failed: n
     const preview = applyMerge(d.preview, ctx);
     const senderName = applyMerge(d.sender_name, ctx);
     const greeting = ui.greeting(d.first_name);
+    // Vary the from-address per send from the sender-identity pool; fall back to the
+    // scenario slug and the configured sending domain when none is set.
+    const fromDomain = d.sender_domain || cfg.fromDomain;
+    const fromLocal = d.sender_local || d.scenario_slug;
     const id = await sendEmail({
       to: d.email,
-      from: `${senderName} <${d.scenario_slug}@${cfg.fromDomain}>`,
+      from: `${senderName} <${fromLocal}@${fromDomain}>`,
       replyTo,
       subject,
       text: `${greeting}\n\n${preview}\n\n${link}\n\n${senderName}`,

@@ -91,6 +91,18 @@ set role service_role;
 create temp table claimed as select * from public.engine_claim_due(10);
 reset role;
 select pg_temp.check((select count(*) from claimed) = 2 and not exists (select 1 from claimed where email = 'tim.huber@delta-bau.ch'), 'only simulations for active employees are claimed');
+-- Each claimed simulation gets a from-address from the sender-identity pool for its
+-- scenario category (or the scenario slug when the pool has none), and no non-default
+-- sending domain is seeded yet.
+select pg_temp.check(not exists (
+  select 1 from claimed c join public.scenarios s on s.slug = c.scenario_slug
+  where c.sender_local is null or (
+    c.sender_local <> s.slug and not exists (
+      select 1 from public.sender_identities si
+      where si.category = s.category and si.local_part = c.sender_local and si.enabled and si.approval_state = 'approved')
+  )
+), 'each claimed simulation gets a sender identity from the pool');
+select pg_temp.check(not exists (select 1 from claimed where sender_domain is not null), 'no non-default sender domain is seeded yet');
 set role service_role;
 select pg_temp.check((select count(*) from public.engine_claim_due(10)) = 0, 'a claimed simulation is not claimed twice');
 reset role;
