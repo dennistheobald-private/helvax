@@ -14,7 +14,7 @@ type Table<Row, Insert = Partial<Row>, Update = Partial<Row>, Relationships exte
 };
 
 export type Profile = { id: string; email: string; full_name: string; phone: string | null; locale: string; is_superadmin: boolean; created_at: string };
-export type Tenant = { id: string; name: string; timezone: string; locale: string; status: TenantStatus; created_at: string; awareness_confirmed_at: string | null; sending_approved_at: string | null };
+export type Tenant = { id: string; name: string; timezone: string; locale: string; status: TenantStatus; created_at: string; awareness_confirmed_at: string | null; sending_approved_at: string | null; logo_url: string | null };
 export type Membership = { tenant_id: string; user_id: string; role: MemberRole; created_at: string };
 export type Invitation = { id: string; tenant_id: string; email: string; role: MemberRole; token_hash: string; invited_by: string | null; phone: string | null; expires_at: string; accepted_at: string | null; created_at: string };
 export type AuditLog = { id: number; tenant_id: string | null; actor_id: string | null; action: string; target: string | null; metadata: Record<string, unknown>; created_at: string };
@@ -148,6 +148,7 @@ export type Database = {
       set_sending_enabled: { Args: { t: string; enabled: boolean }; Returns: undefined };
       set_platform_sending: { Args: { enabled: boolean }; Returns: undefined };
       approve_tenant_sending: { Args: { t: string; approved: boolean }; Returns: undefined };
+      set_company_logo: { Args: { t: string; url: string | null }; Returns: undefined };
       // Service role only.
       engine_plan_all: { Args: Record<string, never>; Returns: number };
       engine_claim_due: { Args: { max_count?: number }; Returns: DueSimulation[] };
