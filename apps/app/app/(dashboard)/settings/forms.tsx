@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { Button, Field } from "@helvax/ui/react";
-import { inviteMember, updateCompany, updateProfile, type FormState } from "./actions";
+import { inviteMember, removeLogo, updateCompany, updateProfile, uploadLogo, type FormState } from "./actions";
 
 function Status({ state }: { state: FormState }) {
   if (state.error) return <p className="form-status form-status--error" role="alert">{state.error}</p>;
@@ -56,5 +56,32 @@ export function InviteForm({ canInviteAdmins }: { canInviteAdmins: boolean }) {
       </div>
       <div className="settings-form__actions"><Button type="submit" loading={pending}>Send invitation</Button><Status state={state} /></div>
     </form>
+  );
+}
+
+export function LogoForm({ logoUrl, companyName, canSet }: { logoUrl: string | null; companyName: string; canSet: boolean }) {
+  const [state, action, pending] = useActionState(uploadLogo, {});
+  const [removed, remove, removing] = useActionState(removeLogo, {});
+  return (
+    <div className="logo-form">
+      <div className="logo-form__preview">
+        {logoUrl ? <img src={logoUrl} alt={`${companyName} logo`} /> : <span className="muted">No logo yet</span>}
+      </div>
+      {canSet && (
+        <form action={action} className="logo-form__upload">
+          <div className="hx-field">
+            <label className="hx-label" htmlFor="logo">Upload a logo</label>
+            <input id="logo" name="logo" type="file" accept="image/png,image/jpeg,image/webp" className="hx-input logo-form__file" required />
+            <p className="hx-help">PNG, JPG or WebP, up to 512 KB. A wide logo on a transparent or white background works best.</p>
+          </div>
+          <div className="settings-form__actions"><Button type="submit" loading={pending}>Save logo</Button><Status state={state} /></div>
+        </form>
+      )}
+      {canSet && logoUrl && (
+        <form action={remove} className="settings-form__actions">
+          <Button type="submit" variant="outline" size="sm" loading={removing}>Remove logo</Button><Status state={removed} />
+        </form>
+      )}
+    </div>
   );
 }

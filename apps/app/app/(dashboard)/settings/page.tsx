@@ -5,7 +5,7 @@ import { requireSession } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { changeRole, removeMember, revokeInvitation } from "./actions";
 import { formatPhone } from "@/lib/phone";
-import { CompanyForm, InviteForm, ProfileForm } from "./forms";
+import { CompanyForm, InviteForm, LogoForm, ProfileForm } from "./forms";
 
 export const metadata: Metadata = { title: "Settings" };
 
@@ -14,11 +14,12 @@ const roleLabel: Record<MemberRole, string> = { owner: "Owner", admin: "Admin", 
 export default async function SettingsPage() {
   const s = await requireSession();
   const supabase = await createClient();
-  const [{ data: members }, { data: invites }] = await Promise.all([
+  const [{ data: members }, { data: invites }, { count: verifiedDomains }] = await Promise.all([
     supabase.from("memberships").select("user_id, role, created_at, profiles(full_name, email)").eq("tenant_id", s.tenant.id).order("created_at"),
     s.isAdmin
       ? supabase.from("invitations").select("id, email, role, expires_at").eq("tenant_id", s.tenant.id).is("accepted_at", null).order("created_at", { ascending: false })
       : Promise.resolve({ data: [] as { id: string; email: string; role: MemberRole; expires_at: string }[] }),
+    supabase.from("company_domains").select("id", { count: "exact", head: true }).eq("tenant_id", s.tenant.id).eq("is_demo", false).not("verified_at", "is", null),
   ]);
 
   return (
@@ -26,6 +27,16 @@ export default async function SettingsPage() {
       <Card className="settings__section">
         <header><h2>Company</h2><p>Used in reports and for the sending schedule.</p></header>
         <CompanyForm name={s.tenant.name} timezone={s.tenant.timezone} disabled={!s.isAdmin} />
+      </Card>
+
+      <Card className="settings__section">
+        <header>
+          <h2>Logo</h2>
+          <p>{verifiedDomains
+            ? "Internal-style simulations, such as IT or document notices, show your logo so they look like your own mail."
+            : "Verify a company domain under Employees first. Then internal-style simulations can show your logo."}</p>
+        </header>
+        <LogoForm logoUrl={s.tenant.logo_url} companyName={s.tenant.name} canSet={s.isAdmin && Boolean(verifiedDomains)} />
       </Card>
 
       <Card className="settings__section">
