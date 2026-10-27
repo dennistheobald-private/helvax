@@ -33,6 +33,7 @@ The same person should rarely see the same message twice. Three things vary each
 - **Scenario and timing**: the planner picks a random day and time per person and the scenario they've seen least recently (see "How it runs").
 - **Template variants**: a scenario can have several interchangeable versions per language in `scenario_variants`. `engine_claim_due` picks one approved, enabled variant at random for the employee's language, falling back to the scenario's translation and then its English base. The scenario's original wording is kept as one variant, so nothing is lost.
 - **Merge tokens**: a variant's subject, preview or sender name may contain placeholders such as `{{invoice_no}}`, `{{due_date}}`, `{{amount}}`, `{{ref}}` or `{{first_name}}`. `lib/engine/merge.ts` fills them per send with plausible generated values, derived from the simulation id so an idempotent resend produces an identical message. Nothing generated is stored or read back; it only shapes what is sent. Unknown placeholders are removed.
+- **Sender identities**: each scenario category has a pool of from-addresses in `sender_identities` (e.g. `it-helpdesk`, `accounts`, `office`). `engine_claim_due` picks one at random, so messages don't all share a return address. An identity may also carry its own sending domain for when more than one Helvax-owned sending domain is in use; a null domain (the default, and all that is seeded) means `SIMULATION_FROM_DOMAIN`. Any domain set here must be a Helvax-owned domain verified in Resend.
 
 ## Languages
 
