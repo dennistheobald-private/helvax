@@ -56,7 +56,7 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
 
       <Card className="section section--flush">
         {rows.length === 0 ? (
-          <EmptyState title={result ? `No “${OUTCOMES[result].label.toLowerCase()}” results` : "No simulations yet"}>
+          <EmptyState icon="activity" title={result ? `No “${OUTCOMES[result].label.toLowerCase()}” results` : "No simulations yet"}>
             {result ? "Nothing with this result right now." : "Every simulation and the evidence behind its result will appear here."}
           </EmptyState>
         ) : (
