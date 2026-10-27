@@ -20,7 +20,7 @@ export default async function ReportsPage() {
 
   if ((reports ?? []).length === 0) {
     return (
-      <EmptyState title="Your first monthly report appears here">
+      <EmptyState icon="report" title="Your first monthly report appears here">
         After the first full month of simulations, Helvax freezes the results into a report: the verified risky action rate,
         every outcome category and the breakdown by group. It is emailed to admins on the first working day of the month.
       </EmptyState>

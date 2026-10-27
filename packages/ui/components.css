@@ -362,7 +362,7 @@ th[aria-sort="descending"] .hx-table__sort::after { content: "↓"; opacity: 1; 
 
 /* EmptyState -------------------------------------------------------------- */
 .hx-empty { display: grid; justify-items: center; text-align: center; gap: var(--space-3); padding: var(--space-12) var(--space-6); border: 1.5px dashed var(--border-strong); border-radius: var(--radius-card); background: var(--canvas); }
-.hx-empty__art { width: 88px; height: 88px; color: var(--brand-500); }
+.hx-empty__art { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--brand-100); color: var(--brand-700); }
 .hx-empty__title { font: var(--weight-bold) var(--text-xl)/1.25 var(--font-display); letter-spacing: -0.02em; }
 .hx-empty__body { color: var(--muted); font-size: var(--text-sm); max-width: 44ch; }
 .hx-empty .hx-btn-group { justify-content: center; margin-top: var(--space-2); }
@@ -414,12 +414,23 @@ th[aria-sort="descending"] .hx-table__sort::after { content: "↓"; opacity: 1; 
 
 /* A container query can't style its own container, so the shell's grid switches with a media query. */
 @media (max-width: 760px) {
-  .hx-shell { grid-template-columns: minmax(0, 1fr); }
+  .hx-shell { grid-template-columns: minmax(0, 1fr); overflow-x: clip; }
+  /* iOS zooms into any field under 16px on focus and keeps the zoom after a client-side navigation. */
+  .hx-input, .hx-select { font-size: 16px; }
 }
+.hx-topbar__brand, .hx-shell__heading { display: none; }
+.hx-shell__heading { font: var(--weight-bold) var(--text-xl)/1.2 var(--font-display); letter-spacing: -0.02em; margin: 0; }
 @container (max-width: 760px) {
   .hx-shell > .hx-sidebar { display: none; position: absolute; inset: 0 auto 0 0; width: min(280px, 85%); z-index: var(--z-drawer); box-shadow: var(--shadow-lg); }
   .hx-shell[data-nav-open] > .hx-sidebar { display: flex; }
-  .hx-topbar { padding: 0 var(--space-4); }
+  /* The website's floating header: lockup on the left, avatar and menu on the right. */
+  .hx-topbar { top: 12px; margin: 12px var(--space-4) 0; min-height: 60px; padding: 8px 8px 8px 16px; gap: var(--space-2); border-radius: 22px;
+    background: var(--nav-bg, var(--canvas)); border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+    box-shadow: 0 1px 2px rgb(23 25 29 / 0.03), 0 18px 40px -24px rgb(23 25 29 / 0.25); }
+  .hx-topbar:has(.hx-topbar__brand) .hx-topbar__title { display: none; }
+  .hx-topbar__brand { display: inline-flex; align-items: center; margin-right: auto; }
+  .hx-topbar__brand, .hx-topbar__brand a { color: var(--ink); text-decoration: none; }
+  .hx-shell__heading { display: block; }
   .hx-topbar__menu { display: inline-flex; }
   .hx-topbar__search { display: none; }
   .hx-shell__content { padding: var(--space-4); }

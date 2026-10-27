@@ -89,7 +89,7 @@ export default async function EmployeesPage({ searchParams }: { searchParams: Pr
         </form>
 
         {(employees ?? []).length === 0 ? (
-          <EmptyState title={filtered ? "Nobody matches these filters" : "No employees yet"}>
+          <EmptyState icon="users" title={filtered ? "Nobody matches these filters" : "No employees yet"}>
             {filtered ? "Try another search or clear the filters." : s.isAdmin ? "Add people one by one or import a CSV file below." : "An admin can add employees."}
           </EmptyState>
         ) : (

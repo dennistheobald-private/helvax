@@ -2,7 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { AppShell } from "@helvax/ui/react";
+import Link from "next/link";
+import { AppShell, Logo } from "@helvax/ui/react";
 import { switchTenant } from "@/app/(dashboard)/actions";
 import { SidebarNav } from "./SidebarNav";
 
@@ -56,6 +57,7 @@ export function Shell({ user, tenant, tenants, isAdmin, isSuperadmin, children }
         </>
       }
       title={title}
+      brand={<Link href="/overview" aria-label="Helvax overview"><Logo height={24} /></Link>}
       topbarEnd={<span className="hx-avatar" role="img" aria-label={`Signed in as ${user.name}`}>{user.initials}</span>}
     >
       {children}

@@ -7,13 +7,15 @@ export interface AppShellProps {
   /** The `.hx-sidebar` contents: brand, sections and footer. */
   sidebar: ReactNode;
   title: ReactNode;
+  /** The logo lockup the topbar shows on small screens, where the sidebar is hidden. */
+  brand?: ReactNode;
   /** Right side of the topbar: search, notifications, avatar. */
   topbarEnd?: ReactNode;
   children: ReactNode;
 }
 
 /** Authenticated app frame: sidebar, sticky topbar and content. Below 760px the sidebar becomes a drawer. */
-export function AppShell({ sidebar, title, topbarEnd, children }: AppShellProps) {
+export function AppShell({ sidebar, title, brand, topbarEnd, children }: AppShellProps) {
   const [open, setOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
 
@@ -31,6 +33,9 @@ export function AppShell({ sidebar, title, topbarEnd, children }: AppShellProps)
       </nav>
       <div className="hx-shell__main">
         <header className="hx-topbar">
+          {brand && <span className="hx-topbar__brand">{brand}</span>}
+          <h1 className="hx-topbar__title">{title}</h1>
+          {topbarEnd}
           <button
             ref={toggle}
             type="button"
@@ -41,10 +46,11 @@ export function AppShell({ sidebar, title, topbarEnd, children }: AppShellProps)
           >
             <Icon name="menu" />
           </button>
-          <h1 className="hx-topbar__title">{title}</h1>
-          {topbarEnd}
         </header>
-        <main className="hx-shell__content">{children}</main>
+        <main className="hx-shell__content">
+          {brand && <h1 className="hx-shell__heading">{title}</h1>}
+          {children}
+        </main>
       </div>
     </div>
   );
