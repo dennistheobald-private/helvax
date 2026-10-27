@@ -268,3 +268,7 @@ html, body { margin: 0; background: var(--warm); }
 .checks__action .hx-link { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; font-size: var(--text-xs); }
 .checks li { align-items: flex-start; }
 .checks li .hx-icon { margin-top: 2px; }
+.domains-input { display: grid; gap: 8px; }
+.domains-input__row { display: flex; gap: 8px; align-items: center; }
+.domains-input__row .hx-input { flex: 1; min-width: 0; }
+.domains-input__add { justify-self: start; margin-top: 4px; }

@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { parseDomains } from "@/lib/domains";
 import { allow } from "@/lib/ratelimit";
 import { TENANT_COOKIE } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
@@ -11,15 +12,18 @@ export async function createCompany(_prev: { error?: string }, form: FormData): 
   const timezone = String(form.get("timezone") ?? "Europe/Zurich");
   if (name.length < 2) return { error: "Enter your company name." };
   if (!Intl.supportedValuesOf("timeZone").includes(timezone)) return { error: "Choose a time zone." };
+  const parsed = parseDomains(form.getAll("domain"));
+  if ("error" in parsed) return { error: parsed.error };
 
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) redirect("/login");
   if (!(await allow("create-tenant", auth.user.id, 5, 86400))) return { error: "Too many companies created today. Try again tomorrow." };
-  const { data, error } = await supabase.rpc("create_tenant", { tenant_name: name, tenant_timezone: timezone });
+  const { data, error } = await supabase.rpc("create_tenant", { tenant_name: name, tenant_timezone: timezone, tenant_domains: parsed.domains });
   if (error || !data) {
     console.error("create_tenant failed", error?.code, error?.message);
-    return { error: "We couldn't create the company. Try again." };
+    // Check violations carry a message written for people, such as a rejected domain.
+    return { error: error?.code === "23514" ? error.message : "We couldn't create the company. Try again." };
   }
 
   (await cookies()).set(TENANT_COOKIE, data, { httpOnly: true, sameSite: "lax", secure: true, path: "/" });

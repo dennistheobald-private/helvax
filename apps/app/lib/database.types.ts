@@ -135,7 +135,7 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
-      create_tenant: { Args: { tenant_name: string; tenant_timezone?: string }; Returns: string };
+      create_tenant: { Args: { tenant_name: string; tenant_timezone?: string; tenant_domains?: string[] }; Returns: string };
       accept_invitation: { Args: { invite_token: string }; Returns: string };
       load_sample_data: { Args: { t: string }; Returns: undefined };
       clear_sample_data: { Args: { t: string }; Returns: undefined };
