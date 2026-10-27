@@ -176,3 +176,13 @@ export const UI: Record<Locale, {
     greeting: (n) => `Beste ${n},`, viewDetails: "Details bekijken",
   },
 };
+
+// When a company has a logo, internal-style mail goes out under the company's own name.
+// The variant's sender name (e.g. "DocShare", "People & Culture") is replaced by a plain
+// internal-team label per category, so the from line reads as e.g. "Acme AG Documents"
+// rather than pairing the company with an unrelated product name.
+export const BRANDED_SENDER: Record<Locale, Partial<Record<ScenarioCategory, string>>> = {
+  en: { credential_form: "IT Service Desk", document_link: "Documents", qr_phishing: "IT Security" },
+  de: { credential_form: "IT-Service-Desk", document_link: "Dokumente", qr_phishing: "IT-Sicherheit" },
+  nl: { credential_form: "IT-servicedesk", document_link: "Documenten", qr_phishing: "IT-beveiliging" },
+};
