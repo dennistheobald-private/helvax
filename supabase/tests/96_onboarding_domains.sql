@@ -19,7 +19,7 @@ set role authenticated;
 
 select public.create_tenant('Muster AG', 'Europe/Zurich', array[' Muster.ch ', '@muster-group.com', 'muster.ch', '']) \gset m_
 reset role;
-select pg_temp.check((select array_agg(domain::text order by domain) from public.company_domains where tenant_id = :'m_create_tenant')
+select pg_temp.check((select array_agg(domain::text order by domain::text collate "C") from public.company_domains where tenant_id = :'m_create_tenant')
   = array['muster-group.com', 'muster.ch'], 'domains are cleaned, deduplicated and all added');
 select pg_temp.check((select count(*) from public.company_domains where tenant_id = :'m_create_tenant' and verified_at is not null) = 0,
   'onboarding domains start unverified');
