@@ -3,18 +3,23 @@ import { escapeHtml, sendEmail } from "../email";
 import { createAdminClient } from "../supabase/admin";
 import { applyMerge, buildMergeContext } from "./merge";
 import { BRANDED_SENDER, UI, toLocale } from "./practice-copy";
-import type { ScenarioCategory } from "../database.types";
+import type { DueSimulation, ScenarioCategory } from "../database.types";
 import { signToken } from "./token";
+
+/** The Resend key for simulation mail: a separate key may be limited to the simulation domain. */
+const simulationKey = () => process.env.SIMULATION_RESEND_API_KEY || process.env.RESEND_API_KEY;
+
+export interface SendConfig { origin: string; fromDomain: string; replyDomain: string | null }
 
 /**
  * Sending configuration. Everything must be set, or nothing is sent. The database
  * checks the four switches and every recipient again when it hands out work.
  */
-function config() {
+function config(): SendConfig | null {
   const host = process.env.SIMULATION_HOST;
   const fromDomain = process.env.SIMULATION_FROM_DOMAIN;
   const replyDomain = process.env.SIMULATION_REPLY_DOMAIN;
-  if (!host || !fromDomain || !replyDomain || !process.env.SIMULATION_TOKEN_SECRET || !process.env.RESEND_API_KEY) return null;
+  if (!host || !fromDomain || !replyDomain || !process.env.SIMULATION_TOKEN_SECRET || !simulationKey()) return null;
   return { origin: `https://${host}`, fromDomain, replyDomain };
 }
 
@@ -26,8 +31,13 @@ export async function dispatchDue(limit = 50): Promise<{ sent: number; failed: n
   // Returns nothing unless the platform, the company and the recipient all allow it.
   const { data: due, error } = await admin.rpc("engine_claim_due", { max_count: limit });
   if (error) throw new Error(`engine_claim_due failed: ${error.message}`);
-  const rows = due ?? [];
+  return deliver(admin, cfg, due ?? []);
+}
 
+type Row = Omit<DueSimulation, "sender_local" | "sender_domain"> & { sender_local?: string | null; sender_domain?: string | null };
+
+/** Sends claimed simulations and records each as sent or failed. */
+export async function deliver(admin: NonNullable<ReturnType<typeof createAdminClient>>, cfg: SendConfig, rows: Row[]): Promise<{ sent: number; failed: number }> {
   // Internal-style scenarios can carry the company's own name and logo. Look up the logo
   // per company and the category per scenario for this batch, so branded mail looks like
   // genuine internal mail. Only companies that set a logo (which needs a verified domain)
@@ -46,7 +56,7 @@ export async function dispatchDue(limit = 50): Promise<{ sent: number; failed: n
   let failed = 0;
   for (const d of rows) {
     const link = `${cfg.origin}/p/${signToken("link", d.simulation_id)}`;
-    const replyTo = `r${signToken("reply", d.simulation_id)}@${cfg.replyDomain}`;
+    const replyTo = cfg.replyDomain ? `r${signToken("reply", d.simulation_id)}@${cfg.replyDomain}` : undefined;
     const ui = UI[toLocale(d.locale)];
     // Fill per-send merge tokens (invoice numbers, dates, the recipient's name) so two
     // copies of the same template never read the same. Derived from the simulation id,
@@ -79,6 +89,7 @@ export async function dispatchDue(limit = 50): Promise<{ sent: number; failed: n
       // Lets the company's mail gateway recognise and allow simulations.
       headers: { "X-Helvax-Simulation": "1" },
       idempotencyKey: `simulation/${d.simulation_id}`,
+      apiKey: simulationKey(),
     });
     await admin.rpc("engine_mark_sent", { sim: d.simulation_id, accepted: Boolean(id), provider_signals: id ? { provider_id: id } : {} });
     if (id) sent++;

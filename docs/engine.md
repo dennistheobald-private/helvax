@@ -74,3 +74,31 @@ Links go to `https://$SIMULATION_HOST/p/<token>`. Once `SIMULATION_HOST` is set,
 - Run a pilot with Helvax's own addresses, with the platform switch on only for that pilot company.
 - Review the practice pages and emails in German and Dutch (phase 7).
 - Dennis decides when the platform switch goes on.
+
+## Self-test (backend only)
+
+Sends one real simulation to a platform superadmin's own account email, to check delivery, the
+practice link and event logging end to end. It is not linked from any page and skips the sending
+switches and the verified-domain gate for that one recipient only. It never changes a switch.
+
+Env on the app project (production):
+
+| Variable | Value |
+| --- | --- |
+| `ENGINE_SELF_TEST_SECRET` | 32+ random characters; the bearer token for the route |
+| `SIMULATION_TOKEN_SECRET` | 32+ random characters; signs practice links |
+| `SIMULATION_FROM_DOMAIN` | the verified Resend sending domain for simulations |
+| `SIMULATION_RESEND_API_KEY` | a Resend key allowed to send from that domain (falls back to `RESEND_API_KEY`) |
+| `NEXT_PUBLIC_APP_URL` | `https://app.helvax.ch`; practice links are served from here while `SIMULATION_HOST` is unset |
+
+```sh
+curl -X POST https://app.helvax.ch/api/engine/self-test \
+  -H "Authorization: Bearer $ENGINE_SELF_TEST_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com","scenario":"webmail-storage"}'
+```
+
+`scenario` is optional (a random approved one otherwise). The recipient is added to the
+superadmin's own company as a paused, excluded employee, so it is never planned or billed. Each
+run is audited as `engine.self_test`; at most 5 runs per hour. Opening the link and submitting
+the practice form log events on that simulation like any other.

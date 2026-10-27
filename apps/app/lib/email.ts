@@ -10,13 +10,15 @@ interface Mail {
   from?: string;
   replyTo?: string;
   headers?: Record<string, string>;
+  /** A Resend key other than RESEND_API_KEY, e.g. one allowed to send from the simulation domain. */
+  apiKey?: string;
 }
 
 const ATTEMPTS = 3;
 
 /** Sends an email through Resend. Returns Resend's message id, or false when it couldn't be sent. */
 export async function sendEmail(mail: Mail): Promise<string | false> {
-  const key = process.env.RESEND_API_KEY;
+  const key = mail.apiKey ?? process.env.RESEND_API_KEY;
   if (!key) {
     console.error("RESEND_API_KEY is not set; email not sent:", mail.subject);
     return false;

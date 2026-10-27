@@ -152,6 +152,7 @@ export type Database = {
       // Service role only.
       engine_plan_all: { Args: Record<string, never>; Returns: number };
       engine_claim_due: { Args: { max_count?: number }; Returns: DueSimulation[] };
+      engine_self_test: { Args: { superadmin: string; slug?: string | null }; Returns: Omit<DueSimulation, "sender_local" | "sender_domain">[] };
       engine_mark_sent: { Args: { sim: string; accepted: boolean; provider_signals?: Record<string, unknown> }; Returns: undefined };
       engine_mark_bounced: { Args: { provider_id: string; complaint?: boolean }; Returns: undefined };
       engine_start_session: { Args: { sim: string; ip_hash: string | null; user_agent_family: string; network_class: string }; Returns: string };
