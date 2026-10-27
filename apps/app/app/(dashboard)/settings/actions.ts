@@ -8,6 +8,7 @@ import { escapeHtml, sendEmail } from "@/lib/email";
 import { normalizePhone } from "@/lib/phone";
 import { allow } from "@/lib/ratelimit";
 import { requireSession } from "@/lib/session";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { appOrigin } from "@/lib/urls";
 
@@ -106,4 +107,73 @@ export async function removeMember(form: FormData) {
   const supabase = await createClient();
   await supabase.from("memberships").delete().eq("tenant_id", s.tenant.id).eq("user_id", String(form.get("user")));
   revalidatePath("/settings");
+}
+
+// Company logo -------------------------------------------------------------------------
+
+const LOGO_BUCKET = "branding";
+const LOGO_MAX = 512 * 1024;
+
+/** Detects the image type from its first bytes, so a renamed file can't pass as an image. */
+function imageType(b: Uint8Array): { ext: string; mime: string } | null {
+  if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return { ext: "png", mime: "image/png" };
+  if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return { ext: "jpg", mime: "image/jpeg" };
+  if (String.fromCharCode(...b.slice(0, 4)) === "RIFF" && String.fromCharCode(...b.slice(8, 12)) === "WEBP") return { ext: "webp", mime: "image/webp" };
+  return null;
+}
+
+/** The storage path of a logo we host, or null for any other URL. */
+function logoPath(url: string | null, tenantId: string) {
+  const marker = `/storage/v1/object/public/${LOGO_BUCKET}/`;
+  const at = url?.indexOf(marker) ?? -1;
+  const path = at >= 0 ? url!.slice(at + marker.length) : null;
+  return path?.startsWith(`${tenantId}/`) ? path : null;
+}
+
+export async function uploadLogo(_prev: FormState, form: FormData): Promise<FormState> {
+  const s = await requireSession();
+  if (!s.isAdmin) return { error: "Only admins can change the logo." };
+  const file = form.get("logo");
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose an image file." };
+  if (file.size > LOGO_MAX) return { error: "The logo must be 512 KB or smaller." };
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const type = imageType(bytes);
+  if (!type) return { error: "Use a PNG, JPG or WebP image." };
+
+  const supabase = await createClient();
+  const { count } = await supabase.from("company_domains").select("id", { count: "exact", head: true })
+    .eq("tenant_id", s.tenant.id).eq("is_demo", false).not("verified_at", "is", null);
+  if (!count) return { error: "Verify a company domain before adding a logo." };
+  if (!(await allow("logo", s.tenant.id, 20, 86400))) return { error: "Too many uploads today. Try again tomorrow." };
+
+  const admin = createAdminClient();
+  if (!admin) return { error: "Logo uploads aren't set up yet." };
+  const path = `${s.tenant.id}/${randomBytes(12).toString("hex")}.${type.ext}`;
+  const { error: upErr } = await admin.storage.from(LOGO_BUCKET).upload(path, bytes, { contentType: type.mime, cacheControl: "31536000", upsert: false });
+  if (upErr) {
+    console.error("Logo upload failed", upErr.message);
+    return { error: "Couldn't upload the logo. Try again." };
+  }
+  const url = admin.storage.from(LOGO_BUCKET).getPublicUrl(path).data.publicUrl;
+  const { error } = await supabase.rpc("set_company_logo", { t: s.tenant.id, url });
+  if (error) {
+    await admin.storage.from(LOGO_BUCKET).remove([path]);
+    return { error: error.code === "23514" || error.code === "42501" ? error.message : "Couldn't save the logo. Try again." };
+  }
+  const old = logoPath(s.tenant.logo_url, s.tenant.id);
+  if (old) await admin.storage.from(LOGO_BUCKET).remove([old]);
+  revalidatePath("/settings");
+  return { ok: "Logo saved." };
+}
+
+export async function removeLogo(_prev: FormState): Promise<FormState> {
+  const s = await requireSession();
+  if (!s.isAdmin) return { error: "Only admins can change the logo." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_company_logo", { t: s.tenant.id, url: null });
+  if (error) return { error: "Couldn't remove the logo. Try again." };
+  const old = logoPath(s.tenant.logo_url, s.tenant.id);
+  if (old) await createAdminClient()?.storage.from(LOGO_BUCKET).remove([old]);
+  revalidatePath("/settings");
+  return { ok: "Logo removed." };
 }

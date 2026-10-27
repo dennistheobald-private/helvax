@@ -276,3 +276,9 @@ html, body { margin: 0; background: var(--warm); }
 .domains-input__row { display: flex; gap: 8px; align-items: center; }
 .domains-input__row .hx-input { flex: 1; min-width: 0; }
 .domains-input__add { justify-self: start; margin-top: 4px; }
+
+/* Company logo in settings */
+.logo-form { display: grid; gap: 16px; }
+.logo-form__preview { display: grid; place-items: center; min-height: 88px; padding: 16px; border: 1px dashed var(--border-strong); border-radius: var(--radius-card-sm); background: var(--warm); }
+.logo-form__preview img { max-width: min(240px, 100%); max-height: 64px; object-fit: contain; }
+.logo-form__file { padding: 8px 12px; height: auto; }
