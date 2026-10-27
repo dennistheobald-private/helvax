@@ -2,7 +2,8 @@ import "server-only";
 import { escapeHtml, sendEmail } from "../email";
 import { createAdminClient } from "../supabase/admin";
 import { applyMerge, buildMergeContext } from "./merge";
-import { UI, toLocale } from "./practice-copy";
+import { BRANDED_SENDER, UI, toLocale } from "./practice-copy";
+import type { ScenarioCategory } from "../database.types";
 import { signToken } from "./token";
 
 /**
@@ -61,8 +62,12 @@ export async function dispatchDue(limit = 50): Promise<{ sent: number; failed: n
     const fromLocal = d.sender_local || d.scenario_slug;
     // Brand internal-style scenarios with the company's name and logo when it has one.
     const brand = brandOf.get(d.tenant_id);
-    const branded = Boolean(brand?.logo) && INTERNAL.has(categoryOf.get(d.scenario_slug) ?? "");
-    const displayName = branded ? `${brand!.name} ${senderName}` : senderName;
+    const category = categoryOf.get(d.scenario_slug) ?? "";
+    const branded = Boolean(brand?.logo) && INTERNAL.has(category);
+    // Branded mail goes under the company's own internal-team label, not the variant's
+    // sender name, so it never reads as e.g. "Acme AG DocShare".
+    const brandedSender = BRANDED_SENDER[toLocale(d.locale)][category as ScenarioCategory];
+    const displayName = branded ? `${brand!.name} ${brandedSender ?? senderName}` : senderName;
     const logoHtml = branded ? `<p><img src="${escapeHtml(brand!.logo!)}" alt="${escapeHtml(brand!.name)}" style="height:28px;max-width:100%"></p>` : "";
     const id = await sendEmail({
       to: d.email,

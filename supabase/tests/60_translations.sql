@@ -21,6 +21,13 @@ select pg_temp.check(not exists (
 select pg_temp.check((select bool_and(locales = '{en,de,nl}') from public.scenarios where approval_state = 'approved'), 'the library lists the languages that have text');
 select pg_temp.check(not exists (select 1 from public.scenario_translations where locale = 'de' and (subject || sender_name || preview) like '%ß%'), 'German uses Swiss spelling');
 select pg_temp.check(not exists (select 1 from public.scenario_variants where locale = 'de' and (subject || sender_name || preview) like '%ß%'), 'German variants use Swiss spelling');
+-- Every approved scenario has at least two wordings in each language, so a person rarely
+-- sees the exact same copy twice.
+select pg_temp.check(not exists (
+  select 1 from public.scenarios s cross join (values ('en'), ('de'), ('nl')) l(locale)
+  where s.approval_state = 'approved'
+    and (select count(*) from public.scenario_variants v where v.scenario_id = s.id and v.locale = l.locale and v.enabled and v.approval_state = 'approved') < 2
+), 'every approved scenario has at least two wordings per language');
 
 -- A German-speaking employee gets the German version.
 select id as d from public.tenants where name = 'Delta Bau AG' \gset
