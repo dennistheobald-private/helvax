@@ -531,7 +531,7 @@ th[aria-sort="descending"] .hx-table__sort::after { content: "↓"; opacity: 1; 
 
 /* Dark marketing band ----------------------------------------------------- */
 .hx-band { background: var(--warm); color: var(--ink); }
-.hx-signal-mark { width: 28px; height: 28px; flex: none; }
+.hx-mark, .hx-signal-mark { width: 28px; height: 28px; flex: none; }
 
 /* Keyboard hint ----------------------------------------------------------- */
 .hx-kbd { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 6px; border: 1px solid var(--border-strong); border-bottom-width: 2px; background: var(--canvas); font: var(--weight-medium) 11px/1 var(--font-mono); color: var(--muted); }

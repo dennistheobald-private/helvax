@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Icon, LogoMark, type IconName } from "@helvax/ui/react";
+import { Icon, Logo, type IconName } from "@helvax/ui/react";
 
 const main: { href: string; label: string; icon: IconName }[] = [
   { href: "/overview", label: "Overview", icon: "overview" },
@@ -27,7 +27,7 @@ export function SidebarNav({ isAdmin, isSuperadmin }: { isAdmin: boolean; isSupe
   );
   return (
     <>
-      <Link className="hx-sidebar__brand" href="/overview"><LogoMark width={24} height={24} />helvax</Link>
+      <Link className="hx-sidebar__brand" href="/overview" aria-label="Helvax overview"><Logo height={22} /></Link>
       <div className="hx-sidebar__section">{main.map(link)}</div>
       <div className="hx-sidebar__section">
         <span className="hx-eyebrow hx-sidebar__heading">Account</span>
